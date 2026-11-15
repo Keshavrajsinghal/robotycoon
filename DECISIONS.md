@@ -16,3 +16,7 @@ One line of reasoning per choice made without asking.
 - Headless checks use Playwright 1.64.1 (pinned, older than two weeks) driving the installed Google Chrome, in `tests/`, so no browser download is needed. Tests are not needed to run the site.
 - Area 7 (classical robot software, 16 concepts) is written by two agents in parallel and merged, because it is the deepest area and one agent would run out of room.
 - Agent counts exceed the default "under 10 per workflow" guideline in Phases 1-2 (one writer and two reviewers per area): the request asks for every claim in twelve areas to be checked against primary sources.
+- The simulation engine (no facts, only drawing and UI code) is built in parallel with Phases 1-2 against placeholder fixture content in `tests/fixtures/`; all real ride, workbench, and town text is written after the Phase 2 review, from the reviewed knowledge files.
+- Stop ids for every ride are fixed in `ARCHITECTURE.md` so content writers and drawing code can work in parallel.
+- Ride 2 follows an apple-slice pick (so the degrees-of-freedom workbench, leaning a slice against the grapes, belongs to it); Ride 3 follows a failed grape-bunch pick; Ride 4 follows that takeover's recording back to the grape station.
+- Robot types drawn at each station are a design judgment, not a fact from a source: grapes SCARA with a soft finger gripper, apples 6-axis arm with a vacuum cup (leaning a slice needs wrist tilt), crackers and cheese delta robots. Ride text is written to match and says these are judgment calls.
