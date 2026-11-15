@@ -1,0 +1,9 @@
+{
+  "name": "robotycoon-tests",
+  "private": true,
+  "type": "module",
+  "description": "Headless smoke tests for the RoboTycoon static site. Not needed to run the site.",
+  "devDependencies": {
+    "playwright": "1.64.1"
+  }
+}
