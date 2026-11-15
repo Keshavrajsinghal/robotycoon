@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="color-scheme" content="light dark">
+	<meta name="description" content="RoboTycoon: ride through a robot factory park and learn how industrial robots work.">
+	<title>RoboTycoon</title>
+	<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 29 10v12L16 29 3 22V10z' fill='%237cc46a'/%3E%3Cpath d='M16 3 29 10 16 17 3 10z' fill='%2394d483'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23d9583b'/%3E%3C/svg%3E">
+	<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+	<div id="app" class="app">
+		<!-- Source order is the keyboard Tab order: top bar, ride controls, route, stop panel, then the
+		     map's labeled buttons. Layout comes from absolute positioning and z-index, not source order. -->
+		<header id="hud" class="hud"></header>
+		<div id="controls" class="controls" role="toolbar" aria-label="Ride controls" hidden></div>
+		<nav id="route-drawer" class="drawer" hidden aria-label="Route"></nav>
+		<aside id="panel" class="panel" hidden aria-label="Stop details"></aside>
+		<button id="panel-reopen" class="panel-reopen" type="button" hidden>Details</button>
+		<main id="park-view" class="view park-view">
+			<canvas id="park-canvas" class="scene-canvas" role="img" aria-label="Isometric robot factory park. Use the ride menu, the route list, or the labeled buttons to move around."></canvas>
+			<div id="park-overlay" class="overlay"></div>
+		</main>
+		<section id="town-view" class="view town-view" hidden aria-label="Town map"></section>
+		<section id="showroom-view" class="view showroom-view" hidden aria-label="Showroom"></section>
+		<div id="toast" class="toast" role="status" aria-live="polite"></div>
+		<div id="modal-root"></div>
+		<div id="boot" class="boot" role="status">
+			<p>Loading RoboTycoon...</p>
+			<noscript><p>RoboTycoon needs JavaScript to run.</p></noscript>
+		</div>
+	</div>
+	<script type="module" src="js/main.js"></script>
+</body>
+</html>

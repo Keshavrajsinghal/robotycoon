@@ -1,0 +1,24 @@
+# Glossary
+
+- **Actuator** — PLACEHOLDER: a fake plain-words definition of actuator.
+- **Bottleneck** — PLACEHOLDER: a fake plain-words definition of bottleneck.
+- **Conveyor** — PLACEHOLDER: a fake plain-words definition of conveyor. See [[conveyor]].
+- **Delta robot** — PLACEHOLDER: a fake plain-words definition of delta robot. See [[delta]].
+- **Denester** — PLACEHOLDER: a fake plain-words definition of denester.
+- **Encoder** — PLACEHOLDER: a fake plain-words definition of encoder.
+- **End effector** — PLACEHOLDER: a fake plain-words definition of end effector.
+- **Feeder** — PLACEHOLDER: a fake plain-words definition of feeder.
+- **Gripper** — PLACEHOLDER: a fake plain-words definition of gripper.
+- **Guarding** — PLACEHOLDER: a fake plain-words definition of guarding. See [[guarding]].
+- **Inspection** — PLACEHOLDER: a fake plain-words definition of inspection.
+- **Joint** — PLACEHOLDER: a fake plain-words definition of joint.
+- **Latency** — PLACEHOLDER: a fake plain-words definition of latency. See [[latency-budget]].
+- **Lidding** — PLACEHOLDER: a fake plain-words definition of lidding.
+- **Line balancing** — PLACEHOLDER: a fake plain-words definition of line balancing. See [[line-balancing]].
+- **Payload** — PLACEHOLDER: a fake plain-words definition of payload.
+- **Reach** — PLACEHOLDER: a fake plain-words definition of reach.
+- **SCARA** — PLACEHOLDER: a fake plain-words definition of scara. See [[scara]].
+- **Six-axis arm** — PLACEHOLDER: a fake plain-words definition of six-axis arm. See [[six-axis]].
+- **Takt time** — PLACEHOLDER: a fake plain-words definition of takt time.
+- **Teleoperation** — PLACEHOLDER: a fake plain-words definition of teleoperation.
+- **Vacuum cup** — PLACEHOLDER: a fake plain-words definition of vacuum cup.
