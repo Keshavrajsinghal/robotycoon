@@ -290,3 +290,6 @@ height_mm: 600
 
 `payload_kg` and `reach_mm` are numeric ranges; `height_mm` is a typical body height used to
 draw every robot at the same scale.
+Optional `reach_text:` replaces the numeric reach in the caption when `reach_mm` is not a
+reach (for a mobile base, `reach_mm` is the footprint length used for drawing, and
+`reach_text` says that travel is limited only by the mapped area).

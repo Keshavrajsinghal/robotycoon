@@ -155,9 +155,11 @@ trays per minute, while a pneumatic denester sold for food lines is rated up to 
 minute [2]. It runs at under 3% of its rated speed, so the design questions are reliability with molded
 fiber trays and how often someone refills the magazine, not speed. A magazine holding 250 trays
 (illustrative) lasts 75 minutes at 200 plates/h. The lid station needs its own denester for clear lids.
-Apple slices and cheese wedges arrive in bulk on belts and are found by a camera, and grape bunches,
-which tangle, may be separated by hand and laid one by one onto their belt (an illustrative design
-choice).
+Apple slices and cheese wedges arrive in bulk on belts and are found by a camera. Grape bunches tangle,
+so nothing separates them first: a tote of bunches is presented to the six-axis arm, which picks one
+bunch at a time where a camera above the tote finds it, and full totes come from the cold store, by
+hand or on a mobile robot, to replace empty ones (an illustrative design choice). There the feeder is
+really a tote swap plus perception.
 
 ### Elsewhere
 In engine or electronics assembly, a vibratory bowl feeder delivers screws head-up, one at a time, to
@@ -423,9 +425,9 @@ opening a door to clear a dropped cheese wedge stops that robot. Trays pass in a
 tunnel openings sized with the ISO 13857 safety-distance values so a hand cannot reach the robot [6],
 and the tray and lid magazines are refilled from outside the guard. If an outfeed operator works at an
 open slot instead of a door, a light curtain guards it: with an illustrative total stopping time of
-0.35 s (curtain, safety controller, delta robot braking), the curtain must be at least 1.6 m/s × 0.35 s
-= 560 mm from the nearest hazard, plus the reach-through allowance [4]. Safety devices in the washdown
-zone need a suitable [[ip-rating]].
+0.35 s (curtain, safety controller, and the stopping time of the outfeed gantry's axes), the curtain
+must be at least 1.6 m/s × 0.35 s = 560 mm from the nearest hazard, plus the reach-through
+allowance [4]. Safety devices in the washdown zone need a suitable [[ip-rating|IP rating]].
 
 ### Elsewhere
 A car body welding cell is usually fully fenced with interlocked gates, because welding robots are fast,
@@ -522,7 +524,7 @@ against the 200 plates/h target and the shift's OEE, which needs good and total 
 as "cheese pick: vacuum not reached after 3 retries" tells the operator which gripper to check, and
 inspection's reject reasons appear next to it. A recipe change might switch the cheese station from three
 wedges to four for a premium plate (illustrative). Takt stays 18 s, because demand has not changed,
-but that station's cycle time grows by one pick (with the illustrative times in [[line-balancing]],
+but that station's cycle time grows by one pick (with the illustrative times in the [[line-balancing|line-balancing sketch]],
 from 10.5 s to 13.5 s, still inside takt), so every recipe change must be checked against takt. A
 washdown mode parks every robot in a cleaning position, and the panel itself must survive the daily
 washdown.
@@ -611,7 +613,7 @@ picks per plate × 60 / 18:
 - Cheese: 3 wedges, so 10 picks/min (6 s per pick)
 
 These per-pick times are upper bounds. On an indexing tray belt, the 1-2 s the belt spends moving one
-step (illustrative, see [[conveyor]]) comes out of each 18 s, leaving about 4 s per apple slice, 5-6 s per
+step (illustrative, see [[conveyor|conveyor]]) comes out of each 18 s, leaving about 4 s per apple slice, 5-6 s per
 cheese wedge, and 8-17 s per cracker pack. That is 9-10 picks per plate, or 30-33 picks per minute for the whole plate, far below a delta robot's
 catalog rate of roughly 100-200 standard cycles per minute [4]. The real limits are grasp reliability,
 vision, and recovering from failed picks, not arm speed. With 8 stations holding one tray each plus, say,
@@ -851,7 +853,7 @@ whole line [4].
 One 8-hour shift with 60 minutes of breaks and sanitation counted as planned leaves 420 minutes of
 planned time. Jams and gripper faults stop the line for 42 minutes, so run time is 378 minutes and
 availability is 90.0%. The ideal cycle is 14.3 s per plate (about 252 plates/h): the apple station's
-cycle in the [[line-balancing]] sketch, so the fastest the line can run. The line made 1,380 plates:
+cycle in the [[line-balancing|line-balancing]] sketch, so the fastest the line can run. The line made 1,380 plates:
 performance = 14.3 × 1,380 / (378 × 60) = 87.0%. Inspection rejected 41, so quality = 1,339 / 1,380 =
 97.0%. OEE = 0.900 × 0.870 × 0.970 = 76.0%, matching 1,339 × 14.3 s / 25,200 s. Three traps, none of
 which changes anything on the floor: using the 18 s takt as the ideal cycle would push performance above
@@ -1155,9 +1157,10 @@ risk assessment following ISO 12100 lists hazards such as "operator reaches into
 clear a dropped wedge" [8]. Door interlocks follow ISO 14119 [15], an outfeed light curtain is positioned
 per ISO 13855 [9], each safety function is designed to the PL the risk assessment demands per ISO 13849-1
 [6], and the emergency stop buttons follow ISO 13850 and IEC 60204-1 [10][11]. None of these say anything
-about food hygiene; that comes from separate guidelines (see [[hygienic-design]]). If a cobot works beside
-the outfeed operator, its contact force limits now come from the 2025 edition of ISO 10218 rather than
-the standalone TS [3].
+about food hygiene; that comes from separate guidelines (see [[hygienic-design|hygienic design]]). If
+the outfeed used a cobot beside the operator instead of a guarded gantry (an alternative design), its
+contact force limits would now come from the 2025 edition of ISO 10218 rather than the standalone
+TS [3].
 
 ### Elsewhere
 A car plant extending a welding line built under the 2011 edition cannot simply copy the old design. SICK

@@ -62,7 +62,7 @@ DoF is the first filter when matching a robot to a task: count the independent m
 ### Common misconception
 **Misconception:** More DoF is always better, so a 6-axis arm beats a 4-axis one.
 
-**Reality:** Every extra joint adds a motor, a gearbox, mass, cost, and one more source of error. If the task only ever needs top-down motion, a 4-axis SCARA or delta often beats a 6-axis arm on the standard pick benchmark (see [[speed-specs]]); that trade is why those bodies exist.
+**Reality:** Every extra joint adds a motor, a gearbox, mass, cost, and one more source of error. If the task only ever needs top-down motion, a 4-axis SCARA or delta often beats a 6-axis arm on the standard pick benchmark (see [[speed-specs|speed and cycle specs]]); that trade is why those bodies exist.
 
 ### Key numbers
 - Rigid body in space: 6 DoF; rigid body on a plane: 3 DoF [2]
@@ -100,7 +100,7 @@ Some models add a fourth condition tied to how far the arm is stretched out: FAN
 Gantries quote payload as force and trade it against speed: Güdel's smallest FP gantry allows 300 N (about 31 kg of weight) in its "high dynamic" setting, 500 N "optimal", and 800 N "high load" [5]. Ignoring these limits is costly: ABB warns that wrong load data, or loads outside the load diagram, can overload the robot and damage its motors, gearboxes, and structure, that the robot gives no warning when the arm load limit is exceeded, and that such robots are not covered by warranty [9].
 
 ### On the cheese plate line
-At the cheese station, a gripper with three small vacuum cups might weigh a few hundred grams and each wedge a few tens of grams [unverified: illustrative masses, not measured]. On paper ABB's 1 kg IRB 360-1 could carry that, but the 3 kg IRB 360-3 leaves headroom for a heavier washdown gripper and an off-center wedge, at the cost of a slower benchmark cycle: 0.40 s versus 0.30 s with 0.1 kg [8]. With about 5-6 seconds per wedge (three wedges in each 18-second plate, less the 1-2 s the tray belt spends moving one step; see [[conveyor]]), that 0.1 s does not matter.
+At the cheese station, a gripper with three small vacuum cups might weigh a few hundred grams and each wedge a few tens of grams [unverified: illustrative masses, not measured]. On paper ABB's 1 kg IRB 360-1 could carry that, but the 3 kg IRB 360-3 leaves headroom for a heavier washdown gripper and an off-center wedge, at the cost of a slower benchmark cycle: 0.40 s versus 0.30 s with 0.1 kg [8]. With about 5-6 seconds per wedge (three wedges in each 18-second plate, less the 1-2 s the tray belt spends moving one step; see [[conveyor|conveyors]]), that 0.1 s does not matter.
 
 ### Elsewhere
 In a car plant, FANUC's M-2000iA/2300 is rated for 2,300 kg and FANUC describes it lifting and positioning an entire car or loading heavy castings onto machine fixtures [2]. The robot itself weighs about 11,000 kg [2], which shows how payload drives the size of everything else.
@@ -283,7 +283,7 @@ The common benchmark is the Adept cycle, published by Adept Technology: the tool
 A cell designed from top speed alone will miss its rate, and one designed from a benchmark measured with 0.1 kg will miss it once a real gripper and part are attached.
 
 ### On the cheese plate line
-At 200 plates an hour each station gets 18 seconds per plate, and the tray belt uses 1-2 s of that to move one step (see [[conveyor]]), so the apple station, placing four slices, has about 4 seconds per pick. A delta's benchmark loop of roughly 0.3-0.6 s [2] is a small part of that. The rest of a real pick is overhead the benchmark leaves out: the camera finding the slice, following it on the moving infeed belt, building vacuum, placing gently, and releasing. With the illustrative 3.2 s per apple pick used in [[line-balancing]], the apple station is the busiest on the line even though the delta is moving for well under a second of each pick, so the fix for a slow apple station is less overhead or a second robot, not a faster delta.
+At 200 plates an hour each station gets 18 seconds per plate, and the tray belt uses 1-2 s of that to move one step (see [[conveyor|conveyors]]), so the apple station, placing four slices, has about 4 seconds per pick. A delta's benchmark loop of roughly 0.3-0.6 s [2] is a small part of that. The rest of a real pick is overhead the benchmark leaves out: the camera finding the slice, following it on the moving infeed belt, building vacuum, placing gently, and releasing. With the illustrative 3.2 s per apple pick used in [[line-balancing|line balancing]], the apple station is the busiest on the line even though the delta is moving for well under a second of each pick, so the fix for a slow apple station is less overhead or a second robot, not a faster delta.
 
 ### Elsewhere
 In an electronics plant assembling battery packs, where a SCARA repeats short moves all shift, small benchmark gaps add up. FANUC lists 0.29 s for its SR-6iA and 0.33 s for the smaller SR-3iA on the same 25-300-25 mm loop with 2 kg [3], so at a steady pace the SR-6iA completes about 14% more loops per hour.
@@ -368,7 +368,7 @@ It is the general-purpose answer: one body that can be reprogrammed for welding,
 ### Common misconception
 **Misconception:** Because a six-axis arm can do anything, it is the right choice for any pick.
 
-**Reality:** For top-down picks from one belt to another, a SCARA or delta usually completes the standard benchmark loop faster (about 0.3 s against 0.42 s for a small six-axis arm, see [[speed-specs]]). The six-axis arm earns its cost only when the tool must tilt or reach around things.
+**Reality:** For top-down picks from one belt to another, a SCARA or delta usually completes the standard benchmark loop faster (about 0.3 s against 0.42 s for a small six-axis arm, see [[speed-specs|speed and cycle specs]]). The six-axis arm earns its cost only when the tool must tilt or reach around things.
 
 ### Key numbers
 - IP rating: IP40 standard on small arms to IP67 standard on many larger ones, with hygienic and foundry options [1]
@@ -410,7 +410,7 @@ SCARA stands for Selective Compliance Assembly Robot Arm [6]. It has two rotary 
 SCARAs complete the 25/300/25 mm benchmark in about 0.3 s and repeat within ±0.01-0.02 mm [1, 2]. The workspace is a flat ring-shaped area with a short vertical stroke, about 200-210 mm on small FANUC models [2]. Epson offers table-top, wall, and ceiling mounting [1], and ABB sells a ceiling-mounted IRB 910INV [4]. If the task ever needs a tilted tool, a SCARA cannot be fixed in software; the motion does not exist.
 
 ### On the cheese plate line
-The cracker station suits a SCARA in my judgment: wrapped packs come flat and stacked from a feeder, so the job is purely top-down, with about 8-17 seconds per pack: one or two packs per plate, in the 16-17 s left of each 18 s cycle once the tray belt has moved. The washdown room is the catch. Epson offers the GX8 in an IP65 version [1] and FANUC sells food-grade SCARA models rated IP65 [5], below the line's IP67 target, so it would need a protective cover or a different robot (also a judgment call).
+The cracker station suits a SCARA in my judgment: wrapped packs come flat and stacked from a feeder, so the job is purely top-down, with about 8-17 seconds per pack: one or two packs per plate, in the 16-17 s left of each 18 s cycle once the tray belt has moved. The washdown room is the catch. Epson offers the GX8 in an IP65 version [1] and FANUC sells food-grade SCARA models rated IP65 [5]. IP65 is a water-jet test and the line's stated IP67 is an immersion test, so neither implies the other, and daily high-pressure washdown needs its own rating such as IP69K (see [[ip-rating]]). The SCARA would need a protective cover or a different robot (also a judgment call).
 
 ### Elsewhere
 In electronics and battery assembly, SCARAs insert parts, drive screws, and move small components between fixtures. FANUC shows its SR-3iA assembling battery packs [2], and Epson offers cleanroom versions that comply with ISO Class 3 (ISO 14644-1) for particle-sensitive work [1].
@@ -435,7 +435,7 @@ Most assembly and packing moves are top-down, and a SCARA does exactly those wit
 ### Common misconception
 **Misconception:** A SCARA is just a cheaper, weaker six-axis arm.
 
-**Reality:** It is a different design with its own strengths: on the standard pick loop it beats a small six-axis arm (about 0.3 s against 0.42 s, see [[speed-specs]]), and its repeatability is as good or better at ±0.01 mm [2]. What it gives up is any ability to tilt the tool.
+**Reality:** It is a different design with its own strengths: on the standard pick loop it beats a small six-axis arm (about 0.3 s against 0.42 s, see [[speed-specs|speed and cycle specs]]), and its repeatability is as good or better at ±0.01 mm [2]. What it gives up is any ability to tilt the tool.
 
 ### Key numbers
 - Vertical stroke on small SCARAs: 200-210 mm [2]
@@ -478,13 +478,13 @@ A delta is a parallel robot: several arms connect the fixed base to the same mov
 With the motors on the base, the moving mass is small, so the plate can accelerate very hard: an IRB 360 completes the 25/305/25 mm loop in 0.30 s with 0.1 kg, and an Adept Quattro in 0.26 s [1, 3]. The trade-offs are low payload (0.5-15 kg across ABB and FANUC parallel robots), a shallow working zone (about 250-300 mm tall on the IRB 360), and a large overhead frame [1, 2, 4]. Deltas are mounted inverted (hung from above) [1, 4], which keeps the belt below clear. Static repeatability is 0.03-0.1 mm, but while tracking a moving belt ABB quotes 1.0-5.0 mm depending on belt speed [1, 4].
 
 ### On the cheese plate line
-The apple and cheese stations suit deltas in my judgment: slices and wedges are light, flat, arrive on a belt, and need only top-down placement plus a turn to fit the compartment, which a 4-axis delta provides. The stainless washdown IRB 360 is IP69K validated for washing with industrial detergents and high-pressure hot water, with smooth surfaces and lubricant-free joints [1], which matters more on this line than its speed. Its 0-45 °C ambient rating covers the 2-4 °C room [1]. At 200 plates an hour a delta is far faster than the line needs: its motion takes a fraction of a second per pick, and most of each pick is camera, vacuum, and waiting (see [[speed-specs]]). That unused speed is a cost to weigh, not a technical problem.
+The apple and cheese stations suit deltas in my judgment: slices and wedges are light, flat, arrive on a belt, and need only top-down placement plus a turn to fit the compartment, which a 4-axis delta provides. The stainless washdown IRB 360 is IP69K validated for washing with industrial detergents and high-pressure hot water, with smooth surfaces and lubricant-free joints [1], which matters more on this line than its speed. Its 0-45 °C ambient rating covers the 2-4 °C room [1]. At 200 plates an hour a delta is far faster than the line needs: its motion takes a fraction of a second per pick, and most of each pick is camera, vacuum, and waiting (see [[speed-specs|speed and cycle specs]]). That unused speed is a cost to weigh, not a technical problem.
 
 ### Elsewhere
 ABB lists confectionery, ice cream, meat and fish, pet food, and medical products among its delta packing applications, with stainless versions for meat and dairy washdown [5]. A typical setup has a camera over the infeed belt finding each item and the delta picking it on the move, which ABB supports with its PickMaster vision software and conveyor-tracking controllers [1].
 
 ### Why it exists
-High-speed, light pick-and-place from moving belts is one of the most common packaging jobs, and serial arms are slower on that loop (see [[speed-specs]]). The delta trades payload and working height for speed.
+High-speed, light pick-and-place from moving belts is one of the most common packaging jobs, and serial arms are slower on that loop (see [[speed-specs|speed and cycle specs]]). The delta trades payload and working height for speed.
 
 ### Connects to
 - [[conveyor-tracking]] — deltas usually pick from moving belts
@@ -611,7 +611,7 @@ A cobot is a robot designed for collaborative applications, where a person and t
 Physically, most cobots are six-axis arms with rounded covers, low mass, and joint sensing; ABB's YuMi IRB 14000, listed with 14 axes, is a two-armed exception [4]. Across the Universal Robots, ABB, and FANUC ranges, payloads run 0.5-35 kg, reaches 500-1,813 mm, and repeatability ±0.01-0.1 mm [1, 2, 4, 5]. Listed maximum TCP speeds of 3-5 m/s [1, 2] are not usable at full value next to people; the application's risk assessment and biomechanical limits set lower ones [7]. PFL is not the only way the standard lets a person and a robot share space: it also describes hand guiding (a person steers the arm by hand) and speed and separation monitoring (sensors track how close a person is, and the robot slows, then stops, as they approach). For faster applications, speed and separation monitoring or plain fencing often remains a better choice than PFL [7]. Without PFL and the safety functions, the same arm would need fences or light curtains like any industrial robot.
 
 ### On the cheese plate line
-A cobot could fit a spot where a person also works, such as a manual rework table after inspection, if the risk assessment allows (a judgment call). Check protection before choosing one for the washdown room: Universal Robots' g-Series is rated IP65 [9] and ABB's GoFa IP54 [4], both below the line's IP67 target. At 18 seconds per plate, a cobot's speed limits are not a problem.
+A cobot could fit a spot where a person also works, such as a manual rework table after inspection, if the risk assessment allows (a judgment call). Check protection before choosing one for the washdown room: Universal Robots' g-Series is rated IP65 [9] and ABB's GoFa IP54 [4]. Neither meets the line's stated IP67, an immersion test that jet ratings such as IP65 do not imply, and neither is a high-pressure washdown rating such as IP69K (see [[ip-rating]]). At 18 seconds per plate, a cobot's speed limits are not a problem.
 
 ### Elsewhere
 Machine tending is a typical cobot job, because the arm can be taught by hand and moved between machines. Enabled Robotics, for example, mounts a cobot arm on a MiR250 mobile base to tend machines and restock supplies [6].

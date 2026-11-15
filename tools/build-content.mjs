@@ -843,6 +843,9 @@ function parseShowroom(file, ctx) {
 			concept: m.concept,
 			payloadKg: payload ?? null,
 			reachMm: reach ?? null,
+			// Optional caption that replaces the numeric reach on screen (for robots whose reach_mm is a
+			// drawing size, such as a mobile base's footprint).
+			reachText: m.reach_text ? inline(m.reach_text) : null,
 			heightMm: height ?? null,
 			speed: inline(m.speed ?? ""),
 			notes: md(secText(h2, "notes")),
