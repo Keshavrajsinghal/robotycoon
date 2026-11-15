@@ -25,29 +25,31 @@ aka: belt conveyor, modular plastic belt, indexing conveyor, accumulation convey
 ### Plain
 A conveyor is a moving floor that carries things from one worker to the next, like the belt in a
 sushi restaurant. On a robot line it brings each tray to each robot, so the robots never have to
-move around the room. It also sets the pace, because it decides where each tray is and when it
-arrives.
+move around the room. It also decides where each tray is and when it arrives, which is how each robot
+knows where to reach.
 
 ### Where the analogy breaks
-A sushi belt runs at one steady speed and diners grab whatever passes. An automated line often moves
-in exact steps and stops, and the robots must know where each item is to within a few millimeters,
-which no diner needs.
+A sushi belt runs at one steady speed and diners watch for the plate they want. An automated line often
+moves in exact steps and stops, and a robot usually does not see the item at the moment it grabs: it
+knows where the item is only because the belt's travel since an upstream camera saw it is measured, to
+within a few millimeters, so a slipping belt means a missed pick.
 
 ### Precise
 Industrial conveyors come in a few families [1]. Flat belts (a continuous loop of fabric or urethane
 pulled around a drum by friction) are simple and gentle but need tensioning and tracking (keeping the
 belt from wandering sideways). Modular plastic belts (many small plastic pieces hinged together like a
-watch strap) and thermoplastic positive-drive belts are common in food because they are driven by
-teeth rather than friction and are easier to strip and clean [unverified: construction details from
-general knowledge, not the opened pages]; Intralox markets its ThermoDrive belt as removing the
-tensioning, tracking, and cleanability problems of flat belts [3]. Roller and chain conveyors carry
-cartons, pallets, and car bodies [1].
+watch strap, turned by sprockets, which are toothed wheels) and thermoplastic positive-drive belts
+are common in food because they are driven by teeth or lugs rather than friction and are easier to
+clean [2][3][5]; Intralox
+markets its tensionless ThermoDrive belt as removing the tensioning, tracking, and cleanability
+problems of flat belts [3][5]. Roller and chain conveyors carry cartons and heavy items such as
+pallets [1].
 
 A conveyor runs either continuously or indexed (it moves one fixed step, called the pitch, then stops
 while work happens). Continuous motion gives smoother flow but makes every robot hit a moving target.
 That needs conveyor tracking: an encoder (a sensor that counts how far a shaft has turned) on the belt
-drive tells the robot controller how far the belt has moved since a camera or photo-eye saw the item,
-so the robot can predict where the item is now. Delta robot makers sell exactly this, tracking of fast
+drive tells the robot controller how far the belt has moved since a camera or photo-eye (a light beam
+that an item breaks as it passes) saw the item, so the robot can predict where the item is now. Delta robot makers sell exactly this, tracking of fast
 moving belts plus control of indexing belts, as part of their picking software [4].
 
 What breaks without a good conveyor: items slip or shift on the belt, so the robot's predicted
@@ -58,11 +60,13 @@ station's pause does not stop every other station.
 ### On the cheese plate line
 If trays sit at a 300 mm pitch (an illustrative number) and the line makes 200 plates an hour, one tray
 must leave each station every 18 s. A continuously moving tray belt would crawl at 300 mm / 18 s, about
-17 mm/s or 1 m per minute. That is slow enough that indexing is attractive: the belt moves one pitch
-in 1-2 s, stops, and each robot places onto a stationary tray. The ingredient belts are different:
+17 mm/s or 1 m per minute. At that crawl the belt only has to move for a small part of each beat, so
+indexing is attractive: the belt moves one pitch in 1-2 s, stops, and each robot places onto a
+stationary tray, with no tracking needed for the tray itself. The ingredient belts are different:
 apple slices and cheese wedges arrive in bulk on their own continuously moving belts, so those robots
 pick from a moving belt using a camera plus conveyor tracking [4]. Everything is washed daily, which is
-why food lines favor open stainless frames and plastic belts that lift off for cleaning [3].
+why food lines favor belts built for fast cleaning; Intralox, for example, claims its ThermoDrive belt
+halves cleaning time and water use [5].
 
 ### Elsewhere
 In a parcel warehouse, a sorter belt carries boxes past a barcode scanner and then past a row of
@@ -96,15 +100,16 @@ slip, stretch, and uneven spacing turn directly into missed picks, so belt choic
 are part of the robot's accuracy budget.
 
 ### Key numbers
-- Heavy-duty roller conveyors: up to about 75 ft/min (23 m/min) [1]
+- Delta robot conveyor tracking repeatability: about 1.0 mm at 200 mm/s belt speed, rising to 5.0 mm at 800-1400 mm/s, and 2.0 mm on an indexing conveyor (ABB IRB 360 with PickMaster; depends on robot speed and acceleration) [4]
 - Cheese line tray belt, if continuous: about 17 mm/s (illustrative: 300 mm pitch / 18 s takt)
 - Cheese line index move: about 1-2 s per pitch (illustrative)
 
 ### Sources
-1. [Conveyor system](https://en.wikipedia.org/wiki/Conveyor_system) — Wikipedia; conveyor types and roller conveyor speeds
-2. [Modular plastic belting](https://www.intralox.com/products/modular-plastic-belting) — Intralox; product family overview
-3. [Intralox FoodSafe](https://www.intralox.com/solutions/foodsafe) — Intralox; ThermoDrive claims on tensioning, tracking, and cleanability; detectable belt materials
-4. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; conveyor tracking, indexing belt control, PickMaster software
+1. [Conveyor system](https://en.wikipedia.org/wiki/Conveyor_system) — Wikipedia (secondary); conveyor types
+2. [Modular plastic belting](https://www.intralox.com/products/modular-plastic-belting) — Intralox; product family overview, easier to clean and maintain
+3. [Intralox FoodSafe](https://www.intralox.com/solutions/foodsafe) — Intralox; ThermoDrive claims on tensioning, tracking, and cleanability; detectable belt materials; sprockets for modular belts
+4. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; conveyor tracking speeds and repeatability, indexing belt control, PickMaster software
+5. [ThermoDrive](https://www.intralox.com/products/thermodrive) — Intralox; tensionless positive-drive belting, bar and lug drive, cleaning time claim
 
 ## Feeders and denesters
 id: feeder
@@ -124,18 +129,20 @@ trays that cling to each other are the classic jam.
 ### Precise
 A feeder turns bulk or stacked material into a stream of single items at a known place, orientation
 (which way up and which way round), and rate. Vibratory bowl feeders shake small parts up a spiral
-track whose custom tooling knocks wrongly oriented parts back into the bowl; they are fast and cheap
-per part, but each new part needs new tooling, and they cannot sort parts that look the same from every
-side or differ only by color [3]. Flexible feeders replace the tooling with a camera: parts are spread
-on a shaking surface, the camera finds ones lying well, and a robot picks them [unverified: flexible
-feeder vendor documentation not opened].
+track whose custom tooling (ramps, rails, and cutouts shaped for one part) knocks wrongly oriented parts
+back into the bowl. The tooling sorts by shape and weight, so it works well for parts with one heavy
+end, such as machine screws, but each new part needs new tooling, and it cannot orient a part whose
+right way up is shown only by a feature such as color rather than shape [3]. Flexible feeders replace the tooling
+with a camera: parts are spread on a vibrating platform or a rotating disc, a vision system finds ones
+lying well and sends their coordinates, and a robot picks them [4][5].
 
 A denester separates nested trays or lids from a stack held in a magazine (a holder for the stack) and
-puts them on the conveyor. Scroll denesters use rotating screws on the tray rim to release trays one
-at a time [unverified: mechanism not described on the opened page], and pick-and-place denesters pull
-several trays at once with servo-driven motion synchronized to the line [1]. Rated speeds run from about
-70 to 400 trays per minute, depending on the drive (pneumatic or servo), one lane or two, and the tray
-shape [1][2]. Changing tray size usually means swapping the magazine [1].
+puts them on the conveyor. Scroll (screw) denesters use rotating screws to separate and drop trays one
+at a time [6], and pick-and-place denesters pull several trays at once with servo-driven motion
+(electric motors whose position is controlled precisely) synchronized to the line [1]. Rated maximum
+speeds run from about 120 trays per minute for pneumatic (compressed-air driven) models to about 200
+for electric ones (tray dependent) and up to 400 for scroll systems, which come
+with one outlet or two [1][2]. Changing tray size usually means swapping the magazine [1].
 
 What breaks: double feeds (two trays stuck together go down as one), missed feeds, and crushed rims.
 Each one either stops the line or produces a bad plate. Soft food such as apple slices cannot go
@@ -149,7 +156,8 @@ minute [2]. It runs at under 3% of its rated speed, so the design questions are 
 fiber trays and how often someone refills the magazine, not speed. A magazine holding 250 trays
 (illustrative) lasts 75 minutes at 200 plates/h. The lid station needs its own denester for clear lids.
 Apple slices and cheese wedges arrive in bulk on belts and are found by a camera, and grape bunches,
-which tangle, may be singulated by hand onto their belt (an illustrative design choice).
+which tangle, may be separated by hand and laid one by one onto their belt (an illustrative design
+choice).
 
 ### Elsewhere
 In engine or electronics assembly, a vibratory bowl feeder delivers screws head-up, one at a time, to
@@ -169,9 +177,9 @@ guesses.
 - [[line-balancing]] — magazine refills and jams are availability losses at the first station
 
 ### Real products and tools
-- **QUPAQ ANYTRAY and INTRAY denesters** — pneumatic and servo tray denesters, sold in the UK by Sealpac as of 2026 [2]
-- **Sealpac pick-and-place and scroll denesters** — tray denesting for food packing lines [1]
-- **Asyril Asycube and FlexiBowl** — flexible, camera-based feeders for small parts
+- **QUPAQ ANYTRAY and INTRAY denesters** — pneumatic (ANYTRAY) and electric (INTRAY, including servo versions) tray denesters, sold in the UK by Sealpac as of 2026 [2]
+- **Sealpac pick-and-place denesters and QUPAQ scroll denesters** — tray denesting for food packing lines [1]
+- **Asyril Asycube and ARS FlexiBowl** — flexible, camera-based feeders for small parts [4][5]
 - **Vibratory bowl feeders** — built per part by specialist tooling shops [3]
 
 ### Common misconception
@@ -183,13 +191,17 @@ station starves every station after it.
 
 ### Key numbers
 - Pneumatic tray denesters: up to about 120 trays/min, running on 6 bar air [2]
-- Servo tray denesters: up to about 200 trays/min on one lane, up to 400 on scroll or twin-lane machines, tray dependent [1][2]
+- Electric (INTRAY) tray denesters: up to about 200 trays/min, tray dependent [2]
+- Scroll denesters: up to 400 trays/min, single or twin outlet [1]
 - Cheese line demand: about 3.3 trays/min (200 plates/h)
 
 ### Sources
 1. [Denesting and tray handling](https://www.sealpac-uk.com/denesting) — Sealpac UK; scroll and pick-and-place denesters, speeds, magazine swap
 2. [QUPAQ tray denesting range](https://www.sealpac-uk.com/qupaq-tray-denesting-range) — Sealpac UK; pneumatic and servo models, rated speeds, 6 bar air, IP67 claim
-3. [Bowl feeder](https://en.wikipedia.org/wiki/Bowl_feeder) — Wikipedia; how vibratory bowl feeders orient parts and their limits
+3. [Bowl feeder](https://en.wikipedia.org/wiki/Bowl_feeder) — Wikipedia (secondary); how vibratory bowl feeders orient parts and their limits
+4. [Asycube user guide](https://doc.asycube.asyril.com/en/2024.12/index.html) — Asyril; 3-axis vibrating platform that presents parts to a robot with vision, reduced changeover
+5. [FlexiBowl](https://flexibowl.com/) — ARS S.r.l.; parts fed onto a disc, vision sends part coordinates to the robot
+6. [US 10,294,043 B2, Screw denester with trigger plate](https://patents.google.com/patent/US10294043) — Google Patents; dispensing screws isolate and drop single trays from a stack
 
 ## Inspection and reject
 id: inspection
@@ -202,15 +214,15 @@ against an answer key. Each plate is compared with what it should contain, and a
 pushed off into a side lane. A person then fixes it or throws it away.
 
 ### Where the analogy breaks
-A teacher can take time and use judgment on a borderline answer. The line decides in a fraction of a
-second against a fixed threshold, and every threshold trades good plates wrongly thrown out against bad
-plates that slip through.
+A teacher can stop and use judgment on a borderline answer, and can spot a mistake nobody listed. The
+line applies fixed thresholds to the few things it was set up to measure, and wherever a threshold sits
+it trades good plates wrongly thrown out against bad plates that slip through.
 
 ### Precise
 Inspection measures each item against a specification and makes a pass or fail decision; reject is the
 mechanism that removes failures without stopping the line. Common sensors are cameras (presence,
-count, position, color, labels), checkweighers (a short belt on a load cell, a sensor whose output
-changes with force, that weighs each pack while it moves), metal detectors, and X-ray systems that
+count, position, color, labels), checkweighers (a short belt resting on a load cell, which is a
+sensor whose electrical output changes with the force on it, so each pack is weighed while it moves), metal detectors, and X-ray systems that
 find dense foreign bodies such as glass, stone, bone, or metal [1][2]. Reject mechanisms include air
 blasts or pneumatic pushers for light items, diverter arms, and belts that drop away so fragile items
 slide gently into a bin [1].
@@ -218,8 +230,8 @@ slide gently into a bin [1].
 Two errors matter. A false reject throws out a good item and costs product; an escape passes a bad item
 to the customer. Moving the threshold trades one for the other. The decision is made at one point and
 the reject happens further down the belt, so the controller must track each item between the two,
-usually by counting encoder pulses or index steps [unverified: common practice, not from an opened
-source]. Results also feed the quality factor of [[oee]] (good count divided by total count) [3].
+usually by counting encoder pulses or index steps [unverified: only PLC tutorial blogs found, no vendor
+manual]. Results also feed the quality factor of [[oee]] (good count divided by total count) [3].
 
 What breaks without it: defects are found by the customer, and nobody learns which station is causing
 them. A reject reason code is often more valuable than the reject itself, because it points at the
@@ -234,9 +246,10 @@ which pick station is slipping; at a 2% reject rate that is about 4 plates an ho
 detection belongs here too, because a chip of gripper or belt could land in open food [2].
 
 ### Elsewhere
-Airport baggage screening follows the same pattern: every bag passes a scanner, bags that raise an alarm
-are diverted to a separate belt where a person checks them, and the system has to keep track of which
-bag is which between the scanner and the diverter [unverified: general description, no source opened].
+Airport checked-baggage screening follows the same pattern: in-line systems use conveyors to screen,
+sort, and track every bag automatically, and bags the scanners flag go to resolution rooms where
+officers check them [4]. The system has to keep track of which bag is which between the scanner and
+the diverter.
 
 ### Why it exists
 No robot, gripper, or feeder is perfect. Catching a bad plate at the line costs one plate; catching it
@@ -250,10 +263,10 @@ on the aircraft costs a complaint, and a foreign body in food can mean a recall.
 - [[photo-eye]] — triggers the camera when a tray arrives and confirms rejects
 
 ### Real products and tools
-- **Mettler-Toledo** — checkweighers, metal detectors, and X-ray inspection for food lines
-- **Cognex In-Sight and Keyence vision systems** — smart cameras for presence, count, and label checks
+- **Mettler-Toledo** — checkweighers, metal detectors, and X-ray inspection for food lines [5]
+- **Cognex In-Sight and Keyence vision systems** — smart cameras for presence, count, and label checks [6]
 - **Sealpac inspection range** — combined metal, X-ray, and checkweighing units plus seal and label checks [2]
-- **Ishida** — checkweighers and X-ray inspection for packaged food
+- **Ishida** — checkweighers and X-ray inspection for packaged food [7][8]
 
 ### Common misconception
 **Misconception:** Adding inspection improves quality.
@@ -268,9 +281,14 @@ them.
 - Cheese line time budget: up to 18 s per plate at 200 plates/h
 
 ### Sources
-1. [Checkweigher](https://en.wikipedia.org/wiki/Checkweigher) — Wikipedia; how checkweighers weigh and reject, speeds
+1. [Checkweigher](https://en.wikipedia.org/wiki/Checkweigher) — Wikipedia (secondary); how checkweighers weigh and reject, speeds
 2. [Packaging inspection systems](https://www.sealpac-uk.com/packaging-inspection-systems) — Sealpac UK; inspection types, foreign bodies detected, example speeds
 3. [Calculating OEE](https://oee.com/calculating-oee) — oee.com; quality defined as good count over total count
+4. [Security screening technology](https://www.tsa.gov/news/press/factsheets/technology) — TSA; in-line baggage systems screen, sort, and track bags, with resolution rooms
+5. [Mettler-Toledo International Inc. Form 10-K for 2025](https://www.sec.gov/Archives/edgar/data/1037646/000103764626000011/mtd-20251231.htm) — Mettler-Toledo, filed with the US SEC; product inspection business makes metal detectors, X-ray systems, checkweighers, and camera-based imaging equipment, sold into food processing and packaging
+6. [In-Sight vision system introduction](https://docs.cognex.com/is_573/web/EN/is9000/Content/Topics/Hardware/Intro.htm) — Cognex documentation; In-Sight is a compact, stand-alone machine vision system for automated inspection, measurement, and identification
+7. [Checkweighers for the food industry](https://www.ishidaeurope.com/en/products/inspection-quality-control/checkweighers/) — Ishida Europe; checkweighers for naked and packaged food on production lines
+8. [X-ray inspection systems for food](https://www.ishidaeurope.com/en/products/inspection-quality-control/) — Ishida Europe; current X-ray inspection ranges for food
 
 ## Lidding and outfeed machines
 id: packaging-machines
@@ -290,17 +308,20 @@ the rim can make a leaking seal.
 ### Precise
 There are two common ways to close a tray. A rigid lid (such as a clear plastic dome) is taken from a
 lid magazine and pressed until it snaps over the rim. A traysealer instead lays plastic film over the
-tray, presses a heated tool onto the flange (the flat rim around the tray), and cuts the film; many can
-first replace the air with a gas mix (modified atmosphere packaging, MAP) or pull a vacuum to slow
-spoilage [1]. Traysealer speeds range from about 5-15 packs per minute for small machines to 10-320
-packs per minute for large single and double lane machines [1].
+tray's flange (the flat rim around the tray), heat-seals it there, and cuts the film inside or outside
+the rim; many can first replace the air with a gas mix (modified atmosphere packaging, MAP) or pull a
+vacuum to slow spoilage [1][4]. Sealpac's range runs from 5-15 packs per minute for its compact
+M-series to 10-320 packs per minute for its Amax machines, single and double lane, depending on model
+and pack [1].
 
 The outfeed covers everything after closing: printing codes and labels, accumulating (a buffer table or
 belt that lets the line keep running when the next step pauses), and loading cases, racks, or carts.
 Sleevers that slide a cardboard band around a tray run up to 100 trays per minute with changeovers under
 five minutes [2]. Each of these machines has its own controller, so integrating them means agreeing
-handshake signals with the line (ready to accept, tray present, faulted) [unverified: common practice,
-not from an opened source].
+the signals exchanged with the line, such as running, faulted, blocked (no room downstream), and
+starved (no product arriving); the PackML convention (an industry-agreed list of machine states and
+their names) gives packaging machines a shared set of these states [5]. Without that agreement, the
+line controller cannot tell a lidder that is waiting for trays from one that has jammed.
 
 What breaks: a lid not seated spills or exposes food; a weak seal leaks; and a full outfeed blocks the
 line, so trays back up until the robots stop.
@@ -311,8 +332,8 @@ of 5-15 packs per minute [1], so speed is not the issue. The running example use
 dome needs a lid denester, a placer (a simple pneumatic pick-and-place or a robot with suction cups),
 and a press, and it needs grape stems and cracker packs to sit below the rim, which is why inspection
 comes right before it. The outfeed prints a code and loads plates into racks or catering trolley
-drawers, still at 2-4 C; Newrest describes collaborative robots assisting with trolley assembly in its
-flight kitchens [3]. If a full rack is not swapped, trays back up through lidding and inspection until
+drawers, still at 2-4 C; Newrest describes cobot lines and technological assistance with trolley
+assembly in its newer flight kitchens (2021) [3]. If a full rack is not swapped, trays back up through lidding and inspection until
 the pick stations stop.
 
 ### Elsewhere
@@ -334,7 +355,7 @@ these repetitive motions faster, cheaper, and more consistently than general-pur
 ### Real products and tools
 - **Sealpac Amax and M-series traysealers** — film sealing with MAP, vacuum, and skin options [1]
 - **Multivac traysealers** — tray sealing machines for food packaging
-- **Proseal and Ishida traysealers** — tray sealing for ready meals and fresh food
+- **Proseal (a JBT Marel brand) and Ishida traysealers** — tray sealing for ready meals and fresh food
 - **Sleevers and flowrappers** — sold by packaging lines such as Sealpac UK [2]
 
 ### Common misconception
@@ -345,14 +366,16 @@ on the flange, or a tray a few millimeters off position turns into a crushed lid
 lidding depends on inspection and conveyor accuracy.
 
 ### Key numbers
-- Traysealers: about 5-15 packs/min (small) up to 10-320 packs/min (large, single or double lane) [1]
+- Sealpac traysealers: 5-15 packs/min (compact M-series) to 10-320 packs/min (Amax, single or double lane), by model and pack [1]
 - Sleevers: up to 100 trays/min, changeover under 5 minutes [2]
 - Cheese line lidding demand: about 3.3 lids/min
 
 ### Sources
 1. [SEALPAC traysealer range](https://www.sealpac-uk.com/sealpac-traysealer-range) — Sealpac UK; traysealer speed ranges and pack styles (MAP, vacuum, skin)
 2. [Packaging machines](https://www.sealpac-uk.com/packaging) — Sealpac UK; sleever speed and changeover, other packaging machines
-3. [Cobot lines at the heart of our inflight catering production units](https://media.newrest.eu/news/cobot-lines-at-the-heart-of-our-inflight-catering-production-units/) — Newrest; cobots and trolley assembly assistance in flight kitchens
+3. [Cobot lines at the heart of our inflight catering production units](https://media.newrest.eu/news/cobot-lines-at-the-heart-of-our-inflight-catering-production-units/) — Newrest, January 2021; cobot lines and trolley assembly assistance in flight kitchens
+4. [Automatic tray sealers](https://sigmaequipment.com/guide/automatic-tray-sealer) — Sigma Equipment (secondary, equipment dealer); film placed over the tray flange and heat-sealed, vacuum or gas options
+5. [PackML and machine-to-machine communication](https://www.automationworld.com/communication/article/22144522/packml-and-machine-to-machine-communication) — Automation World, March 2022 (secondary); PackML data exchange between line machines, blocked and starved states
 
 ## Guarding and presence sensing
 id: guarding
@@ -371,9 +394,10 @@ stops the machine, and a light beam must be far enough away that the robot has f
 a hand can reach it.
 
 ### Precise
-Safeguards come in a few types [1]: fixed guards (fences or panels that need a tool to remove);
+Safeguards come in a few types [1]: fixed barrier guards (fences or panels that block access);
 interlocked movable guards (doors with a switch that tells the safety circuit to stop the robot when
-opened); presence-sensing devices (light curtains, safety laser scanners that watch a configured zone on
+opened; the safety circuit is separate, specially built wiring and logic whose only job is stopping
+the machine); presence-sensing devices (light curtains, safety laser scanners that watch a configured zone on
 the floor, pressure-sensitive mats, safety vision systems); and awareness devices such as lights,
 signs, and chains, which only warn [1]. A safety light curtain is a transmitter and receiver pair whose
 pulsed infrared beams send a stop signal when interrupted; Type 4 devices must not fail dangerously even
@@ -396,7 +420,7 @@ testing, and setup, when people are inside the robot's reach [1].
 ### On the cheese plate line
 Each pick station sits inside stainless and clear polycarbonate panels with interlocked doors, so
 opening a door to clear a dropped cheese wedge stops that robot. Trays pass in and out through small
-tunnel openings sized so a hand cannot reach the robot [unverified: reach-distance tables not opened],
+tunnel openings sized with the ISO 13857 safety-distance values so a hand cannot reach the robot [6],
 and the tray and lid magazines are refilled from outside the guard. If an outfeed operator works at an
 open slot instead of a door, a light curtain guards it: with an illustrative total stopping time of
 0.35 s (curtain, safety controller, delta robot braking), the curtain must be at least 1.6 m/s × 0.35 s
@@ -405,9 +429,9 @@ zone need a suitable [[ip-rating]].
 
 ### Elsewhere
 A car body welding cell is usually fully fenced with interlocked gates, because welding robots are fast,
-heavy, and throw sparks. OSHA lists failure to apply lockout/tagout (each worker locking the energy off
-with a personal lock before entering) and servicing during automatic mode among common causes of robot
-accidents [1], which is why the gate interlock is backed by a procedure, not trusted alone.
+heavy, and throw sparks. OSHA's robot accident examples list failure to apply lockout/tagout (each
+worker locking the energy off with a personal lock before entering) and servicing during automatic
+operation among their causes [1], which is why the gate interlock is backed by a procedure, not trusted alone.
 
 ### Why it exists
 Industrial robots move fast and with great force, and a person cannot predict their next motion.
@@ -422,9 +446,9 @@ can overlap.
 - [[ip-rating]] — light curtains and switches in washdown areas need sealed housings
 
 ### Real products and tools
-- **SICK** — safety light curtains and safety laser scanners
-- **Pilz** — safety light curtains, guard locking switches, and safety relays
-- **Fortress Interlocks** — trapped-key and guard-locking systems
+- **SICK** — safety light curtains and safety laser scanners [7][8]
+- **Pilz** — safety light curtains, guard locking switches, and safety relays [9][10][11]
+- **Fortress Safety (Fortress Interlocks)** — trapped-key and guard-locking systems
 - **Troax and Axelent** — modular machine guard fencing
 
 ### Common misconception
@@ -444,7 +468,13 @@ enough, so stopping time has to be measured and rechecked.
 2. [ISO 13855:2024](https://committee.iso.org/standard/80590.html) — ISO; positioning of safeguards, devices covered, scope limits
 3. [ISO 14119:2024](https://online.standard.no/en/iso-14119-2024) — Standards Norway catalogue; interlocking devices, trapped keys, defeat
 4. [29 CFR 1910.217 Mechanical power presses](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.217) — OSHA; safety distance Ds = 63 in/s × Ts
-5. [Light curtain](https://en.wikipedia.org/wiki/Light_curtain) — Wikipedia; how safety light curtains work, Type 2 versus Type 4, muting
+5. [Light curtain](https://en.wikipedia.org/wiki/Light_curtain) — Wikipedia (secondary); how safety light curtains work, Type 2 versus Type 4, muting
+6. [ISO 13857:2019](https://committee.iso.org/standard/69569.html) — ISO; safety distances that stop upper and lower limbs reaching hazard zones, including through openings
+7. [The deTec4 safety light curtains for reliable safety in all environments](https://www.sick.com/us/en/the-detec4-safety-light-curtains-for-reliable-safety-in-all-environments/w/press-detec4_iolink) — SICK, 7 November 2018; launch of the deTec4 safety light curtain
+8. [SICK launches microScan3 Core safety laser scanner](https://www.sick.com/us/en/sick-launches-microscan3-core-safety-laser-scanner-/w/press-microscan3-core) — SICK, 11 April 2016; microScan3 Core safety laser scanner
+9. [Optoelectronic products and solutions must cover type classes and all protection requirements](https://www.pilz.com/mam/pilz/content/uploads/21_08_bi_light_curtains_en.pdf) — Pilz background information, 2021; PSENopt II safety light curtains, Type 3 and Type 4
+10. [What's new in 2024](https://www.pilz.com/mam/pilz/content/import/Company/Press_PR/leaflet_whats_new_2024_en_2024_03_low.pdf) — Pilz leaflet, March 2024; PSENmlock mini and PSENslock 2 safety locking devices for guard locking
+11. [PSENopt technical catalogue](https://www.parmley-graham.co.uk/content/wp-content/uploads/2022/04/PSENopt_Techn_Catalogue_1001183-EN-02.pdf) — Pilz, February 2007 edition (copy hosted by distributor Parmley Graham); PSENopt safety light curtains wired to PNOZ safety relays
 
 ## HMI
 id: hmi
@@ -464,23 +494,25 @@ on the screen at all.
 
 ### Precise
 An HMI (human-machine interface) is usually a touchscreen panel or PC program connected over an
-industrial network to the PLC (programmable logic controller, the rugged computer that runs the line
+industrial network (the wired network linking the machines on a factory floor) to the PLC (programmable logic controller, the rugged computer that runs the line
 logic). It reads and writes tags (named variables inside the PLC, such as a station's state or a good
 plate count) and draws them as screens: an overview, alarms with time stamps and acknowledgment, recipes
 (stored sets of settings for each product variant), manual modes for moving axes by hand, counters, and
 maintenance pages. SCADA (supervisory control and data acquisition) is the same idea scaled to many
 machines or a whole plant.
 
-Safety does not run through the touchscreen. Emergency stops are wired to the safety circuit, and a
+Safety does not run through the touchscreen. Emergency stops are wired to the safety circuit (separate
+wiring and logic whose only job is stopping the machine, so a frozen screen or a bug in the ordinary PLC
+program cannot block a stop), and a
 robot teach pendant (the handheld, robot-specific HMI) carries a three-position enabling device [2], a
 grip switch that allows motion only while held in its middle position, so both letting go and
-squeezing hard in panic stop the robot [unverified: mechanism description not in the opened datasheet].
+squeezing hard in panic stop the robot [4].
 
 HMI design is a discipline of its own. ISA-101.01-2015 covers HMIs for process automation systems across
 a lifecycle of design, implementation, operation, and continuous improvement, with technical reports on HMI philosophy
 (2022) and usability (2019) [1]. A common practice, often called high-performance HMI, keeps screens gray
-and calm so color appears only when something is abnormal [unverified: not stated on the opened ISA
-page]. Without good design, a jam produces a flood of alarms and the operator cannot tell which one
+and calm so color appears only when something is abnormal [unverified: found only in trade and vendor
+articles, not on the ISA page]. Without good design, a jam produces a flood of alarms and the operator cannot tell which one
 caused the rest.
 
 ### On the cheese plate line
@@ -489,14 +521,17 @@ The overview screen shows the eight stations left to right, each with a state: r
 against the 200 plates/h target and the shift's OEE, which needs good and total counts [3]. An alarm such
 as "cheese pick: vacuum not reached after 3 retries" tells the operator which gripper to check, and
 inspection's reject reasons appear next to it. A recipe change might switch the cheese station from three
-wedges to four for a premium plate (illustrative), which changes the takt math for that station. A
+wedges to four for a premium plate (illustrative). Takt stays 18 s, because demand has not changed,
+but that station's cycle time grows by one pick (with the illustrative times in [[line-balancing]],
+from 10.5 s to 13.5 s, still inside takt), so every recipe change must be checked against takt. A
 washdown mode parks every robot in a cleaning position, and the panel itself must survive the daily
 washdown.
 
 ### Elsewhere
 In car assembly, an andon board is a shared HMI for a whole line: a worker pulls a cord or presses a
-button when there is a problem, and the board lights the station number so a team leader can help before
-the car leaves that zone [unverified: no source opened].
+button when there is a problem, and the board lights the station number so a team leader can respond
+quickly; at Toyota, if the problem is not fixed within the cycle, the line stops at the end of that
+workstation [5].
 
 ### Why it exists
 Operators need to see and command machines without reading PLC code, and maintenance needs to find the
@@ -511,22 +546,27 @@ make.
 - [[operator-interfaces]] — remote operator screens in teleoperation follow similar design rules
 
 ### Real products and tools
-- **Siemens SIMATIC HMI panels and WinCC** — operator panels and HMI and SCADA software
-- **Rockwell Automation PanelView and FactoryTalk View** — operator panels and HMI software
+- **Siemens SIMATIC HMI panels and WinCC** — operator panels and HMI and SCADA software [6][7]
+- **Rockwell Automation PanelView and FactoryTalk View** — operator panels and HMI software [8]
 - **Inductive Automation Ignition** — web-based HMI and SCADA platform
 - **ISA-101 series** — the HMI design standard and technical reports [1]
 
 ### Common misconception
 **Misconception:** The HMI is just a user interface skin, so anyone can throw one together at the end.
 
-**Reality:** Bad HMI design causes operator mistakes and slow recovery, and it is a common reason a line's
-uptime is lower than its machines allow. ISA-101 treats it as an engineered artifact with a philosophy,
-a style guide, and a lifecycle [1].
+**Reality:** Bad HMI design causes operator mistakes and slows recovery from every stop, which costs
+uptime even when the machines themselves are fine. ISA-101 treats it as an engineered artifact with a
+documented philosophy and a lifecycle [1].
 
 ### Sources
 1. [ISA-101 series of standards](https://www.isa.org/standards-and-publications/isa-standards/isa-101-standards) — ISA; ISA-101.01-2015, TR101.01-2022, TR101.02-2019, lifecycle approach
 2. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; lists a three-position enabling device among safety features
 3. [Calculating OEE](https://oee.com/calculating-oee) — oee.com; counts needed to compute OEE
+4. [Enabling device ED1G series](https://bannerengineering.com/us/en/products/machine-safety/emergency-stop-and-stop-controls/enabling-device-ed1g-series.html) — Banner Engineering; three-position OFF-ON-OFF grip switch, squeeze or release both stop
+5. [Andon](https://www.lean.org/lexicon-terms/andon/) — Lean Enterprise Institute lexicon; cord or button, station number lights, team leader response, fixed-position stop
+6. [SIMATIC HMI panels](https://www.siemens.com/en-gb/products/simatic-hmi/panels/) — Siemens; panels for machine-level operator control and monitoring, configured with WinCC in the TIA Portal
+7. [SIMATIC WinCC systems](https://www.siemens.com/en-gb/products/simatic-wincc/) — Siemens; WinCC covers machine visualization (HMI) and SCADA applications
+8. [Visualization solutions selection guide](https://my.goagilix.com/assets/87/be/87be8a53-3d27-4cb6-83fd-045db21721b7/view-sg001_-en-p.pdf) — Rockwell Automation publication VIEW-SG002B-EN-P, November 2022 (copy hosted by distributor Agilix); PanelView 5000 and PanelView Plus 7 terminals, FactoryTalk View Machine Edition HMI software
 
 ## Cycle time, takt time, and throughput
 id: cycle-time
@@ -534,13 +574,17 @@ requires: none
 aka: takt time, throughput, lead time, picks per minute, Little's law
 
 ### Plain
-Takt time is the beat a line must keep to meet demand, like the stroke rate a coxswain sets for a rowing
-crew. Cycle time is how long each station actually takes for one item. If every station finishes inside
-the beat, the line keeps up; if one is slower, the whole line slows to it.
+Takt time is the pace that demand sets, like a sandwich counter that expects 120 orders in its lunch
+hour and so must hand over a sandwich every 30 seconds, however fast its staff happen to be. Cycle time
+is how long each person at the counter actually takes for their step. If every step fits inside 30
+seconds the counter keeps up; if one step takes longer, sandwiches come out at that slower pace and the
+queue grows.
 
 ### Where the analogy breaks
-Rowers all pull at the same instant on the same boat. Stations work on different items at the same time,
-and items can wait in buffers between them, so a station can briefly fall behind and catch up.
+Lunch orders come in bursts, and a busy sandwich maker can get help from the person next to them. Takt
+is demand averaged over a whole shift, and a robot station cannot borrow its neighbor's arm, so each
+station is built to cycle below takt with margin for stops; only buffers between stations let one
+briefly fall behind and catch up.
 
 ### Precise
 Takt time is available production time divided by customer demand [1] (takt is German for a precise
@@ -566,10 +610,12 @@ picks per plate × 60 / 18:
 - Cracker: 1-2 packs, so 3.3-6.7 picks/min (9-18 s per pick)
 - Cheese: 3 wedges, so 10 picks/min (6 s per pick)
 
-That is 9-10 picks per plate, or 30-33 picks per minute for the whole plate, far below a delta robot's
+These per-pick times are upper bounds. On an indexing tray belt, the 1-2 s the belt spends moving one
+step (illustrative, see [[conveyor]]) comes out of each 18 s, leaving about 4 s per apple slice, 5-6 s per
+cheese wedge, and 8-17 s per cracker pack. That is 9-10 picks per plate, or 30-33 picks per minute for the whole plate, far below a delta robot's
 catalog rate of roughly 100-200 standard cycles per minute [4]. The real limits are grasp reliability,
 vision, and recovering from failed picks, not arm speed. With 8 stations holding one tray each plus, say,
-6 trays waiting in buffers, Little's law gives a lead time of 14 trays / 200 per hour, about 4.2 minutes
+6 trays sitting on belt positions between stations (illustrative), Little's law gives a lead time of 14 trays / 200 per hour, about 4.2 minutes
 from denester to outfeed [5].
 
 ### Elsewhere
@@ -592,8 +638,8 @@ fixing stations.
 
 ### Real products and tools
 - **ABB RobotStudio** — robot simulation used to verify cycle times before building [4]
-- **Siemens Tecnomatix Plant Simulation** — discrete-event simulation of whole lines
-- **FlexSim** — discrete-event simulation for throughput and buffer sizing
+- **Siemens Tecnomatix Plant Simulation** — discrete-event simulation of whole lines [7]
+- **Autodesk FlexSim** — discrete-event simulation for throughput and buffer sizing; Autodesk agreed to buy FlexSim in October 2023 [6]
 - **Visual Components** — 3D simulation of robot cells and lines
 
 ### Common misconception
@@ -612,9 +658,11 @@ every cycle time comfortably below takt.
 ### Sources
 1. [Takt time](https://www.lean.org/lexicon-terms/takt-time/) — Lean Enterprise Institute lexicon; definition, meaning of takt, Toyota review practice
 2. [Cycle time](https://www.lean.org/lexicon-terms/cycle-time/) — Lean Enterprise Institute lexicon; cycle time and lead time
-3. [Takt time](https://en.wikipedia.org/wiki/Takt_time) — Wikipedia; formula, net available time example, downtime buffer, confusion with cycle time
-4. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; standard cycle times by model and payload
-5. [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) — Wikipedia; L = λW and its conditions
+3. [Takt time](https://en.wikipedia.org/wiki/Takt_time) — Wikipedia (secondary); formula, net available time example, downtime buffer (cited there to The Kaizen Blitz, 1999), confusion with cycle time
+4. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; standard cycle times by model and payload, verify with RobotStudio or real tests
+5. [Little's law](https://en.wikipedia.org/wiki/Little%27s_law) — Wikipedia (secondary); L = λW and its conditions, Little's 1961 proof
+6. [Autodesk signs definitive agreement to acquire FlexSim](https://www.cimdata.com/en/industry-summary-articles/item/23014-autodesk-signs-definitive-agreement-to-acquire-flexsim) — CIMdata, October 2023; FlexSim discrete-event simulation now part of Autodesk
+7. [Use Plant Simulation and throughput optimization](https://resources.sw.siemens.com/en-US/fact-sheet-plant-simulation-and-throughout-optimization-to-improve-manufacturing) — Siemens fact sheet; Plant Simulation uses discrete event simulation for throughput analysis, from whole plants down to specific lines
 
 ## Line balancing and bottlenecks
 id: line-balancing
@@ -636,14 +684,16 @@ Line balancing assigns tasks to stations so each station's time fits within takt
 precedence (task A must finish before task B) and using as few stations as possible. Balance efficiency =
 total work content / (number of stations × slowest station time); the remainder is paid-for idle time. A
 bottleneck (also called the constraint) is the step whose limited capacity caps the output of the whole
-chain; typical signs are the longest queue in front of it and the highest utilization [2].
+chain; typical signs are the longest queue in front of it and the highest utilization (the share of
+time it is busy) [2].
 
 A station is starved when it is idle waiting for input, and blocked when it is idle because the next
 station has no room. Without buffers (small queues between stations), any station stopping stops the
 whole line, so if failures are independent the line runs only the fraction of time that every station is
-up, roughly the product of their availabilities. The theory of constraints, introduced by Eliyahu
-Goldratt in The Goal (1984), says: identify the constraint, exploit it, subordinate everything else to
-it, elevate it, then repeat; it places buffers before the constraint so it never starves and after it so
+up, roughly the product of their availabilities (each station's share of time not stopped). The theory
+of constraints, introduced by Eliyahu Goldratt in The Goal (1984), says: identify the constraint,
+exploit it (get the most out of it as it is), subordinate everything else to it (run the other stations
+at its pace), elevate it (add capacity), then repeat; it places buffers before the constraint so it never starves and after it so
 it never blocks [1].
 
 Ways to fix a bottleneck: split its work across two stations or run two in parallel [3], shorten its task
@@ -678,9 +728,9 @@ how many stations to buy and what each must do, which is most of a line's cost.
 - [[scoping]] — the number of stations drives the project cost
 
 ### Real products and tools
-- **Siemens Tecnomatix Plant Simulation** — discrete-event simulation of lines, buffers, and breakdowns
-- **FlexSim and AnyLogic** — simulation tools used to size buffers and find bottlenecks
-- **Yamazumi chart** — a stacked bar chart of work per station against a takt line, usually built in a spreadsheet
+- **Siemens Tecnomatix Plant Simulation** — discrete-event simulation of lines, buffers, and breakdowns [4][5]
+- **Autodesk FlexSim and AnyLogic** — simulation tools used to size buffers and find bottlenecks
+- **Yamazumi chart** — a stacked bar chart of work per station against a takt line [6][7]
 
 ### Common misconception
 **Misconception:** If every station is faster than takt, the line will hit its target.
@@ -750,9 +800,13 @@ print(analyse(split))
 ```
 
 ### Sources
-1. [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints) — Wikipedia; Goldratt, The Goal (1984), five focusing steps, buffers around the constraint
-2. [Bottleneck (production)](https://en.wikipedia.org/wiki/Bottleneck_%28production%29) — Wikipedia; definition and ways to identify a bottleneck
-3. [Takt time](https://en.wikipedia.org/wiki/Takt_time) — Wikipedia; stations that cannot meet takt and splitting tasks between stations
+1. [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints) — Wikipedia (secondary); Goldratt, The Goal (1984), five focusing steps, buffers around the constraint
+2. [Bottleneck (production)](https://en.wikipedia.org/wiki/Bottleneck_%28production%29) — Wikipedia (secondary); definition and ways to identify a bottleneck
+3. [Takt time](https://en.wikipedia.org/wiki/Takt_time) — Wikipedia (secondary); stations that cannot meet takt and splitting tasks between stations
+4. [Plant simulation software](https://www.siemens.com/en-gb/products/tecnomatix/plant-simulation-software/) — Siemens; models production systems and logistics, with buffer utilization and automatic bottleneck detection
+5. [Simulation modelling using practical examples: a Plant Simulation tutorial](https://www.utwente.nl/en/bms/iebis/staff/mes/plantsimulation/tutorialplantsimulation13v20170726.pdf) — M. R. K. Mes, University of Twente, 2017 (secondary); Plant Simulation is a discrete event simulator, with buffers and machine failures
+6. [Operator balance chart](https://www.lean.org/lexicon-terms/operator-balance-chart/) — Lean Enterprise Institute lexicon; also called a yamazumi board, each operator's work elements stacked into a bar and compared with takt time
+7. [Yamazumi chart](https://en.wikipedia.org/wiki/Yamazumi_chart) — Wikipedia (secondary); stacked bars for each operator or workstation against a horizontal takt time line
 
 ## OEE
 id: oee
@@ -786,7 +840,8 @@ Introduction to TPM (English edition 1988) [2]. Those figures are 90% availabili
 from practical experience as minimums and noted that Japanese TPM prize-winning plants exceeded 85%; the
 figures come from a particular place, time, and industry (Japan, the 1970s, automotive) [2]. I could not
 open the book itself, so I cannot confirm his exact wording. ISO 22400-2:2014 gives formal KPI
-definitions that include OEE, though Wikipedia notes its two versions are not fully consistent [3].
+definitions that include OEE, though Wikipedia notes its two versions are not fully consistent [3];
+as of November 2026 ISO lists it as due for revision, with a replacement at the proof stage [5].
 
 What goes wrong: OEE is easy to game, by setting the ideal cycle time slow or by reclassifying stops as
 planned. It is most useful measured at the bottleneck, because time lost there is output lost for the
@@ -795,12 +850,13 @@ whole line [4].
 ### On the cheese plate line
 One 8-hour shift with 60 minutes of breaks and sanitation counted as planned leaves 420 minutes of
 planned time. Jams and gripper faults stop the line for 42 minutes, so run time is 378 minutes and
-availability is 90.0%. The ideal cycle is 15 s per plate (240 plates/h, the fastest the line can run), and
-the line made 1,380 plates: performance = 15 × 1,380 / (378 × 60) = 91.3%. Inspection rejected 41, so
-quality = 1,339 / 1,380 = 97.0%. OEE = 0.900 × 0.913 × 0.970 = 79.7%, matching 1,339 × 15 s / 25,200 s.
-Two traps: using the 18 s takt as the ideal cycle would push performance above 100%, a sign the baseline
-is wrong [1]; and counting 30 minutes of that washdown as unplanned stop time instead would drop OEE to
-about 74.4% with no change on the floor.
+availability is 90.0%. The ideal cycle is 14.3 s per plate (about 252 plates/h): the apple station's
+cycle in the [[line-balancing]] sketch, so the fastest the line can run. The line made 1,380 plates:
+performance = 14.3 × 1,380 / (378 × 60) = 87.0%. Inspection rejected 41, so quality = 1,339 / 1,380 =
+97.0%. OEE = 0.900 × 0.870 × 0.970 = 76.0%, matching 1,339 × 14.3 s / 25,200 s. Three traps, none of
+which changes anything on the floor: using the 18 s takt as the ideal cycle would push performance above
+100%, a sign the baseline is wrong [1]; rounding the ideal cycle up to 15 s would lift OEE to 79.7%; and
+counting 30 minutes of that washdown as unplanned stop time instead would drop OEE to about 70.9%.
 
 ### Elsewhere
 oee.com's worked example is a machine with a 1.0 s ideal cycle, such as a small press or bottle capper:
@@ -823,7 +879,7 @@ of loss to attack. OEE gives both: the headline score and the three factors behi
 - **Vorne XL** — a line-side OEE display and data collection device
 - **Evocon** — cloud OEE monitoring for production lines
 - **Sepasoft OEE module for Ignition** — OEE and downtime tracking on the Ignition platform
-- **ISO 22400-2:2014** — the standard's KPI definitions, including OEE [3]
+- **ISO 22400-2:2014** — the standard's KPI definitions, including OEE [3][5]
 
 ### Common misconception
 **Misconception:** 85% OEE is the world-class standard every line should hit.
@@ -837,13 +893,14 @@ baseline, measured the same way each time.
 - "World class": 90% × 95% × 99% ≈ 84.6%, quoted as 85% [2]
 - 90% on all three factors gives only about 73% OEE [2]
 - Typical manufacturers: closer to 60% [2]
-- Worked example: 74.8% [1]; cheese plate example: 79.7% (illustrative)
+- Worked example: 74.8% [1]; cheese plate example: 76.0% (illustrative)
 
 ### Sources
 1. [Calculating OEE](https://oee.com/calculating-oee) — oee.com; formulas, definitions, worked example
 2. [World-class OEE](https://oee.com/world-class-oee) — oee.com; origin of the 85% figure, typical scores
-3. [Overall equipment effectiveness](https://en.wikipedia.org/wiki/Overall_equipment_effectiveness) — Wikipedia; Nakajima 1982, TEEP, ISO 22400-2:2014, caution on the 85% target
-4. [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints) — Wikipedia; output of a system is limited by its constraint
+3. [Overall equipment effectiveness](https://en.wikipedia.org/wiki/Overall_equipment_effectiveness) — Wikipedia (secondary); Nakajima 1982, TEEP, ISO 22400-2:2014, caution on the 85% target
+4. [Theory of constraints](https://en.wikipedia.org/wiki/Theory_of_constraints) — Wikipedia (secondary); output of a system is limited by its constraint
+5. [ISO 22400-2:2014](https://committee.iso.org/standard/54497.html) — ISO; KPI definitions for manufacturing operations, Amd 1:2017, stage "to be revised"
 
 ## IP ratings and washdown
 id: ip-rating
@@ -878,9 +935,9 @@ for example IP66/IP67/IP69K [1].
 
 Washdown needs more than any IP digit. Daily sanitation combines jets, foamed detergents (often alkaline
 or chlorinated), sanitizers, and hot water on cold equipment, repeated for years [unverified: typical
-practice, no source opened]. IP tests use clean water on a new device, so they say nothing about chemical
+practice, no primary source found]. IP tests use clean water on a new device, so they say nothing about chemical
 resistance, seal aging, or corrosion, and a warm sealed housing cooled suddenly by water can draw moisture
-past its seals as the air inside contracts [unverified: no source opened]. Food plants therefore ask for
+past its seals as the air inside contracts [unverified: no primary source found]. Food plants therefore ask for
 the jet ratings on anything sprayed directly, plus resistant materials and a hygienic shape.
 
 ### On the cheese plate line
@@ -911,8 +968,8 @@ Buyers and makers need a shared, testable vocabulary for "sealed". The IP code t
 
 ### Real products and tools
 - **ABB IRB 360 stainless variant** — delta robot IP69K validated for high-pressure hot washdown [4]
-- **Stäubli Stericlean and HE robots** — arms built for wet and hygienic environments
-- **ifm and SICK washdown sensors** — photo-eyes and proximity sensors offered with IP69K housings
+- **Stäubli Stericlean and HE robots** — arms built for wet and hygienic environments [6]
+- **ifm and SICK washdown sensors** — photo-eyes and proximity sensors offered with IP69K housings [7][8][9]
 - **IEC 60529 and ISO 20653** — the test standards behind the IP code and the K tests [1]
 
 ### Common misconception
@@ -929,11 +986,15 @@ the needed ratings are listed.
 - IPX5 versus IPX6: 12.5 L/min at 30 kPa versus 100 L/min at 100 kPa, both from 3 m [1]
 
 ### Sources
-1. [IP code](https://en.wikipedia.org/wiki/IP_code) — Wikipedia; digit definitions, test conditions, IP69K and ISO 20653, non-cumulative rule
-2. [IP code](https://www.digikey.com/en/blog/ip-code) — DigiKey; summary of digits including the 9K test parameters
+1. [IP code](https://en.wikipedia.org/wiki/IP_code) — Wikipedia (secondary); digit definitions, test conditions, IP69K and ISO 20653, non-cumulative rule
+2. [IP code](https://www.digikey.com/en/blog/ip-code) — DigiKey (secondary, distributor); summary of digits including the 9K temperature, pressure, and distance
 3. [NF EN 60529/A2](https://www.boutique.afnor.org/en-gb/standard/nf-en-60529-a2/degrees-of-protection-provided-by-enclosures-ip-code/fa181031/1434) — AFNOR; Amendment 2 adds IPX9
 4. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; stainless variant IP69K validated, washdown with detergents and hot high-pressure water
 5. [QUPAQ tray denesting range](https://www.sealpac-uk.com/qupaq-tray-denesting-range) — Sealpac UK; denesters described as IP67-rated
+6. [New special-purpose robot series](https://assets.staubli.com/Robotics/Local_content/Staeubli_Interpack_PR_EN_now_2021.pdf) — Stäubli press release, May 2020; HE (humid environment) robots resist moisture and cleaning with water-based media; the Stericlean option is for aseptic environments
+7. [Measuring photoelectric sensor for the food industry](https://www.ifm.com/dk/en/shared/productnews/2019/sps/measuring-photoelectric-sensor-for-the-food-industry) — ifm, 2019; stainless steel photoelectric sensor rated IP68 / IP69K for wet food areas
+8. [Inductive full-metal sensors](https://www.ifm.com/gb/en/shared/productnews/2019/updates/inductive-full-metal-sensors-robust-compact-accurate) — ifm, 2019; stainless steel inductive sensors rated IP65 up to IP69K, aimed at food plants
+9. [Food-safe and hygienically designed: photoelectric sensors and reflectors made of inox steel](https://www.sick.com/au/en/w/blog-food-safe-and-hygienically-designed-photoelectric-sensors-and-reflectors-made-of-inox-steel/) — SICK, 31 October 2012; stainless photoelectric sensor housings that exceed IP67, IP68, and IP69K
 
 ## Hygienic and food-safe design
 id: hygienic-design
@@ -955,19 +1016,21 @@ the test of success is a lab swab, not the eye.
 Hygienic design shapes equipment so it can be cleaned to a microbiologically safe state quickly and
 repeatably. Core principles [2]: smooth food-contact surfaces (3-A and EHEDG specify a maximum roughness
 Ra, the average height of the surface's microscopic bumps, of 0.8 µm; cold-rolled stainless steel is
-typically 0.2-0.5 µm); no crevices or dead areas where residue collects; no metal-to-metal joints; smooth,
-continuous welds; surfaces and pipes that slope so they drain; and materials that do not react with food
+typically 0.2-0.5 µm); no crevices or dead areas (pockets the cleaning flow does not reach) where residue
+collects; no metal-to-metal joints, because two metal parts pressed together leave a hairline gap that
+soil and bacteria can enter but cleaning cannot; smooth, continuous welds; surfaces and pipes that slope so they drain; and materials that do not react with food
 or cleaning chemicals. EHEDG Guideline 8, Hygienic Design Principles, now in its fourth edition (December
 2025), applies a risk-based approach to both equipment and the factory and is the basis for EHEDG
 equipment certification [1].
 
-The rules are strict because Listeria monocytogenes, unlike most bacteria, can grow at refrigeration
-temperatures [3], so a cold room slows it but does not stop it, and it can settle into hard-to-clean spots
-and keep recontaminating product. Equipment is commonly divided into a food zone (touches product), a
-splash zone (product may splash on it and run back), and a non-food zone, with the strictest rules in the
-food zone; the European machinery standard EN 1672-2 is organized around this split [unverified:
-standard text not opened]. In the US, the 3-A Sanitary Standards set comparable rules, including the same
-0.8 µm surface limit [2].
+The rules are strict because Listeria monocytogenes (a bacterium that causes a serious food-borne
+illness) can grow even in refrigerated food, so a cold room
+slows it but does not stop it, and once inside a processing plant it can be hard to fully remove and
+spreads from contaminated surfaces and equipment to food [3]. The European food machinery standard
+EN 1672-2 (2020) divides equipment into a food area (surfaces exposed to food, or from which anything
+can drain, drip, or be drawn back into it), a splash area (food may splash or flow onto it but does not
+return to the product), and a non-food area, and sets separate material and design rules for each [6].
+In the US, the 3-A Sanitary Standards set comparable rules, including the same 0.8 µm surface limit [2].
 
 For robots this means stainless or sealed housings, no exposed fasteners or cable runs over open food,
 lubricants that are food-safe or sealed away, and end effectors that come off without tools. ABB's
@@ -976,11 +1039,12 @@ Belts and plastic parts can be made metal- or X-ray-detectable so a broken fragm
 inspection [5].
 
 ### On the cheese plate line
-Every surface over the open trays is in the food or splash zone: the delta robots' arms, the grippers
-touching apple slices and cheese wedges, and the belts. The room runs at 2-4 C, which slows Listeria but
+Under the EN 1672-2 definitions above, every surface over the open trays counts as food area, because
+anything on it can drip into the food: the delta robots' arms and the grippers touching apple slices and
+cheese wedges, along with the ingredient belts that carry food directly [6]. The room runs at 2-4 C, which slows Listeria but
 does not stop it [3], so the daily washdown matters more than the temperature. Practical choices:
 grippers on quick-release mounts that go to a parts washer; vacuum paths that can be flushed, since apple
-juice and cheese crumbs get drawn into suction hoses [unverified: design concern, no source opened];
+juice and cheese crumbs get drawn into suction hoses [unverified: design concern, no primary source found];
 open-frame stainless conveyors whose belts lift off; no flat ledges where water pools; and detectable
 plastic for any part that could chip [5].
 
@@ -1022,9 +1086,10 @@ crevices, no dead areas, drainable surfaces) decide whether it can be cleaned [2
 ### Sources
 1. [GL 8 Hygienic design principles](https://ehedg.org/guidelines-working-groups/guidelines/guidelines/detail/hygienic-design-principles) — EHEDG; fourth edition (December 2025), scope, link to certification
 2. [Hygienic design of equipment in food processing](https://www.food-safety.com/articles/4350-hygienic-design-of-equipment-in-food-processing) — Food Safety Magazine, Roy Curiel (Unilever), 2003; principles and the Ra 0.8 µm figure
-3. [Listeria (Listeriosis)](https://www.fda.gov/food/foodborne-pathogens/listeria-listeriosis) — US FDA; growth at refrigeration temperatures
+3. [How Listeria spreads](https://www.cdc.gov/listeria/causes/) — US CDC; grows in refrigerated food, hard to fully remove from food processing facilities
 4. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/a3759d3f3e7141deba89d1caeb1dd4e4/IRB%20360%20FlexPicker_Datasheet_US%20Letter.pdf) — ABB, 2017; stainless variant with rinse-off surfaces and lubricant-free joints
 5. [Intralox FoodSafe](https://www.intralox.com/solutions/foodsafe) — Intralox; detectable belt materials, hygienic belting
+6. [prEN 1672-2:2019 preview (SIST EN 1672-2:2021)](https://cdn.standards.iteh.ai/samples/59736/028f6fb3ae8d4153a15ec2020e35d0d7/SIST-EN-1672-2-2021.pdf) — iTeh Standards preview of the CEN enquiry draft of EN 1672-2:2020; definitions of food, splash, and non-food areas, clause structure
 
 ## The main safety standards
 id: safety-standards
@@ -1038,21 +1103,27 @@ build guards, stop buttons, and safety electronics, and a robot standard pulls t
 written by expert committees and become close to mandatory because laws point to them.
 
 ### Where the analogy breaks
-A building code is usually law in its own right. Most machine safety standards are voluntary on paper and
-gain force indirectly, for example through EU law, which presumes a machine is compliant if it follows
-the standards listed as harmonised [14].
+A building code is usually law in its own right and mostly lists fixed rules for an inspector to check.
+Most machine safety standards are voluntary on paper and gain force indirectly, for example through EU
+law, which presumes a machine is compliant if it follows the standards listed as harmonised [14]; and
+their core is a risk assessment the builder carries out and documents, which decides how strong each
+safeguard must be, rather than a fixed checklist [3][8].
 
 ### Precise
 ISO 12100 is the basic standard (type A): it sets the method for identifying hazards, estimating and
 evaluating risk, and reducing it, and it is the basis for type-B standards (one safety aspect for any
 machine, such as guard distances or emergency stops) and type-C standards (one machine type) [8]. For
 industrial robots the type-C standard is ISO 10218: part 1 covers the robot itself, treated as partly
-completed machinery, and part 2 covers integrating it into applications and cells [1][2].
+completed machinery (a machine that cannot do its job until it is built into something larger, so
+whoever builds the whole takes responsibility for its safety), and part 2 covers integrating it into
+applications and cells [1][2].
 
 Safety functions (for example, "stop the robot when the door opens") are built from safety-rated sensors,
 logic, and actuators. ISO 13849-1 rates them by performance level, PL a to e (how unlikely a dangerous
-failure is), for any technology [6]; IEC 62061 does the same job for electrical and programmable systems
-using safety integrity levels (SIL) [7]. The 2025 robot standards replaced a blanket PL d requirement with
+failure is), for electrical, hydraulic, pneumatic, or mechanical technology [6][16]; IEC 62061 does the
+same job using safety integrity levels (SIL, a numbered scale where a higher number means a dangerous
+failure is less likely), and its 2021 edition widened it beyond electrical and
+programmable systems to other technologies [7]. The 2025 robot standards replaced a blanket PL d requirement with
 a PL chosen per safety function from a risk evaluation, defined two robot classes, added cybersecurity
 where it affects safety, and absorbed the collaborative robot content of ISO/TS 15066, including the body
 force and pressure limits [3][4].
@@ -1063,7 +1134,7 @@ Current editions as of November 2026:
 |---|---|---|
 | ISO 10218-1 | 2025 (3rd edition, February 2025) | The industrial robot: inherently safe design, protective measures, information for use [1] |
 | ISO 10218-2 | 2025 (2nd edition, February 2025) | Robot applications and cells: integration, commissioning, operation, maintenance [2] |
-| ISO/TS 15066 | 2016 | Collaborative applications; content now folded into ISO 10218-1/-2:2025, though catalogues still list the TS as valid [3][12] |
+| ISO/TS 15066 | 2016 | Collaborative applications; content now folded into ISO 10218-1/-2:2025, but the TS is not withdrawn: ISO still lists it as current (confirmed 2022), marked for revision, with ISO 15066-1 under development to replace it [3][12] |
 | ANSI/A3 R15.06 | 2025 | US adoption of ISO 10218 parts 1 and 2, replacing R15.06-2012; Part 3, for users of robot cells, released January 2026 [4][5] |
 | ISO 12100 | 2010, confirmed 2022 | Risk assessment and risk reduction for all machinery; a revision (ISO/DIS 12100) is in development [8] |
 | ISO 13849-1 | 2023 (4th edition) | Design of safety-related parts of control systems, performance levels [6] |
@@ -1075,7 +1146,8 @@ Current editions as of November 2026:
 
 In the EU, the Machinery Regulation (EU) 2023/1230 replaces the Machinery Directive 2006/42/EC and applies
 from 20 January 2027 [13]. EN ISO 10218-1 and -2:2025 were listed in the EU Official Journal as harmonised
-standards on 7 September 2026 [14].
+standards under the current Machinery Directive on 7 September 2026, by Implementing Decision
+(EU) 2026/2015 [14].
 
 ### On the cheese plate line
 The integrator builds each robot cell to ISO 10218-2:2025, or ANSI/A3 R15.06-2025 in the US. A documented
@@ -1084,14 +1156,16 @@ clear a dropped wedge" [8]. Door interlocks follow ISO 14119 [15], an outfeed li
 per ISO 13855 [9], each safety function is designed to the PL the risk assessment demands per ISO 13849-1
 [6], and the emergency stop buttons follow ISO 13850 and IEC 60204-1 [10][11]. None of these say anything
 about food hygiene; that comes from separate guidelines (see [[hygienic-design]]). If a cobot works beside
-the outfeed operator, its contact force limits now come from ISO 10218-2:2025 rather than the standalone
-TS [3].
+the outfeed operator, its contact force limits now come from the 2025 edition of ISO 10218 rather than
+the standalone TS [3].
 
 ### Elsewhere
 A car plant extending a welding line built under the 2011 edition cannot simply copy the old design. SICK
-advises treating ISO 10218-2:2025 as the state of the art when modifying or extending older systems, and
-notes that significant changes may require a new CE conformity assessment once the EU Machinery Regulation
-applies in January 2027 [3].
+advises treating ISO 10218-2:2025 as the state of the art when modifying or extending older systems.
+It adds that a significant change requires a new CE conformity assessment (the maker's documented check
+that the machine meets EU law, which allows the CE mark), under both the current Machinery Directive and
+the Machinery Regulation that applies from January 2027, which now spells out "significant change" in EU
+law itself [3].
 
 ### Why it exists
 Robot makers, integrators, and plants need one shared definition of "safe enough" so responsibility is
@@ -1102,12 +1176,12 @@ compliance [14].
 - [[guarding]] — ISO 13855 and ISO 14119 govern guard distances and interlocks
 - [[safety-circuit]] — ISO 13849-1 and IEC 62061 rate the safety circuits
 - [[estop]] — ISO 13850 and IEC 60204-1 define how emergency stops work
-- [[cobot]] — collaborative force and pressure limits now live in ISO 10218-2:2025
+- [[cobot]] — collaborative force and pressure limits now live in ISO 10218:2025
 - [[acceptance-tests]] — safety functions are validated before the line is handed over
 
 ### Real products and tools
 - **SISTEMA** — free software from the German IFA for calculating ISO 13849-1 performance levels
-- **Pilz PNOZmulti and Siemens SIMATIC S7-1500F** — safety controllers that implement rated safety functions
+- **Pilz PNOZmulti and Siemens SIMATIC S7-1500F** — safety controllers that implement rated safety functions [17][18]
 - **A3 Standards Store** — sells ANSI/A3 R15.06-2025 in the US [4]
 - **ISO and IEC webstores** — publish the standards listed above [1][11]
 
@@ -1128,15 +1202,18 @@ part for the user's duties [5]. A compliant robot inside a badly designed cell i
 1. [ISO 10218-1:2025](https://committee.iso.org/standard/73933.html) — ISO; edition, publication date, scope, replaced 2011 edition
 2. [ISO 10218-2:2025](https://committee.iso.org/standard/73934.html) — ISO; edition, publication date, scope, replaced 2011 edition
 3. [More safety for humans and machines](https://www.sick.com/br/en/more-safety-for-humans-and-machines/w/blog-robotic-norm-iso10218) — SICK; ISO/TS 15066 incorporated, robot classes, per-function PL, retrofit advice
-4. [Updated ANSI/A3 standards address industrial robot safety](https://www.therobotreport.com/updated-ansi-a3-standards-address-industrial-robot-safety/) — The Robot Report, September 2025; R15.06-2025 parts, consolidation of TS 15066, monitored standstill
-5. [ANSI/A3 releases Part 3 of R15.06-2025](https://www.plantautomation-technology.com/index.php/news/ansi-a3-releases-part-3-of-r15.06-2025-standard-focusing-on-industrial-robot-operational-safety-in-u.s.-factories) — Plant Automation Technology, January 2026; Part 3 for users
+4. [Updated ANSI/A3 standards address industrial robot safety](https://www.therobotreport.com/updated-ansi-a3-standards-address-industrial-robot-safety/) — The Robot Report, 12 September 2025 (secondary, trade press); R15.06-2025 parts, consolidation of TS 15066, monitored standstill
+5. [A3 releases Part 3 of ANSI/A3 R15.06-2025 robot safety standard](https://www.robotics247.com/article/a3-releases-part-3-of-ansi-a3-r15.06-2025-robot-safety-standard) — Robotics 24/7, 14 January 2026 (secondary, trade press); Part 3, safety requirements for the use of industrial robot cells
 6. [ISO 13849-1:2023](https://committee.iso.org/es/sites/isoorg/contents/data/standard/07/34/73481.html) — ISO; fourth edition, scope, replaced 2015 edition
-7. [IEC 62061:2021/AMD1:2024](https://www.evs.ee/en/iec-62061-2021-amd1-2024) — Estonian Centre for Standardisation; amendment valid from March 2024
+7. [IEC 62061:2021+AMD1:2024 CSV](https://webstore.iec.ch/en/publication/59927) — IEC; consolidated edition 2 with Amendment 1:2024, scope, extension to non-electrical technologies
 8. [ISO 12100:2010](https://committee.iso.org/standard/51528.html) — ISO; scope, confirmed 2022, revision under development
 9. [ISO 13855:2024](https://committee.iso.org/standard/80590.html) — ISO; third edition, scope
 10. [ISO 13850:2015](https://www.evs.ee/en/iso-13850-2015) — Estonian Centre for Standardisation; emergency stop scope, valid edition
 11. [IEC 60204-1:2016+AMD1:2021 CSV](https://webstore.iec.ch/en/publication/71256) — IEC; edition 6.1, scope
-12. [ISO/TS 15066:2016](https://www.evs.ee/en/iso-ts-15066-2016) — Estonian Centre for Standardisation; TS still listed as valid
+12. [ISO/TS 15066:2016](https://committee.iso.org/standard/62996.html) — ISO; published, confirmed 2022, stage 90.92 (to be revised), to be replaced by ISO/AWI 15066-1 (under development)
 13. [Regulation (EU) 2023/1230 on machinery](https://osha.europa.eu/en/legislation/directive/regulation-20231230eu-machinery) — EU-OSHA; applies from 20 January 2027, replaces Directive 2006/42/EC
-14. [New standards for industrial robots: EN ISO 10218-1 and -2](https://www.ibf-solutions.com/en/seminars-and-news/news/new-standards-for-industrial-robots-en-iso-10218-1-and-2) — IBF Solutions; harmonised listing in the Official Journal on 7 September 2026
+14. [Commission Implementing Decision (EU) 2026/2015](https://eur-lex.europa.eu/eli/dec_impl/2026/2015/oj/eng) — EUR-Lex; adds EN ISO 10218-1/-2:2025 to the harmonised standards for Directive 2006/42/EC, OJ 7 September 2026; presumption of conformity
 15. [ISO 14119:2024](https://online.standard.no/en/iso-14119-2024) — Standards Norway catalogue; interlocking devices, published September 2024
+16. [ISO 13849](https://en.wikipedia.org/wiki/ISO_13849) — Wikipedia (secondary); performance levels a to e as bands of dangerous failure rate, technologies covered
+17. [What's new in 2024](https://www.pilz.com/mam/pilz/content/import/Company/Press_PR/leaflet_whats_new_2024_en_2024_03_low.pdf) — Pilz leaflet, March 2024; PNOZmulti 2 safe small controllers
+18. [SIMATIC Safety Integrated](https://www.siemens.com/en-gb/products/simatic/simatic-safety-integrated/) — Siemens; fail-safe S7-1200F and S7-1500F controllers with dedicated safety programs, safety functions up to PL e / SIL 3

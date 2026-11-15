@@ -8,18 +8,21 @@
 - **ACT (Action Chunking with Transformers)** — A learned-policy design from the ALOHA project that predicts a short run of future joint positions at once instead of one step at a time. See [[imitation-learning]].
 - **Action chunk** — A short list of future targets that a learned policy outputs in one go, for example 50 steps covering one second. See [[learned-policy]].
 - **Adept cycle** — A standard test move for comparing robot speed: up 25 mm, across 305 mm, down 25 mm, and back, with a stated load. Real tasks are usually slower. See [[speed-specs]].
-- **AGV (automated guided vehicle)** — A driverless cart that follows a fixed route marked by tape, wires, or reflectors, and stops when something blocks it. See [[mobile-robot]].
+- **AGV (automated guided vehicle)** — A driverless cart that follows a fixed route, typically marked by wires or magnetic strips, and stops when something blocks it until the obstacle is removed. See [[mobile-robot]].
 - **AMR (autonomous mobile robot)** — A driverless robot that builds a map, works out where it is from its own sensors, and plans its own route around obstacles. See [[mobile-robot]].
 - **Andon** — A shared signal board for a whole line, where a worker pulls a cord or presses a button to show that a station needs help. See [[hmi]].
 - **Arcminute (arcmin)** — One sixtieth of a degree. Gearbox play and twist are measured in it. See [[gearbox]].
 - **AV1** — A newer, royalty-free video compression standard. How much smaller it makes video than older standards varies a lot from test to test. See [[video-pipeline]].
+- **Availability** — In OEE, the share of planned production time a machine is actually running; scheduled breaks are left out of the planned time. See [[oee]].
 
 ## B
 - **B-frame** — A compressed video frame that refers to a later frame as well as earlier ones, so the encoder must wait for that later frame, which adds delay. See [[video-pipeline]].
 - **Backlash** — Free play in a gearbox: how far the output can turn while the input is held still, before the teeth touch. See [[gearbox]].
+- **Bandwidth (of a control loop)** — How fast a change a feedback loop can follow. In cascaded control each inner loop is usually set to about 5-10 times the bandwidth of the loop around it. See [[control-loops]].
 - **Behavior cloning** — Training a policy to copy a person: for each recorded moment, the right answer is the action the person took. See [[imitation-learning]].
-- **Behavior tree (BT)** — A way to sequence robot tasks as a tree of small steps, where each parent decides which children to run, re-checked from the top many times a second. See [[state-machines]].
+- **Behavior tree (BT)** — A way to sequence robot tasks as a tree of small steps, where each parent decides which children to run. A repeated signal, the tick, asks the current step how it is going many times a second; earlier checks are re-run on every tick only where the author used a reactive step. See [[state-machines]].
 - **Belt encoder** — A sensor on a conveyor roller or motor that gives a count for every small step of belt travel, so the robot knows how far the belt has moved. See [[conveyor-tracking]].
+- **Bill of materials (BOM)** — The full parts list for a machine or cell. See [[purchasing]].
 - **Blend (zone)** — A robot program setting for how close the tool passes a point before rounding the corner instead of stopping on it. See [[vendor-languages]].
 - **Bottleneck** — The step whose limited capacity caps the output of the whole line; also called the constraint. See [[line-balancing]].
 - **Brake (holding brake)** — A brake in a robot joint that clamps whenever power is removed, so a power cut, broken cable, or emergency stop leaves the arm held in place. See [[brake]].
@@ -28,11 +31,13 @@
 - **C-space (configuration space)** — The space of every possible combination of joint values, with one dimension per joint. Motion planners search it for collision-free paths. See [[motion-planning]].
 - **Canary** — A partial, time-limited release of new software to a small slice of the fleet, compared against the rest. See [[remote-updates]].
 - **Capex (capital expenditure)** — Money spent buying a long-lived asset such as a robot cell. It goes on the balance sheet and is counted as a cost gradually over the asset's useful life. See [[purchasing]].
-- **Cascaded control** — Nested feedback loops: a position loop feeds a speed loop, which feeds a current loop, each inner loop much faster than the one around it. See [[control-loops]].
+- **Cascaded control** — Nested feedback loops: a position loop feeds a speed loop, which feeds a current loop. Each inner loop must respond much faster than the one around it, typically following changes 5-10 times faster. See [[control-loops]].
 - **CBR (constant bitrate)** — A video encoder setting that holds the data rate steady so the network is not hit by bursts. See [[video-pipeline]].
+- **Checkweigher** — A short belt resting on a load cell (a sensor whose electrical output changes with the force on it), so each pack is weighed while it moves. See [[inspection]].
 - **CMMS (computerized maintenance management system)** — Software that tracks work orders for equipment, such as repairs and scheduled servicing. See [[acceptance-tests]].
-- **Cobot (collaborative robot)** — A robot arm designed to work in a space shared with people, usually by sensing contact and capping its speed and force. See [[cobot]].
+- **Cobot (collaborative robot)** — A robot arm designed to work in a space shared with people, usually by sensing contact and capping its speed and force. The 2025 edition of ISO 10218 drops the term and judges the safety of the whole collaborative application instead. See [[cobot]].
 - **Cold and hot commissioning** — Cold commissioning tests a new cell's axes, safety functions, and signals with no product running; hot commissioning then runs real product, tunes settings, and does performance runs. See [[commissioning]].
+- **Collaborative application** — A task in which a person and a robot share a workspace. The 2025 edition of ISO 10218 uses this term instead of "collaborative robot" and judges safety by the risk assessment of the whole application, not the robot alone. See [[cobot]].
 - **Compounding error** — In imitation learning, a small mistake leads the robot into a situation the demonstrations never showed, where it makes a bigger mistake and drifts further off. See [[imitation-learning]].
 - **Congestion control** — Estimating how fast a network path can carry data and sending no faster. See [[webrtc]].
 - **Contactor** — A heavy-duty relay (an electrically worked switch) that turns motor power on and off. See [[safety-circuit]].
@@ -42,17 +47,20 @@
 ## D
 - **DAgger (dataset aggregation)** — A fix for compounding error: run the learned policy, have an expert label the situations it actually reaches, add those to the training data, and retrain. See [[imitation-learning]].
 - **Damped least squares** — A way of solving inverse kinematics step by step that gives up a little accuracy per step so it never makes huge joint jumps near awkward poses. See [[inverse-kinematics]].
+- **DC bus** — The internal supply of steady, one-direction current inside a servo drive, which the drive switches on and off rapidly to feed the motor: up to 848 V on an industrial axis module. Cobot joints often use a much lower bus, such as 48 V. See [[servo-drive]].
 - **DDS (Data Distribution Service)** — An industrial messaging standard, used by default in ROS 2, in which programs post messages to named channels and every program signed up to a channel receives them. See [[ros2]].
 - **Dead-man switch** — A control that allows motion only while a person holds it, so letting go stops the robot. See [[watchdogs]].
 - **Degrees of freedom (DoF)** — The number of independent motions you must set to say exactly where every part of a robot is. Six are needed to place a tool anywhere and point it any way. See [[dof]].
-- **Delta robot** — A fast robot hung from a frame above a belt, with three or four light arms driven from the top that move a small gripper below. See [[delta]].
+- **Delta robot** — A fast robot hung from a frame above a belt. Three motors in the frame swing three light arms that meet at one small plate, which paired rods keep level; a fourth motor often turns the gripper. See [[delta]].
 - **Denester** — A machine that holds a stack of trays or lids and releases one at a time onto the line when asked. See [[feeder]].
 - **Depth camera** — A camera that measures distance at each pixel, giving a depth image or a point cloud. See [[depth-camera]].
 - **DH parameters (Denavit-Hartenberg)** — A convention that describes each link of a robot arm with four numbers, so the arm's geometry can be written down and computed. See [[forward-kinematics]].
 - **Diffusion policy** — A learned policy that makes actions by starting from random noise and refining it over several steps into a smooth run of motion. See [[imitation-learning]].
 - **Direct control** — Teleoperation in which the operator's device streams motion targets many times a second and the robot follows them, so every bit of delay matters. See [[teleop-modes]].
 - **Domain randomization** — Changing a simulator's settings at random in every episode, so the policy learns to cope with a whole range and treats reality as one more variation. See [[sim-to-real]].
+- **DTLS** — A handshake and encryption scheme like the one HTTPS websites use, adapted for UDP packets that can be lost or reordered. WebRTC uses it to set up the keys for its encrypted video and audio. See [[webrtc]].
 - **Dual-channel wiring** — Running a safety signal as two independent circuits that are checked against each other. Any disagreement is treated as a fault, and the machine stops. See [[safety-circuit]].
+- **Duty cycle** — How much of the time a machine works, and how hard. Maintenance intervals in robot manuals depend on it. See [[support]].
 
 ## E
 - **E-stop (emergency stop)** — A red mushroom-head button that stops dangerous motion when pressed and stays latched until someone deliberately releases it. See [[estop]].
@@ -71,17 +79,20 @@
 - **FAT (factory acceptance test)** — A test at the builder's shop where the customer watches the system run against agreed criteria before it ships. See [[acceptance-tests]].
 - **FEC (forward error correction)** — Sending extra recovery data up front so the receiver can rebuild a lost packet without asking for it again. See [[network-impairments]].
 - **Feedforward** — Adding the command you already know you will need from the planned motion, instead of waiting for an error to appear. It cannot make the loop oscillate. See [[control-loops]].
-- **Fieldbus** — A network that links controllers with drives, sensors, and other devices so data arrives on a fixed, predictable schedule. See [[industrial-network]].
+- **Fieldbus** — A network that links controllers with drives, sensors, and other devices and exchanges the same small block of data with each one on a fixed cycle, so the worst-case delay is known. How tight that timing is varies from network to network. See [[industrial-network]].
 - **Flow matching** — A method that starts from random noise and refines it over a handful of steps into a smooth run of actions; used in some VLA models. See [[vla-models]].
 - **FOC (field-oriented control)** — Math in a servo drive that turns the motor's three changing currents into two steady values, so two simple controllers can set the motor's push precisely. See [[servo-drive]].
+- **Food area and splash area** — Zones in the European food machinery standard EN 1672-2. A food area is any surface food touches, or from which anything can drain, drip, or be drawn back into food; a splash area is one that food may splash or flow onto but from which nothing returns to the product; everything else is non-food area. See [[hygienic-design]].
 - **Forward kinematics (FK)** — Working out where the tool is in space from the joint angles. See [[forward-kinematics]].
 - **Foundation model** — A large neural network trained on broad data and then adapted to specific uses. See [[model-companies]].
 - **Frame (coordinate frame)** — An origin point plus three perpendicular axes, used to say where things are. The robot base, camera, tool, and each tray can have their own. See [[frames]].
 - **FSM (finite state machine)** — A program that is always in exactly one of a fixed list of states and moves to another only along a defined arrow when that arrow's condition becomes true. See [[state-machines]].
+- **Function Block Diagram (FBD)** — A graphical PLC language of boxes wired together like a signal-flow diagram. See [[plc-programming]].
 
 ## G
 - **Gantry robot** — A robot built from a frame of straight rails with sliding carriages that move its tool in straight lines, like an arcade claw machine; also called a Cartesian robot. See [[gantry]].
 - **Gear ratio** — How many times the motor turns for each turn of the joint. See [[gearbox]].
+- **Gimbal lock** — A pose where two of the three axes used by Euler angles line up, so one way of turning disappears and a tiny real rotation can give wildly different angle readings. For yaw-pitch-roll it happens at pitch plus or minus 90 degrees. See [[frames]].
 - **Glass-to-glass latency** — The time from light from an event entering the camera lens to the matching image leaving the display screen. See [[latency-budget]].
 - **Global shutter and rolling shutter** — A global shutter sensor captures all pixels at the same moment; a rolling shutter captures rows one after another, which distorts fast-moving objects but usually has lower noise. See [[camera-2d]].
 - **GOP (group of pictures)** — The run of video frames from one complete picture (I-frame) to the next. See [[video-pipeline]].
@@ -90,31 +101,36 @@
 ## H
 - **H.264 (AVC)** — A common video compression standard that every WebRTC browser must support. See [[video-pipeline]].
 - **H.265 (HEVC)** — A video compression standard that makes video roughly 25-50% smaller than H.264 at the same quality. See [[video-pipeline]].
+- **Hand guiding** — A collaborative mode in which a person steers the robot arm by hand. See [[cobot]].
 - **Hand-eye calibration** — Measuring exactly where a camera sits relative to the robot, so a position seen in an image can become a robot target. See [[hand-eye-calibration]].
+- **Harmonised standard** — In the EU, a standard listed in the Official Journal under a law such as the Machinery Directive; a machine built to it is presumed to meet that law. See [[safety-standards]].
 - **Head-of-line blocking** — When one missing piece of data holds up everything behind it until it is resent, as happens in TCP. See [[udp-vs-tcp]].
 - **Heartbeat** — A small message sent on a timer that means "still alive". If it stops arriving, the receiver acts. See [[watchdogs]].
+- **HG-DAgger** — A version of DAgger in which the expert takes control when they judge it necessary, and the corrections made while they are in control become new training examples. Its authors argue this is safer than having the expert label actions while the robot stays in control. See [[data-pipelines]].
 - **HMI (human-machine interface)** — The screen and buttons that let a person see what a machine is doing and start, stop, or switch it. See [[hmi]].
 - **Homing** — Moving a robot to a reference mark after power-up so a sensor that only counts movement can learn where it is. See [[encoder]].
 - **Homogeneous transform** — A 4x4 table of numbers that holds both a rotation and a shift, so one multiplication moves a point from one frame into another. See [[frames]].
+- **Hydraulic actuation** — Moving things with oil pumped at very high pressure, from 6.9 MPa on the 1961 Unimate robot to 35 MPa on a current excavator, roughly ten to sixty times factory air pressure. It packs great force into a small space but brings leaks and hoses that wear out. See [[hydraulic-actuation]].
 
 ## I
 - **I-frame and P-frame** — Two kinds of compressed video frame: an I-frame holds a complete picture and is large; a P-frame stores only the differences from earlier frames and is small. See [[video-pipeline]].
 - **I/O (inputs and outputs)** — The on/off signals and continuous readings a controller reads from sensors and switches, and sends to motors, valves, and lamps. See [[plc]].
 - **ICE (Interactive Connectivity Establishment)** — The procedure WebRTC uses to find a working network path between two devices that each sit behind a router sharing one public address. See [[webrtc]].
-- **IMU (inertial measurement unit)** — A small sensor that measures acceleration and turning rate. Adding these up over time gives tilt and motion, which slowly drifts off unless corrected. See [[imu]].
+- **IMU (inertial measurement unit)** — A small sensor that measures acceleration and turning rate. Adding these up over time gives tilt and motion, which slowly drifts off unless corrected, and the accelerometer cannot tell gravity from the robot's own speeding up, so motion can read as false tilt. See [[imu]].
 - **Incremental encoder** — A position sensor that only gives pulses as the shaft moves, so after power-up the robot must move to a reference mark to learn where it is. See [[encoder]].
 - **Industrial PC (IPC)** — A PC built for factory cabinets rather than offices. See [[onboard-compute]].
-- **Integrator (system integrator)** — A company that designs, builds, and installs a working robot cell from parts made by others. See [[integrators]].
+- **Integrator (system integrator)** — A company that designs, builds, and installs a working robot cell from parts made by others, and takes responsibility for the whole system working. See [[integrators]].
 - **Interlock** — A switch on a guard door that tells the safety circuit to stop the robot when the door opens. See [[guarding]].
 - **Interpolation cycle** — The fixed beat at which a robot controller sends a fresh position target to every joint. See [[robot-controller]].
 - **Intra refresh** — A video setting that repairs one stripe of the picture each frame instead of sending large complete pictures now and then, keeping the data flow smooth. See [[video-pipeline]].
+- **Intrinsics** — A camera's internal geometry: its focal length in pixels and the point where the lens's central axis hits the sensor. Camera calibration measures them, along with lens distortion. See [[camera-calibration]].
 - **Inverse kinematics (IK)** — Working out the joint angles that put the tool at a target position and angle. There may be several answers, or none. See [[inverse-kinematics]].
 - **IO-Link** — A cable link from one controller port to one sensor or actuator that carries detailed readings as well as the basic on/off signal. See [[industrial-network]].
 - **IP code (IP rating)** — A two-digit rating of how well a device keeps out solids (first digit) and water (second digit). See [[ip-rating]].
 - **IP67** — Dust-tight and able to survive 30 minutes under 1 m of water. It is an immersion test, not a spray test. See [[ip-rating]].
 - **IP69K** — A rating, from road-vehicle standards, for surviving close-range jets of hot, high-pressure water; its water test matches IPX9. See [[ip-rating]].
-- **ISO 10218** — The international safety standard for industrial robots: part 1 covers the robot itself, part 2 covers building it into a cell. See [[safety-standards]].
-- **ISO/TS 15066** — A technical specification for collaborative robots that set force and pressure limits for parts of the body; its content has been folded into ISO 10218:2025. See [[safety-standards]].
+- **ISO 10218** — The international safety standard for industrial robots, current edition 2025: part 1 covers the robot itself, part 2 covers building it into applications and cells. See [[safety-standards]].
+- **ISO/TS 15066** — A 2016 technical specification for collaborative robots that set force and pressure limits for parts of the body. Its content has been folded into ISO 10218:2025, but the document is still published and is due to be replaced by ISO 15066-1, now in development. See [[safety-standards]].
 - **ISP (image signal processor)** — The chip stage that turns raw sensor values into a color image by filling in colors, balancing white, and reducing noise. See [[video-pipeline]].
 
 ## J
@@ -133,19 +149,22 @@
 - **Latch (encoder latch)** — Hardware that stores a counter's value at the instant an input switches, so software delays do not affect the reading. See [[conveyor-tracking]].
 - **Lead time** — On a line, how long one unit takes from entering to leaving. In purchasing, the time from order to delivery. See [[cycle-time]].
 - **Leader arm** — A smaller arm with the same joint layout as the robot, which an operator moves by hand while the robot copies it. See [[operator-interfaces]].
+- **Legal manufacturer** — The party legally responsible for a finished cell meeting safety law, who signs its declaration of conformity. See [[purchasing]].
 - **Lidar** — A sensor that measures distance by timing short laser pulses while sweeping the beam, producing a map of dots around it. See [[lidar]].
 - **Light curtain** — A transmitter and receiver pair whose infrared beams send a stop signal when something breaks them. See [[guarding]].
 - **Little's law** — The average number of items in a system equals throughput times the average time each spends in it, for any stable system. See [[cycle-time]].
+- **Lookahead** — A video encoder setting that holds a set number of upcoming frames to judge how hard they are before sharing out bits. It delays output, so low-latency settings leave it out. See [[video-pipeline]].
 - **LTS (long-term support)** — A software release that is maintained for years, so production systems can stay on it. See [[ros2]].
 
 ## M
 - **MAP (modified atmosphere packaging)** — Replacing the air in a pack with a gas mix before sealing, to slow spoilage. See [[packaging-machines]].
 - **MCAP** — An open file format for timestamped robot messages, and the default format for ROS 2 recordings. See [[telemetry-logs]].
 - **MES (manufacturing execution system)** — Plant software that tracks orders and production. See [[commissioning]].
-- **Modbus TCP** — An old, simple industrial protocol in which a controller asks each device for its values in turn. It has no built-in security. See [[industrial-network]].
+- **Modbus TCP** — An old, simple industrial protocol in which a controller asks each device for its values in turn. The original protocol has no built-in security; a separate secure version from 2018 adds encryption. See [[industrial-network]].
 - **MoveIt** — Free ROS software that works out how an arm should move without hitting anything, then hands the motion to the arm. See [[moveit]].
 - **MQTT** — A lightweight messaging protocol in which devices post messages to named channels on a server and every device signed up to a channel receives them; used for example by VDA 5050. See [[fleet-management]].
 - **MuJoCo** — Google DeepMind's open-source physics engine, widely used to train robot policies in simulation. See [[simulators]].
+- **Multi-turn encoder** — An absolute encoder that also counts whole turns, using a backup battery, a small gear train, or a self-powered sensor. A battery-backed counter keeps counting while main power is off; a type that only saves its count at power-down needs a brake to keep the shaft still. See [[encoder]].
 - **Muting** — Switching off a presence sensor for part of the cycle so product can pass through a light curtain without stopping the line. See [[guarding]].
 
 ## N
@@ -164,16 +183,21 @@
 - **OpenCV** — A widely used free library of ready-made routines for working with camera images and camera geometry. See [[opencv]].
 - **Opex (operating expense)** — A recurring cost, like rent, counted in the period it is paid. See [[purchasing]].
 - **OTA update (over-the-air update)** — Sending new software to a robot over the network instead of installing it by hand. See [[remote-updates]].
+- **Overshoot** — A controlled motion passing its target before settling back. See [[control-loops]].
 
 ## P
+- **PackML** — An industry-agreed list of machine states and their names, such as running, blocked, and starved, so the line controller can tell, for example, a machine waiting for trays from a jammed one. See [[packaging-machines]].
+- **Parquet** — A column-based table file format. Robot datasets such as LeRobotDataset use it for small, high-rate numbers like joint states, actions, and timestamps. See [[robot-datasets]].
+- **Partly completed machinery** — A machine that cannot do its job until it is built into something larger, so whoever builds the whole takes responsibility for its safety. ISO 10218-1 treats a robot arm this way. See [[safety-standards]].
 - **Payback period** — Installed cost divided by yearly net savings: the number of years until a project has earned its money back. See [[scoping]].
-- **Payload** — The mass a robot can carry at its mounting plate, counting the gripper as well as the item. See [[payload]].
+- **Payload** — The mass a robot can carry at its mounting plate, counting the gripper as well as the item. The rating assumes the load's balance point sits close to the plate; the farther out it sits, the less the robot may carry. See [[payload]].
 - **Performance level (PL)** — A rating from a to e of how unlikely a safety function is to fail dangerously, defined in ISO 13849-1. See [[safety-circuit]].
-- **PFL (power and force limiting)** — A cobot feature that senses contact and caps speed and force so a collision stays below injury limits. See [[cobot]].
+- **PFL (power and force limiting)** — A cobot feature that senses contact and caps speed and force so a collision stays below pain thresholds set for each body region (29 regions in ISO 10218-2:2025). See [[cobot]].
 - **Photo-eye** — A sensor with a light emitter and receiver that reports "something is here" when an object blocks the beam or bounces it back. See [[photo-eye]].
 - **PID controller** — A feedback rule that sets its command from the error now (P, which pushes back harder the bigger the error), the error added up over time (I, which removes steady offsets), and how fast the error is changing (D, which damps motion but amplifies sensor noise). See [[control-loops]].
 - **PLC (programmable logic controller)** — A rugged industrial computer that runs a machine or line by reading sensors, running its logic, and switching outputs, over and over. See [[plc]].
 - **PMSM (permanent-magnet synchronous motor)** — The brushless motor in most robot joints: magnets on the spinning part, copper windings in the stationary outer part, so nothing rubs to carry current. See [[servo-motor]].
+- **Pneumatic actuation** — Moving things with compressed air: plant compressors commonly deliver about 690 kPa, and many machines use 550 kPa or less. Air is simple to switch with standard valves but springy, so cylinders usually travel end to end against hard stops. See [[pneumatic-actuation]].
 - **Point cloud** — A list of 3D points, each an x, y, z position, sometimes with color. See [[depth-camera]].
 - **Pose** — Position plus orientation. A 6D pose is three numbers for where something is and three for which way it faces. See [[frames]].
 - **PPO (Proximal Policy Optimization)** — A common reinforcement learning method in simulation that collects a batch of attempts, then makes several small, careful updates from it. See [[reinforcement-learning]].
@@ -182,11 +206,12 @@
 - **Process image** — A snapshot of every input that a PLC takes at the start of each scan, so its logic sees one consistent moment. See [[plc]].
 - **PROFINET** — A major industrial Ethernet network, with a basic class that runs over ordinary network switches and a faster class that reserves network capacity and keeps device clocks in step. See [[industrial-network]].
 - **Proprioception** — A robot's sense of its own body, such as joint angles read from its encoders. See [[learned-policy]].
+- **Publish/subscribe** — A messaging pattern in which senders post to a named channel without knowing who is listening, and everyone signed up to that channel receives the messages. See [[ros2]].
 - **Punch list** — A list of open defects to fix before a system is accepted. See [[acceptance-tests]].
 - **PWM (pulse-width modulation)** — Switching a voltage on and off thousands of times a second and varying the on-time to set the average voltage. See [[servo-drive]].
 
 ## Q
-- **QoS (quality of service)** — In ROS 2, the delivery rules for each sender and receiver, such as whether lost messages are retried. Mismatched rules silently block delivery. See [[ros2]].
+- **QoS (quality of service)** — In ROS 2, the delivery rules for each sender and receiver, such as whether lost messages are retried. If a sender's and a receiver's rules are incompatible, nothing is delivered, and the only sign is a warning in the log. See [[ros2]].
 - **Quantization** — Storing a neural network's numbers with fewer bits so it runs faster on the robot's computer. See [[on-robot-inference]].
 - **Quaternion** — Four numbers that encode a rotation axis and angle. Unlike Euler angles it has no trouble spots and blends smoothly between orientations. See [[frames]].
 - **QUIC** — A newer way of sending data over the internet, built on UDP, with several independent streams per connection so one lost piece does not hold up the others. See [[udp-vs-tcp]].
@@ -196,7 +221,9 @@
 - **RaaS (robots as a service)** — Paying a recurring fee that covers the robot, software, updates, and support instead of buying the robot outright. See [[raas]].
 - **RANSAC** — A way to find a shape such as a flat surface in noisy 3D data: repeatedly fit it through a few random points and keep the fit that most points lie near. See [[opencv]].
 - **Real-time** — Guaranteed to respond within a bounded delay. It means predictable timing, not more speed. See [[onboard-compute]].
+- **Real-time chunking** — A way of running a learned policy that freezes the actions that will play while the next chunk is being computed and fills in the rest of the new chunk to match, so motion does not jerk at chunk boundaries. See [[on-robot-inference]].
 - **Reality gap** — The systematic differences between a simulator and the real cell, which make policies trained in simulation stumble on real hardware. See [[sim-to-real]].
+- **Reducer** — Another name for a robot joint's gearbox, which makes the joint turn more slowly than the motor but with more twisting force. See [[gearbox]].
 - **Reinforcement learning (RL)** — Improving a policy by trial and error against a numeric score. See [[reinforcement-learning]].
 - **Remote assist** — A teleoperation style in which the robot runs on its own and, when unsure, asks a remote person a narrow question such as where to pick. See [[teleop-modes]].
 - **Repeatability** — How tightly a robot's landings cluster when it is sent to the same taught point again and again. See [[repeatability]].
@@ -204,6 +231,7 @@
 - **Revolute joint** — A joint that rotates about one axis, like a hinge. A prismatic joint slides along one axis instead. See [[dof]].
 - **Reward** — A number the engineer's code computes at every step of reinforcement learning to score how well the policy is doing. The total over an episode is called the return. See [[reinforcement-learning]].
 - **RFQ (request for quotation)** — A request for binding prices on a clearly defined scope of work. When the buyer knows the problem but not the solution, an RFP (request for proposal) invites different approaches instead. See [[purchasing]].
+- **Ring buffer** — A fixed-size memory buffer that keeps overwriting its oldest data, used to hold the last few minutes of robot recordings so they can be saved after a failure. See [[telemetry-logs]].
 - **ROI (return on investment)** — Net gain divided by cost. See [[scoping]].
 - **Rollback** — Returning a robot to the last known-good software version when an update goes wrong. See [[remote-updates]].
 - **ROS 2 (Robot Operating System 2)** — An open-source software framework in which robot programs run as nodes that exchange messages. See [[ros2]].
@@ -214,14 +242,17 @@
 ## S
 - **S-curve profile** — A motion profile that ramps acceleration up and down smoothly, trading a slightly longer move for much smoother motion. See [[trajectory-generation]].
 - **Safe Torque Off (STO)** — A drive safety input that, when removed, stops the drive from powering the motor to push. The motor coasts; STO does not brake. See [[servo-drive]].
+- **Safety distance** — How far a safety sensor's trigger zone must sit from the hazard so the machine has stopped before a person can reach it. ISO 13855 assumes a person approaches at 1.6 m/s, so each millisecond of sensor and stopping delay adds 1.6 mm, plus an allowance for reaching in. See [[lidar]].
+- **Safety laser scanner** — A 2D lidar built and certified to stop machines: anything entering its protective zone on the floor stops the machine, and a warning zone can slow it or sound an alarm first. See [[lidar]].
 - **Safety PLC** — A PLC built for safety jobs that handles many safety functions in one programmable unit, with a restricted, safety-specific instruction set. See [[safety-circuit]].
 - **Safety relay** — A fixed-function module, usually for one safety function, that checks two input channels and refuses to restart after a fault. See [[safety-circuit]].
 - **SAT (site acceptance test)** — The agreed acceptance check repeated in the customer's plant after installation. See [[acceptance-tests]].
 - **Scan cycle** — A PLC's endless loop: read all inputs, run the program, write all outputs, repeat. See [[plc]].
 - **SCADA (supervisory control and data acquisition)** — The HMI idea scaled up to watch and steer many machines or a whole plant. See [[hmi]].
 - **SCARA** — A four-axis arm that swings flat at the shoulder and elbow and has a shaft that moves up, down, and twists; built for fast pick-and-place from above. See [[scara]].
-- **Sequence and Fallback** — Two kinds of behavior tree step: a Sequence runs its children left to right and stops at the first failure; a Fallback (also called a Selector) tries them left to right until one succeeds. See [[state-machines]].
-- **Sequential Function Chart (SFC)** — A graphical PLC language of steps and transitions for sequences, which can run branches in parallel. See [[plc-programming]].
+- **SDP (Session Description Protocol)** — A text format listing codecs and network addresses. In WebRTC one side sends an offer in it and the other replies. See [[webrtc]].
+- **Sequence and Fallback** — Two kinds of behavior tree step: a Sequence runs its children left to right and stops at the first failure; a Fallback (also called a Selector) tries them left to right until one succeeds. A plain Sequence picks up at the step that was still running; a reactive Sequence re-checks the earlier steps on every tick. See [[state-machines]].
+- **Sequential Function Chart (SFC)** — Graphical steps and transitions for laying out PLC sequences, which can run branches in parallel. The standard treats them as elements that structure programs, but they are usually counted as a fourth PLC language. See [[plc-programming]].
 - **Servo drive** — The power electronics that feed current to a motor and run fast control loops so it follows its commands. See [[servo-drive]].
 - **Shadow mode** — Running new software on live data next to the old version and logging what it would have done, without letting it move anything. See [[remote-updates]].
 - **Shared autonomy** — Teleoperation in which the person's input and the robot's own decisions are blended continuously. See [[teleop-modes]].
@@ -229,14 +260,16 @@
 - **Singularity** — An arm pose where the arm loses the ability to move in some direction, often because two joint axes line up. See [[inverse-kinematics]].
 - **Six-axis arm** — An arm built like a human arm, with a swiveling waist, shoulder, elbow, and a wrist that bends and twists; the default factory robot arm. See [[six-axis]].
 - **SLA (service level agreement)** — A contract with measurable promises, such as how fast someone responds, how soon a technician arrives, or a minimum uptime. See [[support]].
+- **Speed and separation monitoring (SSM)** — A collaborative mode in which sensors track how close a person is, and the robot slows, then stops, as they approach. See [[cobot]].
 - **SRTP (Secure RTP)** — Encrypted, tamper-checked packets that carry live video and audio; every WebRTC system must use it. See [[webrtc]].
 - **SS1 (safe stop 1)** — A controlled stop: slow the motor down under power, then apply Safe Torque Off. See [[servo-drive]].
 - **Starved and blocked stations** — A starved station is idle because it is waiting for input from upstream; a blocked station is idle because the next station has no room for its output. See [[line-balancing]].
+- **Stepper motor** — A motor often run without a sensor, which positions itself by counting command pulses. If the load or acceleration is too high it slips to the wrong step and the controller is never told. See [[servo-motor]].
 - **Stop category** — The three kinds of stop in IEC 60204-1: 0 cuts power at once, 1 brakes under power and then cuts it, 2 stops under power and keeps it on. See [[estop]].
 - **Strain gauge** — A thin resistor whose resistance changes when it is stretched, used to measure force or torque. See [[torque-sensing]].
 - **Strain wave gear (harmonic drive)** — A compact gear with almost no play, built around a thin steel cup that flexes on every turn. See [[gearbox]].
 - **Structured light** — A depth-sensing method that projects a pattern onto the scene and measures how it bends over surfaces. See [[depth-camera]].
-- **Structured Text (ST)** — A Pascal-like text language for PLCs, best for math, data, and step logic. See [[plc-programming]].
+- **Structured Text (ST)** — A Pascal-like text language for PLCs, best for math, data, and step logic. It is the only text language left in the 2025 edition of the PLC language standard. See [[plc-programming]].
 - **STUN** — A server that tells a device what public address it appears to have, so WebRTC can try a direct path. See [[webrtc]].
 - **System identification** — Measuring the real robot and adjusting the simulator to match it. See [[sim-to-real]].
 
@@ -251,6 +284,7 @@
 - **Throughput** — Units produced per unit of time. In a line it is set by the slowest station. See [[cycle-time]].
 - **Tick** — In a behavior tree, a signal sent from the top down the tree that asks each visited step to do a little work and report back. See [[state-machines]].
 - **Time-of-flight (ToF)** — A depth-sensing method that times how long the camera's own light takes to come back. See [[depth-camera]].
+- **Tool changer** — A two-part coupling, one half on the robot's wrist and one on each tool, that locks on command and passes air and electrical signals through, so one robot can swap tools in seconds. See [[tool-changer]].
 - **Topic (ROS 2)** — A named channel for continuous, one-way message streams between ROS 2 programs. Short request-and-response calls use services instead. See [[ros2]].
 - **TOPS** — Trillions of operations per second: a best-case speed figure for AI chips that does not compare directly across chips or with real models. See [[onboard-compute]].
 - **TOTG (time-optimal trajectory generation)** — A method that finds the fastest timing along a given path within speed and acceleration limits; MoveIt's default. See [[trajectory-generation]].
@@ -263,6 +297,7 @@
 - **UDP (User Datagram Protocol)** — An internet protocol that sends independent packets with no ordering and no resending, so nothing waits for a lost one. See [[udp-vs-tcp]].
 - **URDF (Unified Robot Description Format)** — A text file used across ROS that describes a robot's links, joints, shapes, and limits. See [[forward-kinematics]].
 - **URS (user requirements specification)** — The buyer's document saying what the cell must do and under what conditions. See [[purchasing]].
+- **Utilization** — The share of time a station or machine is busy. The bottleneck usually has the highest. See [[line-balancing]].
 
 ## V
 - **Vacuum generator** — The device that removes air for a suction cup, such as a pump or a nozzle that uses a jet of compressed air. See [[vacuum-gripper]].
