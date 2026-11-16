@@ -1,0 +1,86 @@
+/* Ride 3 (The rescue): the stop close-up and its whole-ride latency bar. */
+
+.r3-closeup {
+	display: block;
+}
+
+.r3-closeup .r3-art {
+	display: block;
+	width: 100% !important;
+}
+
+.r3-lat {
+	padding: 8px 12px 10px;
+	background: var(--surface-2);
+	color: var(--text);
+	border-top: 1px solid var(--border);
+}
+
+/* One segment per stop, sized by its delay midpoint; stops that add nothing are thin ticks. */
+.r3-lat-bar {
+	display: flex;
+	gap: 2px;
+	height: 14px;
+	border-radius: 7px;
+	overflow: hidden;
+	background: var(--surface-3);
+}
+
+.r3-seg {
+	flex-basis: 0;
+	min-width: 4px;
+	background: var(--surface);
+	box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.r3-seg.zero {
+	flex: 0 0 3px;
+	min-width: 3px;
+	background: var(--border);
+	box-shadow: none;
+}
+
+.r3-seg.past {
+	background: var(--accent);
+	box-shadow: none;
+}
+
+.r3-seg.current {
+	min-width: 7px;
+	background: #f2a541;
+	box-shadow: inset 0 0 0 2px #8f5b00;
+}
+
+.r3-seg.current.zero {
+	flex-basis: 7px;
+}
+
+.r3-lat-nums {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	margin-top: 5px;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.2;
+	font-size: 13px;
+	color: var(--muted);
+}
+
+.r3-lat-run b {
+	font-weight: 800;
+	font-size: 16px;
+	color: var(--text);
+}
+
+.r3-lat-total b {
+	font-weight: 700;
+	color: var(--text);
+}
+
+@media (prefers-color-scheme: dark) {
+	.r3-seg.current {
+		background: #f2b54a;
+		box-shadow: inset 0 0 0 2px #ffe2a6;
+	}
+}
