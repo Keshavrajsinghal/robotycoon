@@ -258,6 +258,9 @@ export function openPuzzle(app, rideId) {
 			debrief.hidden = false;
 			m.el.dataset.solved = "true";
 			debrief.scrollIntoView?.({ block: "nearest" });
+		} else {
+			// The message sits under the options, often below the fold on a phone.
+			status.scrollIntoView?.({ block: "nearest" });
 		}
 	});
 	m.foot().append(closeBtn, checkBtn);

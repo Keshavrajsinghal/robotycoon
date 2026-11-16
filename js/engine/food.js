@@ -2,6 +2,8 @@
 // cheese wedges, inspection pass mark, and clear lid. Shared by every ride that shows the
 // plate. Sizes are exaggerated (about 2.5x) so the cargo reads at park zoom.
 
+import { depthOf } from "./iso.js";
+
 export const FOOD = {
 	tray: "#c9ae80",
 	trayIn: "#b89b6c",
@@ -51,6 +53,30 @@ export function drawGrapes(r, at, s = 1, lw = 1) {
 		const p = at(f, sd, zz);
 		r.sphere(p[0], p[1], p[2], 0.034 * s, i % 3 ? FOOD.grape : FOOD.grape2, 0);
 	});
+}
+
+/**
+ * A grape bunch hanging from its stem at (x, y, z) (held by a gripper). swing tilts it in the
+ * x-z plane (radians), s scales it. Balls are sorted back to front.
+ */
+export function drawHangingBunch(r, x, y, z, swing = 0, s = 1) {
+	const rows = [4, 4, 3, 2, 1];
+	const sw = Math.sin(swing);
+	const cw = Math.cos(swing);
+	const balls = [];
+	rows.forEach((n, row) => {
+		const rad = (0.07 - row * 0.015) * s;
+		const dz = -(0.08 + row * 0.055) * s;
+		for (let i = 0; i < n; i++) {
+			const a = (i / n) * Math.PI * 2 + row * 0.8;
+			const bx = Math.cos(a) * rad;
+			const by = Math.sin(a) * rad;
+			balls.push({ p: [x + bx * cw - dz * sw, y + by, z + bx * sw + dz * cw], k: i + row });
+		}
+	});
+	balls.sort((a, b) => depthOf(a.p[0], a.p[1], a.p[2]) - depthOf(b.p[0], b.p[1], b.p[2]));
+	r.line([x, y, z + 0.03 * s], [x - 0.06 * s * sw, y, z - 0.06 * s * cw], FOOD.stem, 2.2 * s);
+	for (const b of balls) r.sphere(b.p[0], b.p[1], b.p[2], 0.04 * s, b.k % 3 ? FOOD.grape : FOOD.grape2, 0);
 }
 
 export function drawAppleSlice(r, at, f, sd, rot, s = 1, lw = 1) {
@@ -105,7 +131,7 @@ export function drawPlate(r, cx, cy, z, heading, contents = {}, opts = {}) {
 	if (contents.apples)
 		for (let i = 0; i < 4; i++) push(0.06 + i * 0.055, -0.1, () => drawAppleSlice(r, at, 0.06 + i * 0.055, -0.1, heading + 1.2, s, lw));
 	if (contents.crackers)
-		for (let i = 0; i < 2; i++) push(-0.15, 0.06 + i * 0.075, () => drawCrackerPack(r, at, -0.15, 0.06 + i * 0.075, heading, s));
+		for (let i = 0; i < 2; i++) push(-0.15, 0.05 + i * 0.1, () => drawCrackerPack(r, at, -0.15, 0.05 + i * 0.1, heading, s));
 	if (contents.cheese)
 		for (let i = 0; i < 3; i++) push(0.08 + i * 0.07, 0.1, () => drawCheeseWedge(r, at, 0.08 + i * 0.07, 0.1, heading + i * 0.9, s));
 	items.sort((a, b) => a.d - b.d);

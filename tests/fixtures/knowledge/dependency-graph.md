@@ -14,6 +14,17 @@ flowchart LR
     delta["Delta robot"]
     cobot["Collaborative robot (cobot)"]
     gantry["Gantry (Cartesian) robot"]
+    mobile_robot["PH Mobile robots"]
+    humanoid["PH Humanoid robots"]
+  end
+  subgraph area2["2. PH Inside a joint"]
+    joint_stack["PH The joint as a stack of parts"]
+    servo_motor["PH Servo motor"]
+    gearbox["PH Gearbox"]
+    encoder["PH Encoder"]
+    brake["PH Holding brake"]
+    servo_drive["PH Servo drive"]
+    torque_sensing["PH Torque sensing"]
   end
   subgraph area6["6. The cell and the line"]
     conveyor["Conveyor"]
@@ -30,11 +41,32 @@ flowchart LR
     latency_budget["The latency budget"]
     webrtc["WebRTC"]
   end
+  subgraph area11["11. PH Deployment lifecycle"]
+    scoping["PH Scoping and ROI"]
+    cell_design["PH Cell design and simulation"]
+    purchasing["PH Purchasing"]
+    acceptance_tests["PH Acceptance tests"]
+    commissioning["PH Commissioning and ramp-up"]
+    support["PH Support and maintenance"]
+    raas["PH Buying versus paying per use"]
+  end
+  subgraph area12["12. PH Industry map"]
+    value_chain["PH Who buys from whom"]
+    component_makers["PH Component makers"]
+    robot_makers["PH Robot makers"]
+    integrators["PH System integrators"]
+    application_companies["PH Application companies"]
+    model_companies["PH Robot model companies"]
+    tooling_companies["PH Tooling and software companies"]
+    end_users["PH End users"]
+  end
   dof --> six_axis
   dof --> scara
   dof --> delta
   six_axis --> cobot
   dof --> gantry
+  dof --> mobile_robot
+  dof --> humanoid
   conveyor --> feeder
   conveyor --> inspection
   conveyor --> packaging_machines
@@ -49,12 +81,34 @@ Depth 0 needs nothing else first. Each later depth builds only on earlier ones.
 ### Depth 0
 
 - **Degrees of freedom** (`dof`, area 1)
+- **PH The joint as a stack of parts** (`joint-stack`, area 2)
+- **PH Servo motor** (`servo-motor`, area 2)
+- **PH Gearbox** (`gearbox`, area 2)
+- **PH Encoder** (`encoder`, area 2)
+- **PH Holding brake** (`brake`, area 2)
+- **PH Servo drive** (`servo-drive`, area 2)
+- **PH Torque sensing** (`torque-sensing`, area 2)
 - **Conveyor** (`conveyor`, area 6)
 - **Guarding and presence sensing** (`guarding`, area 6)
 - **Cycle time, takt time, and throughput** (`cycle-time`, area 6)
 - **Hygienic and food-safe design** (`hygienic-design`, area 6)
 - **Remote assist versus direct control** (`teleop-modes`, area 9)
 - **The latency budget** (`latency-budget`, area 9)
+- **PH Scoping and ROI** (`scoping`, area 11)
+- **PH Cell design and simulation** (`cell-design`, area 11)
+- **PH Purchasing** (`purchasing`, area 11)
+- **PH Acceptance tests** (`acceptance-tests`, area 11)
+- **PH Commissioning and ramp-up** (`commissioning`, area 11)
+- **PH Support and maintenance** (`support`, area 11)
+- **PH Buying versus paying per use** (`raas`, area 11)
+- **PH Who buys from whom** (`value-chain`, area 12)
+- **PH Component makers** (`component-makers`, area 12)
+- **PH Robot makers** (`robot-makers`, area 12)
+- **PH System integrators** (`integrators`, area 12)
+- **PH Application companies** (`application-companies`, area 12)
+- **PH Robot model companies** (`model-companies`, area 12)
+- **PH Tooling and software companies** (`tooling-companies`, area 12)
+- **PH End users** (`end-users`, area 12)
 
 ### Depth 1
 
@@ -62,6 +116,8 @@ Depth 0 needs nothing else first. Each later depth builds only on earlier ones.
 - **SCARA robot** (`scara`, area 1) — after `dof`
 - **Delta robot** (`delta`, area 1) — after `dof`
 - **Gantry (Cartesian) robot** (`gantry`, area 1) — after `dof`
+- **PH Mobile robots** (`mobile-robot`, area 1) — after `dof`
+- **PH Humanoid robots** (`humanoid`, area 1) — after `dof`
 - **Feeders and denesters** (`feeder`, area 6) — after `conveyor`
 - **Inspection and reject** (`inspection`, area 6) — after `conveyor`
 - **Lidding and outfeed machines** (`packaging-machines`, area 6) — after `conveyor`
@@ -76,12 +132,21 @@ Depth 0 needs nothing else first. Each later depth builds only on earlier ones.
 
 | Concept | Area | Requires | Required by |
 |---|---|---|---|
-| Degrees of freedom | 1 | none | `six-axis`, `scara`, `delta`, `gantry` |
+| Degrees of freedom | 1 | none | `six-axis`, `scara`, `delta`, `gantry`, `mobile-robot`, `humanoid` |
 | 6-axis articulated arm | 1 | `dof` | `cobot` |
 | SCARA robot | 1 | `dof` | none |
 | Delta robot | 1 | `dof` | none |
 | Collaborative robot (cobot) | 1 | `six-axis` | none |
 | Gantry (Cartesian) robot | 1 | `dof` | none |
+| PH Mobile robots | 1 | `dof` | none |
+| PH Humanoid robots | 1 | `dof` | none |
+| PH The joint as a stack of parts | 2 | none | none |
+| PH Servo motor | 2 | none | none |
+| PH Gearbox | 2 | none | none |
+| PH Encoder | 2 | none | none |
+| PH Holding brake | 2 | none | none |
+| PH Servo drive | 2 | none | none |
+| PH Torque sensing | 2 | none | none |
 | Conveyor | 6 | none | `feeder`, `inspection`, `packaging-machines` |
 | Feeders and denesters | 6 | `conveyor` | none |
 | Inspection and reject | 6 | `conveyor` | none |
@@ -93,3 +158,18 @@ Depth 0 needs nothing else first. Each later depth builds only on earlier ones.
 | Remote assist versus direct control | 9 | none | none |
 | The latency budget | 9 | none | `webrtc` |
 | WebRTC | 9 | `latency-budget` | none |
+| PH Scoping and ROI | 11 | none | none |
+| PH Cell design and simulation | 11 | none | none |
+| PH Purchasing | 11 | none | none |
+| PH Acceptance tests | 11 | none | none |
+| PH Commissioning and ramp-up | 11 | none | none |
+| PH Support and maintenance | 11 | none | none |
+| PH Buying versus paying per use | 11 | none | none |
+| PH Who buys from whom | 12 | none | none |
+| PH Component makers | 12 | none | none |
+| PH Robot makers | 12 | none | none |
+| PH System integrators | 12 | none | none |
+| PH Application companies | 12 | none | none |
+| PH Robot model companies | 12 | none | none |
+| PH Tooling and software companies | 12 | none | none |
+| PH End users | 12 | none | none |

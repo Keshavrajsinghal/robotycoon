@@ -481,7 +481,7 @@ Training each policy from scratch needs lots of data for every new task and robo
 ### Common misconception
 **Misconception:** A VLA understands the task like a person, so it works on any robot out of the box.
 
-**Reality:** Language and object knowledge transfer from the web; motor skill does not come for free. The Gemini Robotics On-Device 2 model card itself lists limited generalization to out-of-distribution tasks and to robots with many degrees of freedom [9], and every published VLA result above involves robot-specific demonstrations or fine-tuning.
+**Reality:** Language and object knowledge transfer from the web; motor skill does not come for free. The Gemini Robotics On-Device 2 model card itself lists limited generalization to out-of-distribution tasks and to robots with many degrees of freedom [9], and every published VLA result cited in this concept involves robot-specific demonstrations or fine-tuning.
 
 ### Key numbers
 - Model size: 27M-93M for Octo [3] up to 55B for the largest RT-2 [1]; the best-known open VLAs are 3-7B, such as pi0 3.3B [4], GR00T N1.7 3B [7], OpenVLA 7B [2].

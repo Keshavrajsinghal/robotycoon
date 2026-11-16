@@ -35,6 +35,25 @@ export function isMissingModule(e) {
 	return e instanceof TypeError && /dynamically imported module|Importing a module script failed|Failed to fetch/i.test(String(e.message));
 }
 
+/**
+ * Add a stylesheet once (ride, workbench, and town modules keep their own CSS in
+ * css/modules/<name>.css). Resolves when loaded; repeated calls reuse the same link.
+ */
+export function loadCss(href) {
+	const url = new URL(href, document.baseURI).href;
+	const existing = [...document.querySelectorAll('link[rel="stylesheet"]')].find((l) => l.href === url);
+	if (existing) return existing._loaded ?? Promise.resolve();
+	const link = document.createElement("link");
+	link.rel = "stylesheet";
+	link.href = url;
+	link._loaded = new Promise((res) => {
+		link.onload = res;
+		link.onerror = res;
+	});
+	document.head.append(link);
+	return link._loaded;
+}
+
 /** Plain text from an HTML string (for aria labels and titles). */
 export function textOf(html) {
 	const d = document.createElement("div");

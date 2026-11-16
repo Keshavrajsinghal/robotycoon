@@ -36,8 +36,12 @@ export function initControls(app) {
 		play.innerHTML = icon(s.playing ? "pause" : "play");
 		play.setAttribute("aria-label", s.playing ? "Pause" : "Play");
 		play.title = s.playing ? "Pause" : "Play";
-		back.disabled = !s.moving && !s.finished && s.index <= 0;
-		fwd.disabled = s.finished && !s.moving;
+		const backOff = !s.moving && !s.held && !s.finished && s.index <= 0;
+		const fwdOff = s.finished && !s.moving;
+		// A focused button that becomes disabled drops keyboard focus to the page: keep it in the bar.
+		if ((backOff && document.activeElement === back) || (fwdOff && document.activeElement === fwd)) play.focus({ preventScroll: true });
+		back.disabled = backOff;
+		fwd.disabled = fwdOff;
 		speed.textContent = `${s.speed}x`;
 		speed.setAttribute("aria-label", `Speed ${s.speed}x`);
 		speed.title = `Speed ${s.speed}x`;

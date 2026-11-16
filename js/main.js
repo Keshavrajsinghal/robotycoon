@@ -308,6 +308,52 @@ async function main() {
 	}
 
 	scene.addTick((dt) => runner.update(dt));
+
+	// While riding, station, booth, sign and gate labels that would sit on the cart's tag (or on the
+	// cart under it) step aside, so the cargo stays readable; the current stop's label stays. A label
+	// whose box would reach under the top bar drops below its point instead, and one whose point is
+	// itself under the bar, or that only peeks out above the phone sheet, hides. Sizes are read
+	// first, classes written after, so a frame forces at most one style pass.
+	const GUARDED = new Set(["station", "booth", "sign", "gate"]);
+	const phoneMq = window.matchMedia("(max-width: 759px)");
+	scene.afterLabels = () => {
+		const tag = scene.labels.get("cart-tag");
+		const top = scene.insets.top;
+		// On a phone the sheet spans the full width; a label crossing its top edge only peeks out.
+		const sheetTop = phoneMq.matches && scene.insets.bottom > 0 ? scene.h - scene.insets.bottom : Infinity;
+		let box = null;
+		if (runner.loaded && tag && !tag.anchor.hidden && tag.sx !== undefined) {
+			const p = runner.pos();
+			const cartY = scene.worldToScreen(p.x, p.y, p.z)[1];
+			const w = tag.el.offsetWidth;
+			const h = tag.el.offsetHeight;
+			if (w) box = [tag.sx - w / 2 - 4, tag.sy - h - 12, tag.sx + w / 2 + 4, Math.max(tag.sy, cartY + 6)];
+		}
+		const cur = runner.loaded && !runner.finished ? `stop-${runner.ride.id}-${runner.stop?.id}` : null;
+		const checks = [];
+		for (const l of scene.labels.values()) {
+			if (!GUARDED.has(l.kind) || l.sx === undefined) continue;
+			const nearTag = box && !l.anchor.hidden && l.id !== cur && Math.abs(l.sx - tag.sx) < 420 && l.sy > box[1] - 10 && l.sy < box[3] + 90;
+			const nearTop = !l.anchor.hidden && l.sy < top + 70;
+			const nearSheet = !l.anchor.hidden && l.id !== cur && l.sy > sheetTop + 2 && l.sy < sheetTop + 70;
+			const read = nearTag || nearTop || nearSheet;
+			checks.push({ l, nearTag, nearTop, nearSheet, w: read ? l.el.offsetWidth : 0, h: read ? l.el.offsetHeight : 0 });
+		}
+		for (const { l, nearTag, nearTop, nearSheet, w, h } of checks) {
+			const below = nearTop && h > 0 && l.sy - h < top + 2;
+			const y0 = below ? l.sy : l.sy - h;
+			// Even hanging below its point it would peek out from under the bar: hide it (not the current stop's).
+			const underBar = below && y0 < top - 2 && l.id !== cur;
+			const onTag = nearTag && w > 0 && l.sx - w / 2 < box[2] && l.sx + w / 2 > box[0] && y0 < box[3] && y0 + h > box[1];
+			const peeks = nearSheet && h > 0 && l.sy - h < sheetTop;
+			const hide = underBar || onTag || peeks;
+			// The current stop's label whose point is under the bar slides down until it clears it.
+			const shift = below && l.id === cur && y0 < top + 2 ? `${Math.round(top + 2 - y0)}px` : "";
+			if (l.el.style.top !== shift) l.el.style.top = shift;
+			l.el.classList.toggle("label-below", below);
+			l.el.classList.toggle("label-yield", hide);
+		}
+	};
 	scene.onUserPan = (kind) => {
 		if (kind === "zoom" || !state.get("follow") || !runner.loaded) return;
 		state.set("follow", false);
@@ -390,12 +436,21 @@ async function main() {
 	function selectRide(rideId, { stopId = null, jump = false } = {}) {
 		const info = rides.get(rideId);
 		if (!info?.available) return false;
+		// A link to a stop that only one approach shows (ride 2's "policy" is learned only) opens
+		// the ride in that approach, instead of silently boarding at stop 1 of the other one.
+		const linked = stopId ? info.ride.stops.find((s) => s.id === stopId) : null;
+		const needMode = linked && rideHasModes(info.ride) && (linked.mode === "classical" || linked.mode === "learned") ? linked.mode : null;
 		if (app.currentRideId !== rideId || !runner.loaded) {
 			app.route.close(false);
 			app.currentRideId = rideId;
 			try {
+				let mode = state.get("modes")?.[rideId];
+				if (needMode && needMode !== mode) {
+					mode = needMode;
+					state.set("modes", { ...(state.get("modes") ?? {}), [rideId]: mode });
+				}
 				// Board directly at the requested stop, so a deep link does not also "visit" stop 1.
-				runner.load(info.ride, info.module, state.get("modes")?.[rideId], stopId);
+				runner.load(info.ride, info.module, mode, stopId);
 			} catch (e) {
 				console.error(e);
 				info.available = false;
@@ -411,6 +466,7 @@ async function main() {
 			app.hud.update();
 			app.controls.update();
 		}
+		if (needMode && runner.mode !== needMode) runner.setMode(needMode);
 		if (stopId && (runner.stop?.id !== stopId || runner.finished)) runner.goToStopId(stopId, { jump });
 		return true;
 	}
@@ -614,6 +670,8 @@ async function main() {
 		reducedMotion: () => reducedMotion(),
 		openPuzzle: (rideId) => app.openPuzzle(rideId),
 		topModal: () => topModal(),
+		// The open workbench's test hook ({solve(), state(), ...}), or null.
+		wbTest: () => topModal()?.wbInstance?.test ?? null,
 		view: () => app.viewName,
 		hits: () => scene.hits.map((x) => ({ id: x.id, kind: x.kind })),
 		townScene: () => town.scene,

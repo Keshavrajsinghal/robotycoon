@@ -34,6 +34,16 @@ PLACEHOLDER: about the motor-mill building.
 - **PH Engineer** — PLACEHOLDER: what this role does day to day.
 - **PH Technician** — PLACEHOLDER: another fake role.
 
+## Building: sensor-shop
+title: PH sensor shop
+district: parts
+
+### About
+PLACEHOLDER: about the sensor-shop building.
+### Job functions
+- **PH Designer** — PLACEHOLDER: what this role does day to day.
+- **PH Assembler** — PLACEHOLDER: another fake role.
+
 ## District: robot-row
 title: PH Robot Row
 concept: robot-makers
@@ -101,6 +111,16 @@ PLACEHOLDER: about the line-designers building.
 ### Job functions
 - **PH Engineer** — PLACEHOLDER: what this role does day to day.
 - **PH Technician** — PLACEHOLDER: another fake role.
+
+## Building: test-hall
+title: PH test hall
+district: integrators
+
+### About
+PLACEHOLDER: about the test-hall building.
+### Job functions
+- **PH Test lead** — PLACEHOLDER: what this role does day to day.
+- **PH Field technician** — PLACEHOLDER: another fake role.
 
 ## District: applications
 title: PH Applications Lane
@@ -170,6 +190,16 @@ PLACEHOLDER: about the data-farm building.
 - **PH Engineer** — PLACEHOLDER: what this role does day to day.
 - **PH Technician** — PLACEHOLDER: another fake role.
 
+## Building: robot-gym
+title: PH robot gym
+district: model-lab
+
+### About
+PLACEHOLDER: about the robot-gym building.
+### Job functions
+- **PH Data collector** — PLACEHOLDER: what this role does day to day.
+- **PH Researcher** — PLACEHOLDER: another fake role.
+
 ## District: tool-works
 title: PH Tool Works
 concept: tooling-companies
@@ -219,11 +249,11 @@ PLACEHOLDER: who factory-district buys from.
 PLACEHOLDER: who factory-district sells to.
 
 ## Building: plate-plant
-title: PH plate plant
+title: PH airline catering plant
 district: factory-district
 
 ### About
-PLACEHOLDER: about the plate-plant building.
+PLACEHOLDER: about the plate-plant building, the airline catering plant that runs the cheese plate line.
 ### Job functions
 - **PH Engineer** — PLACEHOLDER: what this role does day to day.
 - **PH Technician** — PLACEHOLDER: another fake role.
@@ -247,3 +277,13 @@ PLACEHOLDER: about the parcel-hub building.
 ### Job functions
 - **PH Engineer** — PLACEHOLDER: what this role does day to day.
 - **PH Technician** — PLACEHOLDER: another fake role.
+
+## Building: car-plant
+title: PH car plant
+district: factory-district
+
+### About
+PLACEHOLDER: about the car-plant building.
+### Job functions
+- **PH Line supervisor** — PLACEHOLDER: what this role does day to day.
+- **PH Maintenance technician** — PLACEHOLDER: another fake role.

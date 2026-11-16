@@ -206,7 +206,8 @@ export function initPanel(app) {
 		}
 		parts.push(h("div", { class: "prose stop-text", html: level === "precise" ? stop.precise : stop.plain }));
 		parts.push(delayBox(r.stops, i));
-		if (i > 0) parts.push(questionCard(app, ride, r.stops[i - 1], { kicker: "Quick check on the last stop" }));
+		// Only quiz on a stop the rider has been to: a route-list jump or deep link skips stops.
+		if (i > 0 && app.state.isSeen(ride.id, r.stops[i - 1].id)) parts.push(questionCard(app, ride, r.stops[i - 1], { kicker: "Quick check on the last stop" }));
 		parts.push(conceptCard(stop.concepts?.[0]));
 		if (stop.workbench) {
 			const wb = app.workbench(stop.workbench);
@@ -237,7 +238,7 @@ export function initPanel(app) {
 			...[
 				h("div", { class: "panel-row" }, levelSwitch(app)),
 				delayBox(r.stops, r.stops.length - 1),
-				questionCard(app, ride, last, { kicker: "Quick check on the last stop" }),
+				last && app.state.isSeen(ride.id, last.id) ? questionCard(app, ride, last, { kicker: "Quick check on the last stop" }) : null,
 				h(
 					"section",
 					{ class: "card complete-card", "data-ride-complete": ride.id },

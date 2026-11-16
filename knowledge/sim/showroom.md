@@ -39,13 +39,13 @@ Common in electronics and battery assembly, where it inserts parts, drives screw
 title: Delta robot
 concept: delta
 payload_kg: 0.5-15
-reach_mm: 280-1600
-reach_text: 280-1,600 mm working diameter as listed [1, 2]
+reach_mm: 140-800
+reach_text: 140-800 mm from the center, half the 280-1,600 mm working diameter makers list [1, 2]
 speed: Cycle time 0.26-0.60 s on the 25/305/25 mm loop, depending on payload and variant [1, 3]
 height_mm: 1000
 
 ### Notes
-Hung from a frame over a conveyor in food and packaging plants, picking light items such as confectionery off a moving belt [5]. Its motors sit in the fixed frame and only light arms move, so it accelerates very hard on short picks, but it carries little, works in a shallow zone (about 250-300 mm tall on the ABB IRB 360), and the common 3- and 4-axis versions keep the tool level, so they cannot tilt a part [1]. On the cheese plate line it is the design choice for the apple and cheese stations; the stainless IRB 360 is IP69K validated for washing with detergents and high-pressure hot water, and its 0-45 °C rating covers the 2-4 °C room [1]. Reach here is the working diameter as makers list it, and the 1,000 mm drawing height is illustrative, not from a datasheet.
+Hung from a frame over a conveyor in food and packaging plants, picking light items such as confectionery off a moving belt [5]. Its motors sit in the fixed frame and only light arms move, so it accelerates very hard on short picks, but it carries little, works in a shallow zone (about 250-300 mm tall on the ABB IRB 360), and the common 3- and 4-axis versions keep the tool level, so they cannot tilt a part [1]. On the cheese plate line it is the design choice for the apple and cheese stations; the stainless IRB 360 is IP69K validated for washing with detergents and high-pressure hot water, and its 0-45 °C rating covers the 2-4 °C room [1]. The reach bar uses half the listed working diameter, so it compares with the arms, whose reach is measured from the base outward; the 1,000 mm drawing height is illustrative, not from a datasheet.
 
 ### Sources
 1. [IRB 360 FlexPicker datasheet](https://library.e.abb.com/public/f03878770fef4c2c93757953373aed9b/IRB%20360_datasheet_20220829.pdf) — ABB (2022); working diameter and height, cycle times, stainless IP69K version, ambient temperature

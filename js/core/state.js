@@ -18,12 +18,22 @@ const DEFAULTS = {
 	modes: {}, // rideId -> "classical" | "learned"
 };
 
+const isMap = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+
+/** Stored values whose type differs from the default (an old or hand-edited save) are dropped. */
 function load() {
 	try {
 		const raw = window.localStorage.getItem(KEY);
 		if (!raw) return {};
 		const v = JSON.parse(raw);
-		return v && typeof v === "object" ? v : {};
+		if (!isMap(v)) return {};
+		const out = {};
+		for (const [k, d] of Object.entries(DEFAULTS)) {
+			if (!(k in v)) continue;
+			const ok = d === null ? v[k] === null || typeof v[k] === "boolean" : isMap(d) ? isMap(v[k]) : typeof v[k] === typeof d;
+			if (ok) out[k] = v[k];
+		}
+		return out;
 	} catch {
 		return {};
 	}

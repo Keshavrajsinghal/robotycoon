@@ -14,7 +14,25 @@ export const CONTENT = {
     "scara",
     "delta",
     "cobot",
-    "gantry"
+    "gantry",
+    "mobile-robot",
+    "humanoid"
+   ]
+  },
+  {
+   "area": 2,
+   "slug": "inside-a-joint",
+   "title": "PH Inside a joint",
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "intro": "<p>PLACEHOLDER: intro for area 2, the parts inside one robot joint.</p>",
+   "concepts": [
+    "joint-stack",
+    "servo-motor",
+    "gearbox",
+    "encoder",
+    "brake",
+    "servo-drive",
+    "torque-sensing"
    ]
   },
   {
@@ -44,6 +62,39 @@ export const CONTENT = {
     "teleop-modes",
     "latency-budget",
     "webrtc"
+   ]
+  },
+  {
+   "area": 11,
+   "slug": "deployment-lifecycle",
+   "title": "PH Deployment lifecycle",
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "intro": "<p>PLACEHOLDER: intro for area 11, how a robot cell goes from idea to a running line.</p>",
+   "concepts": [
+    "scoping",
+    "cell-design",
+    "purchasing",
+    "acceptance-tests",
+    "commissioning",
+    "support",
+    "raas"
+   ]
+  },
+  {
+   "area": 12,
+   "slug": "industry-map",
+   "title": "PH Industry map",
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "intro": "<p>PLACEHOLDER: intro for area 12, the kinds of companies that make robots work and who buys from whom.</p>",
+   "concepts": [
+    "value-chain",
+    "component-makers",
+    "robot-makers",
+    "integrators",
+    "application-companies",
+    "model-companies",
+    "tooling-companies",
+    "end-users"
    ]
   }
  ],
@@ -500,6 +551,343 @@ export const CONTENT = {
      "title": "Placeholder source two",
      "url": "https://example.org/placeholder-two",
      "note": "placeholder; fake citation for layout"
+    }
+   ],
+   "unverified": 0
+  },
+  "mobile-robot": {
+   "id": "mobile-robot",
+   "area": 1,
+   "title": "PH Mobile robots",
+   "requires": [
+    "dof"
+   ],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/01-robot-bodies.md",
+   "plain": "<p>PLACEHOLDER: PH Mobile robots is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Mobile robots stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Mobile robots defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Mobile robots on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Mobile robots in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Mobile robots exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-mobile-robot",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "humanoid": {
+   "id": "humanoid",
+   "area": 1,
+   "title": "PH Humanoid robots",
+   "requires": [
+    "dof"
+   ],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/01-robot-bodies.md",
+   "plain": "<p>PLACEHOLDER: PH Humanoid robots is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Humanoid robots stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Humanoid robots defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Humanoid robots on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Humanoid robots in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Humanoid robots exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-humanoid",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "joint-stack": {
+   "id": "joint-stack",
+   "area": 2,
+   "title": "PH The joint as a stack of parts",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH The joint as a stack of parts is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH The joint as a stack of parts stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH The joint as a stack of parts defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH The joint as a stack of parts on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH The joint as a stack of parts in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH The joint as a stack of parts exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-joint-stack",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "servo-motor": {
+   "id": "servo-motor",
+   "area": 2,
+   "title": "PH Servo motor",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH Servo motor is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Servo motor stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Servo motor defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Servo motor on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Servo motor in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Servo motor exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-servo-motor",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "gearbox": {
+   "id": "gearbox",
+   "area": 2,
+   "title": "PH Gearbox",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH Gearbox is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Gearbox stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Gearbox defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Gearbox on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Gearbox in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Gearbox exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-gearbox",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "encoder": {
+   "id": "encoder",
+   "area": 2,
+   "title": "PH Encoder",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH Encoder is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Encoder stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Encoder defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Encoder on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Encoder in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Encoder exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-encoder",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "brake": {
+   "id": "brake",
+   "area": 2,
+   "title": "PH Holding brake",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH Holding brake is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Holding brake stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Holding brake defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Holding brake on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Holding brake in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Holding brake exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-brake",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "servo-drive": {
+   "id": "servo-drive",
+   "area": 2,
+   "title": "PH Servo drive",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH Servo drive is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Servo drive stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Servo drive defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Servo drive on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Servo drive in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Servo drive exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-servo-drive",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "torque-sensing": {
+   "id": "torque-sensing",
+   "area": 2,
+   "title": "PH Torque sensing",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/02-inside-a-joint.md",
+   "plain": "<p>PLACEHOLDER: PH Torque sensing is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Torque sensing stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Torque sensing defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Torque sensing on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Torque sensing in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Torque sensing exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-torque-sensing",
+     "note": "placeholder"
     }
    ],
    "unverified": 0
@@ -1320,6 +1708,645 @@ export const CONTENT = {
     }
    ],
    "unverified": 0
+  },
+  "scoping": {
+   "id": "scoping",
+   "area": 11,
+   "title": "PH Scoping and ROI",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Scoping and ROI is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Scoping and ROI stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Scoping and ROI defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Scoping and ROI on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Scoping and ROI in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Scoping and ROI exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-scoping",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "cell-design": {
+   "id": "cell-design",
+   "area": 11,
+   "title": "PH Cell design and simulation",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Cell design and simulation is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Cell design and simulation stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Cell design and simulation defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Cell design and simulation on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Cell design and simulation in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Cell design and simulation exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-cell-design",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "purchasing": {
+   "id": "purchasing",
+   "area": 11,
+   "title": "PH Purchasing",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Purchasing is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Purchasing stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Purchasing defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Purchasing on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Purchasing in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Purchasing exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-purchasing",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "acceptance-tests": {
+   "id": "acceptance-tests",
+   "area": 11,
+   "title": "PH Acceptance tests",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Acceptance tests is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Acceptance tests stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Acceptance tests defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Acceptance tests on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Acceptance tests in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Acceptance tests exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-acceptance-tests",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "commissioning": {
+   "id": "commissioning",
+   "area": 11,
+   "title": "PH Commissioning and ramp-up",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Commissioning and ramp-up is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Commissioning and ramp-up stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Commissioning and ramp-up defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Commissioning and ramp-up on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Commissioning and ramp-up in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Commissioning and ramp-up exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-commissioning",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "support": {
+   "id": "support",
+   "area": 11,
+   "title": "PH Support and maintenance",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Support and maintenance is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Support and maintenance stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Support and maintenance defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Support and maintenance on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Support and maintenance in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Support and maintenance exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-support",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "raas": {
+   "id": "raas",
+   "area": 11,
+   "title": "PH Buying versus paying per use",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/11-deployment-lifecycle.md",
+   "plain": "<p>PLACEHOLDER: PH Buying versus paying per use is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Buying versus paying per use stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Buying versus paying per use defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Buying versus paying per use on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Buying versus paying per use in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Buying versus paying per use exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-raas",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "value-chain": {
+   "id": "value-chain",
+   "area": 12,
+   "title": "PH Who buys from whom",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH Who buys from whom is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Who buys from whom stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Who buys from whom defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Who buys from whom on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Who buys from whom in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Who buys from whom exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-value-chain",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0
+  },
+  "component-makers": {
+   "id": "component-makers",
+   "area": 12,
+   "title": "PH Component makers",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH Component makers is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Component makers stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Component makers defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Component makers on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Component makers in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Component makers exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-component-makers",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
+  },
+  "robot-makers": {
+   "id": "robot-makers",
+   "area": 12,
+   "title": "PH Robot makers",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH Robot makers is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Robot makers stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Robot makers defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Robot makers on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Robot makers in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Robot makers exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-robot-makers",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
+  },
+  "integrators": {
+   "id": "integrators",
+   "area": 12,
+   "title": "PH System integrators",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH System integrators is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH System integrators stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH System integrators defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH System integrators on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH System integrators in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH System integrators exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-integrators",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
+  },
+  "application-companies": {
+   "id": "application-companies",
+   "area": 12,
+   "title": "PH Application companies",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH Application companies is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Application companies stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Application companies defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Application companies on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Application companies in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Application companies exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-application-companies",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
+  },
+  "model-companies": {
+   "id": "model-companies",
+   "area": 12,
+   "title": "PH Robot model companies",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH Robot model companies is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Robot model companies stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Robot model companies defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Robot model companies on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Robot model companies in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Robot model companies exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-model-companies",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
+  },
+  "tooling-companies": {
+   "id": "tooling-companies",
+   "area": 12,
+   "title": "PH Tooling and software companies",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH Tooling and software companies is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH Tooling and software companies stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH Tooling and software companies defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH Tooling and software companies on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH Tooling and software companies in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH Tooling and software companies exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-tooling-companies",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
+  },
+  "end-users": {
+   "id": "end-users",
+   "area": 12,
+   "title": "PH End users",
+   "requires": [],
+   "aka": [],
+   "file": "tests/fixtures/knowledge/12-industry-map.md",
+   "plain": "<p>PLACEHOLDER: PH End users is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.</p>",
+   "analogyLimit": "<p>PLACEHOLDER: where the errand analogy for PH End users stops working.</p>",
+   "precise": "<p>PLACEHOLDER: PH End users defined precisely with a fake citation <sup class=\"cite\">[1]</sup>.</p>",
+   "cheese": "<p>PLACEHOLDER: PH End users on the cheese plate line.</p>",
+   "elsewhere": "<p>PLACEHOLDER: PH End users in a car factory.</p>",
+   "why": "<p>PLACEHOLDER: why PH End users exists.</p>",
+   "connects": [
+    {
+     "id": "dof",
+     "html": "PLACEHOLDER: a fake connection."
+    }
+   ],
+   "products": "<ul><li><strong>Placeholder Product</strong> — PLACEHOLDER: not real.</li></ul>",
+   "misconception": {
+    "myth": "<p>PLACEHOLDER: a myth.</p>",
+    "reality": "<p>PLACEHOLDER: the fake reality <sup class=\"cite\">[1]</sup>.</p>"
+   },
+   "keyNumbers": "",
+   "specs": null,
+   "code": null,
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder source",
+     "url": "https://example.com/ph-end-users",
+     "note": "placeholder"
+    }
+   ],
+   "unverified": 0,
+   "industry": {
+    "sells": "<p>PLACEHOLDER: what this company type sells.</p>",
+    "buysFrom": "<p>PLACEHOLDER: who it buys from.</p>",
+    "sellsTo": "<p>PLACEHOLDER: who it sells to.</p>",
+    "roles": [
+     {
+      "name": "PH Role",
+      "html": "PLACEHOLDER: what this role does."
+     }
+    ],
+    "companies": "<p>PLACEHOLDER: no real companies.</p>"
+   }
   }
  },
  "conceptOrder": [
@@ -1329,6 +2356,15 @@ export const CONTENT = {
   "delta",
   "cobot",
   "gantry",
+  "mobile-robot",
+  "humanoid",
+  "joint-stack",
+  "servo-motor",
+  "gearbox",
+  "encoder",
+  "brake",
+  "servo-drive",
+  "torque-sensing",
   "conveyor",
   "feeder",
   "inspection",
@@ -1339,7 +2375,22 @@ export const CONTENT = {
   "hygienic-design",
   "teleop-modes",
   "latency-budget",
-  "webrtc"
+  "webrtc",
+  "scoping",
+  "cell-design",
+  "purchasing",
+  "acceptance-tests",
+  "commissioning",
+  "support",
+  "raas",
+  "value-chain",
+  "component-makers",
+  "robot-makers",
+  "integrators",
+  "application-companies",
+  "model-companies",
+  "tooling-companies",
+  "end-users"
  ],
  "glossary": [
   {
@@ -2295,17 +3346,17 @@ export const CONTENT = {
     {
      "id": "gripper",
      "title": "PH Gripper",
-     "cargo": "PH Slice released",
+     "cargo": "PH Bunch released",
      "cargoDetail": "",
      "concepts": [
-      "vacuum-gripper"
+      "soft-gripper"
      ],
      "workbench": null,
      "delay": null,
      "mode": "both",
      "replaces": [],
      "plain": "<p>PLACEHOLDER: at ph gripper, the cargo changes in a fake way. This is placeholder text for layout testing.</p>",
-     "precise": "<p>PLACEHOLDER: the precise version for gripper uses real terms (defined in plain words) and links <a class=\"concept-link\" href=\"#concept/vacuum-gripper\" data-concept=\"vacuum-gripper\">Vacuum gripper</a>.</p>",
+     "precise": "<p>PLACEHOLDER: the precise version for gripper uses real terms (defined in plain words) and links <a class=\"concept-link\" href=\"#concept/soft-gripper\" data-concept=\"soft-gripper\">Soft gripper</a>.</p>",
      "question": {
       "prompt": "<p>PLACEHOLDER: which statement about gripper is true?</p>",
       "options": [
@@ -2344,7 +3395,7 @@ export const CONTENT = {
       },
       {
        "id": "cup",
-       "label": "PH Vacuum cup"
+       "label": "PH Soft fingers"
       }
      ],
      "rows": [
@@ -2354,7 +3405,7 @@ export const CONTENT = {
        "why": {
         "camera": "PH: right, the camera does this.",
         "drive": "PH: wrong, the drive moves motors.",
-        "cup": "PH: wrong, the cup holds things."
+        "cup": "PH: wrong, the fingers hold things."
        }
       },
       {
@@ -2363,16 +3414,16 @@ export const CONTENT = {
        "why": {
         "camera": "PH: wrong, cameras only see.",
         "drive": "PH: right, that is the drive.",
-        "cup": "PH: wrong, cups do not power motors."
+        "cup": "PH: wrong, fingers do not power motors."
        }
       },
       {
-       "item": "PH Holds the apple slice",
+       "item": "PH Holds the grape bunch",
        "answer": "cup",
        "why": {
         "camera": "PH: wrong, it cannot hold.",
         "drive": "PH: wrong, it stays in the cabinet.",
-        "cup": "PH: right, suction holds the slice."
+        "cup": "PH: right, the fingers hold the bunch."
        }
       }
      ]
@@ -3237,29 +4288,119 @@ export const CONTENT = {
    "goal": "<p>PLACEHOLDER: goal for wb1-dof.</p>",
    "plain": "<p>PLACEHOLDER: plain workbench text for wb1-dof.</p>",
    "precise": "<p>PLACEHOLDER: precise workbench text for wb1-dof.</p>",
-   "howTo": "<p>PLACEHOLDER: drag the fake sliders.</p>",
-   "notice": "<p>PLACEHOLDER: notice the fake effect.</p>",
+   "howTo": "<p>PLACEHOLDER: lock or unlock joints, jog the slice or turn the free joints with their sliders, and match the ghost slice.</p>",
+   "notice": "<p>PLACEHOLDER: notice which pose components the free joints can change.</p>",
    "data": {
     "note": "Illustrative placeholder values.",
-    "stations": [
+    "links_m": {
+     "base": 0.3,
+     "upper_arm": 0.34,
+     "forearm": 0.32,
+     "wrist": 0.07,
+     "tool": 0.08
+    },
+    "joints": [
      {
-      "id": "grapes",
-      "seconds": 14
+      "label": "PH J1",
+      "min_deg": -170,
+      "max_deg": 170,
+      "start_deg": 0
      },
      {
-      "id": "apples",
-      "seconds": 21
+      "label": "PH J2",
+      "min_deg": -90,
+      "max_deg": 120,
+      "start_deg": 35
      },
      {
-      "id": "crackers",
-      "seconds": 9
+      "label": "PH J3",
+      "min_deg": -120,
+      "max_deg": 150,
+      "start_deg": -35
      },
      {
-      "id": "cheese",
-      "seconds": 16
+      "label": "PH J4",
+      "min_deg": -180,
+      "max_deg": 180,
+      "start_deg": 0
+     },
+     {
+      "label": "PH J5",
+      "min_deg": -125,
+      "max_deg": 125,
+      "start_deg": 90
+     },
+     {
+      "label": "PH J6",
+      "min_deg": -180,
+      "max_deg": 180,
+      "start_deg": 0
      }
     ],
-    "target_seconds": 18
+    "tray": {
+     "x_m": 0.46,
+     "y_m": -0.12,
+     "z_m": -0.08,
+     "length_m": 0.24,
+     "width_m": 0.17
+    },
+    "slice": {
+     "radius_m": 0.035,
+     "thickness_m": 0.01
+    },
+    "grapes": {
+     "radius_m": 0.04
+    },
+    "target": {
+     "x_m": -0.02,
+     "y_m": 0.03,
+     "tilt_deg": 60,
+     "heading_deg": -90
+    },
+    "tolerance": {
+     "position_mm": 12,
+     "angle_deg": 8
+    },
+    "start_unlocked": [
+     1,
+     2,
+     3,
+     6
+    ],
+    "start_level": true,
+    "presets": [
+     {
+      "label": "PH Level four",
+      "unlocked": [
+       1,
+       2,
+       3,
+       6
+      ],
+      "level": true
+     },
+     {
+      "label": "PH Five",
+      "unlocked": [
+       1,
+       2,
+       3,
+       5,
+       6
+      ]
+     },
+     {
+      "label": "PH All six",
+      "unlocked": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ]
+     }
+    ]
    }
   },
   {
@@ -3274,29 +4415,72 @@ export const CONTENT = {
    "goal": "<p>PLACEHOLDER: goal for wb2-ik.</p>",
    "plain": "<p>PLACEHOLDER: plain workbench text for wb2-ik.</p>",
    "precise": "<p>PLACEHOLDER: precise workbench text for wb2-ik.</p>",
-   "howTo": "<p>PLACEHOLDER: drag the fake sliders.</p>",
+   "howTo": "<p>PLACEHOLDER: drag the fake target, tilt the fake fingers, flip the fake posture switch.</p>",
    "notice": "<p>PLACEHOLDER: notice the fake effect.</p>",
    "data": {
     "note": "Illustrative placeholder values.",
-    "stations": [
+    "upper_arm_mm": 425,
+    "forearm_mm": 390,
+    "tool_mm": 150,
+    "shoulder_height_mm": 440,
+    "tray_x_mm": 260,
+    "tote": {
+     "near_x_mm": 470,
+     "far_x_mm": 760,
+     "wall_mm": 110
+    },
+    "tilt_max_deg": 60,
+    "start_target_mm": [
+     690,
+     -60
+    ],
+    "bunches": [
      {
-      "id": "grapes",
-      "seconds": 14
+      "x_mm": 540,
+      "z_mm": -380,
+      "tilt_deg": 15
      },
      {
-      "id": "apples",
-      "seconds": 21
+      "x_mm": 630,
+      "z_mm": -380,
+      "tilt_deg": 0
      },
      {
-      "id": "crackers",
-      "seconds": 9
-     },
-     {
-      "id": "cheese",
-      "seconds": 16
+      "x_mm": 710,
+      "z_mm": -370,
+      "tilt_deg": -45
      }
     ],
-    "target_seconds": 18
+    "joints": [
+     {
+      "name": "PH Base"
+     },
+     {
+      "name": "PH Shoulder",
+      "min_deg": -45,
+      "max_deg": 150
+     },
+     {
+      "name": "PH Elbow",
+      "min_deg": -160,
+      "max_deg": 150
+     },
+     {
+      "name": "PH Wrist roll"
+     },
+     {
+      "name": "PH Wrist bend",
+      "min_deg": -135,
+      "max_deg": 135
+     },
+     {
+      "name": "PH Wrist turn"
+     }
+    ],
+    "solutions": [
+     "PH Elbow up",
+     "PH Elbow down"
+    ]
    }
   },
   {
@@ -3306,34 +4490,60 @@ export const CONTENT = {
    "stop": "drive",
    "order": 3,
    "concepts": [
-    "control-loops"
+    "control-loops",
+    "servo-drive",
+    "servo-motor"
    ],
-   "goal": "<p>PLACEHOLDER: goal for wb3-control.</p>",
+   "goal": "<p>PLACEHOLDER: goal for wb3-control. Meet the fake spec with the fake payload on.</p>",
    "plain": "<p>PLACEHOLDER: plain workbench text for wb3-control.</p>",
    "precise": "<p>PLACEHOLDER: precise workbench text for wb3-control.</p>",
-   "howTo": "<p>PLACEHOLDER: drag the fake sliders.</p>",
-   "notice": "<p>PLACEHOLDER: notice the fake effect.</p>",
+   "howTo": "<p>PLACEHOLDER: drag the three fake gain sliders and flip the fake payload toggle.</p>",
+   "notice": "<p>PLACEHOLDER: notice the fake effect of the payload on the same gains.</p>",
    "data": {
     "note": "Illustrative placeholder values.",
-    "stations": [
-     {
-      "id": "grapes",
-      "seconds": 14
+    "drive_loop_hz": 4000,
+    "setpoint_hz": 500,
+    "duration_s": 1,
+    "target_deg": 30,
+    "load": {
+     "empty": {
+      "label": "PH Empty fingers",
+      "inertia_kgm2": 0.04,
+      "gravity_nm": 0
      },
-     {
-      "id": "apples",
-      "seconds": 21
-     },
-     {
-      "id": "crackers",
-      "seconds": 9
-     },
-     {
-      "id": "cheese",
-      "seconds": 16
+     "loaded": {
+      "label": "PH Holding a bunch",
+      "inertia_kgm2": 0.085,
+      "gravity_nm": 1.5
      }
-    ],
-    "target_seconds": 18
+    },
+    "damping_nm_s_per_rad": 0.05,
+    "friction_nm": 0.05,
+    "torque_limit_nm": 6,
+    "integral_limit_nm": 1,
+    "gains": {
+     "kp": {
+      "min": 0,
+      "max": 80,
+      "start": 48
+     },
+     "ki": {
+      "min": 0,
+      "max": 400,
+      "start": 0
+     },
+     "kd": {
+      "min": 0,
+      "max": 5,
+      "start": 2
+     }
+    },
+    "spec": {
+     "max_overshoot_pct": 5,
+     "max_settling_s": 0.4,
+     "settle_band_pct": 2,
+     "max_steady_state_error_deg": 0.1
+    }
    }
   },
   {
@@ -3343,71 +4553,100 @@ export const CONTENT = {
    "stop": "position-3d",
    "order": 4,
    "concepts": [
-    "hand-eye-calibration"
+    "hand-eye-calibration",
+    "camera-calibration",
+    "frames"
    ],
-   "goal": "<p>PLACEHOLDER: goal for wb4-calibration.</p>",
+   "goal": "<p>PLACEHOLDER: goal for wb4-calibration (the fake camera starts knocked; recalibrate, then land a pick within the allowed offset).</p>",
    "plain": "<p>PLACEHOLDER: plain workbench text for wb4-calibration.</p>",
    "precise": "<p>PLACEHOLDER: precise workbench text for wb4-calibration.</p>",
-   "howTo": "<p>PLACEHOLDER: drag the fake sliders.</p>",
-   "notice": "<p>PLACEHOLDER: notice the fake effect.</p>",
+   "howTo": "<p>PLACEHOLDER: tap a bunch in the fake camera image, knock the camera with the sliders, press Calibrate, pick again.</p>",
+   "notice": "<p>PLACEHOLDER: notice the fake footprints drift apart and the fake residual.</p>",
    "data": {
     "note": "Illustrative placeholder values.",
-    "stations": [
-     {
-      "id": "grapes",
-      "seconds": 14
-     },
-     {
-      "id": "apples",
-      "seconds": 21
-     },
-     {
-      "id": "crackers",
-      "seconds": 9
-     },
-     {
-      "id": "cheese",
-      "seconds": 16
-     }
+    "image_px": [
+     640,
+     480
     ],
-    "target_seconds": 18
+    "mm_per_px": 0.8,
+    "camera_height_mm": 600,
+    "camera_center_mm": [
+     560,
+     0
+    ],
+    "camera_yaw_deg": 180,
+    "lens_k1": -0.1,
+    "board_noise_px": 0.3,
+    "robot_pose_error_mm": 0.3,
+    "bunch_center_noise_mm": 1.5,
+    "calibration_poses": 6,
+    "bunch_mm": [
+     140,
+     90
+    ],
+    "tolerance_mm": 8,
+    "washdown_knock": {
+     "tilt_x_deg": -0.8,
+     "tilt_y_deg": 1.2,
+     "yaw_deg": 0.6
+    },
+    "bump_max": {
+     "tilt_deg": 3,
+     "yaw_deg": 5,
+     "height_mm": 30
+    }
    }
   },
   {
    "id": "wb5-teleop",
-   "title": "PH Teleoperation",
+   "title": "PH Teleoperation under delay",
    "ride": "ride3",
    "stop": "operator",
    "order": 5,
    "concepts": [
-    "latency-budget"
+    "latency-budget",
+    "teleop-modes"
    ],
-   "goal": "<p>PLACEHOLDER: goal for wb5-teleop.</p>",
-   "plain": "<p>PLACEHOLDER: plain workbench text for wb5-teleop.</p>",
-   "precise": "<p>PLACEHOLDER: precise workbench text for wb5-teleop.</p>",
-   "howTo": "<p>PLACEHOLDER: drag the fake sliders.</p>",
-   "notice": "<p>PLACEHOLDER: notice the fake effect.</p>",
+   "goal": "<p>PLACEHOLDER: grip a grape bunch from the tote before the plate time runs out, with the round trip at or above the target delay.</p>",
+   "plain": "<p>PLACEHOLDER: plain workbench text for wb5-teleop. You are the remote operator and see the station a little late.</p>",
+   "precise": "<p>PLACEHOLDER: precise workbench text for wb5-teleop, with real terms defined in plain words and a link to <a class=\"concept-link\" href=\"#concept/latency-budget\" data-concept=\"latency-budget\">The latency budget</a>.</p>",
+   "howTo": "<p>PLACEHOLDER: In Direct, hold and drag the move pad to move the gripper, release to stop, and press Grip over a stem. In Assist, tap a marked stem. Raise the delay sliders until the round trip reaches the target, then grip a bunch. Cut link and the Watchdog box show what the watchdog does.</p>",
+   "notice": "<p>PLACEHOLDER: notice the fake effect of delay on direct control compared with assist.</p>",
    "data": {
     "note": "Illustrative placeholder values.",
-    "stations": [
-     {
-      "id": "grapes",
-      "seconds": 14
-     },
-     {
-      "id": "apples",
-      "seconds": 21
-     },
-     {
-      "id": "crackers",
-      "seconds": 9
-     },
-     {
-      "id": "cheese",
-      "seconds": 16
-     }
-    ],
-    "target_seconds": 18
+    "plate_time_s": 18,
+    "tote_length_m": 0.6,
+    "tote_width_m": 0.4,
+    "bunches_per_tote": 4,
+    "speed_cap_m_s": 0.05,
+    "robot_speed_m_s": 0.25,
+    "grip_tolerance_m": 0.01,
+    "grip_time_ms": 1200,
+    "camera_fps": 30,
+    "command_rate_hz": 100,
+    "watchdog_ms": 250,
+    "heartbeat_timeout_ms": 2000,
+    "target_rtt_ms": 400,
+    "video_ms": {
+     "min": 60,
+     "max": 300,
+     "default": 65
+    },
+    "command_ms": {
+     "min": 40,
+     "max": 150,
+     "default": 45
+    },
+    "jitter_ms": {
+     "min": 0,
+     "max": 60,
+     "default": 5
+    },
+    "loss_pct": {
+     "min": 0,
+     "max": 20,
+     "default": 0
+    }
    }
   },
   {
@@ -3420,32 +4659,109 @@ export const CONTENT = {
     "line-balancing",
     "cycle-time"
    ],
-   "goal": "<p>PLACEHOLDER: goal for wb6-line-balancing.</p>",
+   "goal": "<p>PLACEHOLDER: goal for wb6-line-balancing (make the target rate within the budget).</p>",
    "plain": "<p>PLACEHOLDER: plain workbench text for wb6-line-balancing.</p>",
    "precise": "<p>PLACEHOLDER: precise workbench text for wb6-line-balancing.</p>",
-   "howTo": "<p>PLACEHOLDER: drag the fake sliders.</p>",
-   "notice": "<p>PLACEHOLDER: notice the fake effect.</p>",
+   "howTo": "<p>PLACEHOLDER: pick a station column, then buy or undo its changes.</p>",
+   "notice": "<p>PLACEHOLDER: notice which changes move the line rate and which do not.</p>",
    "data": {
     "note": "Illustrative placeholder values.",
+    "target_per_hour": 200,
+    "budget": 6,
+    "cost_unit": "PH pts",
+    "transfer_s": 1.5,
+    "parallel_overhead_s": 0.5,
+    "stop_s": 20,
+    "short_stop_s": 30,
+    "buffer": {
+     "cost": 1,
+     "capacity": 4
+    },
     "stations": [
      {
+      "id": "denester",
+      "work_s": 2,
+      "picks": 1,
+      "availability": 0.99
+     },
+     {
       "id": "grapes",
-      "seconds": 14
+      "work_s": 9,
+      "picks": 1,
+      "availability": 0.95,
+      "tool": {
+       "saves_s": 3,
+       "cost": 2,
+       "label": "PH softer gripper"
+      }
      },
      {
       "id": "apples",
-      "seconds": 21
+      "work_s": 17,
+      "picks": 4,
+      "availability": 0.98,
+      "parallel_cost": 5,
+      "parallel_label": "PH second apple robot",
+      "tool": {
+       "saves_s": 1,
+       "cost": 2,
+       "label": "PH faster robot"
+      }
      },
      {
       "id": "crackers",
-      "seconds": 9
+      "work_s": 6,
+      "picks": 2,
+      "availability": 0.99
      },
      {
       "id": "cheese",
-      "seconds": 16
+      "work_s": 10,
+      "picks": 3,
+      "availability": 0.98,
+      "tool": {
+       "saves_s": 2,
+       "cost": 2,
+       "label": "PH wedge cup"
+      }
+     },
+     {
+      "id": "inspection",
+      "work_s": 1.5,
+      "availability": 1
+     },
+     {
+      "id": "lidding",
+      "work_s": 5,
+      "availability": 0.98,
+      "tool": {
+       "saves_s": 1.5,
+       "cost": 1,
+       "label": "PH faster press"
+      }
+     },
+     {
+      "id": "outfeed",
+      "work_s": 3,
+      "availability": 0.99
      }
     ],
-    "target_seconds": 18
+    "moves": [
+     {
+      "from": "apples",
+      "to": "grapes",
+      "seconds": 4,
+      "cost": 1,
+      "label": "PH one apple slice"
+     },
+     {
+      "from": "apples",
+      "to": "crackers",
+      "seconds": 4,
+      "cost": 2,
+      "label": "PH one apple slice"
+     }
+    ]
    }
   }
  ],
@@ -3556,6 +4872,22 @@ export const CONTENT = {
     ]
    },
    {
+    "id": "sensor-shop",
+    "title": "PH sensor shop",
+    "district": "parts",
+    "about": "<p>PLACEHOLDER: about the sensor-shop building.</p>",
+    "roles": [
+     {
+      "name": "PH Designer",
+      "html": "PLACEHOLDER: what this role does day to day."
+     },
+     {
+      "name": "PH Assembler",
+      "html": "PLACEHOLDER: another fake role."
+     }
+    ]
+   },
+   {
     "id": "arm-factory",
     "title": "PH arm factory",
     "district": "robot-row",
@@ -3615,6 +4947,22 @@ export const CONTENT = {
      },
      {
       "name": "PH Technician",
+      "html": "PLACEHOLDER: another fake role."
+     }
+    ]
+   },
+   {
+    "id": "test-hall",
+    "title": "PH test hall",
+    "district": "integrators",
+    "about": "<p>PLACEHOLDER: about the test-hall building.</p>",
+    "roles": [
+     {
+      "name": "PH Test lead",
+      "html": "PLACEHOLDER: what this role does day to day."
+     },
+     {
+      "name": "PH Field technician",
       "html": "PLACEHOLDER: another fake role."
      }
     ]
@@ -3684,6 +5032,22 @@ export const CONTENT = {
     ]
    },
    {
+    "id": "robot-gym",
+    "title": "PH robot gym",
+    "district": "model-lab",
+    "about": "<p>PLACEHOLDER: about the robot-gym building.</p>",
+    "roles": [
+     {
+      "name": "PH Data collector",
+      "html": "PLACEHOLDER: what this role does day to day."
+     },
+     {
+      "name": "PH Researcher",
+      "html": "PLACEHOLDER: another fake role."
+     }
+    ]
+   },
+   {
     "id": "sim-studio",
     "title": "PH sim studio",
     "district": "tool-works",
@@ -3717,9 +5081,9 @@ export const CONTENT = {
    },
    {
     "id": "plate-plant",
-    "title": "PH plate plant",
+    "title": "PH airline catering plant",
     "district": "factory-district",
-    "about": "<p>PLACEHOLDER: about the plate-plant building.</p>",
+    "about": "<p>PLACEHOLDER: about the plate-plant building, the airline catering plant that runs the cheese plate line.</p>",
     "roles": [
      {
       "name": "PH Engineer",
@@ -3762,6 +5126,22 @@ export const CONTENT = {
       "html": "PLACEHOLDER: another fake role."
      }
     ]
+   },
+   {
+    "id": "car-plant",
+    "title": "PH car plant",
+    "district": "factory-district",
+    "about": "<p>PLACEHOLDER: about the car-plant building.</p>",
+    "roles": [
+     {
+      "name": "PH Line supervisor",
+      "html": "PLACEHOLDER: what this role does day to day."
+     },
+     {
+      "name": "PH Maintenance technician",
+      "html": "PLACEHOLDER: another fake role."
+     }
+    ]
    }
   ]
  },
@@ -3782,6 +5162,7 @@ export const CONTENT = {
     "mid": 1150,
     "text": "500-1800"
    },
+   "reachText": null,
    "heightMm": {
     "min": 1100,
     "max": 1100,
@@ -3815,6 +5196,7 @@ export const CONTENT = {
     "mid": 700,
     "text": "200-1200"
    },
+   "reachText": null,
    "heightMm": {
     "min": 650,
     "max": 650,
@@ -3848,6 +5230,7 @@ export const CONTENT = {
     "mid": 1000,
     "text": "400-1600"
    },
+   "reachText": null,
    "heightMm": {
     "min": 1000,
     "max": 1000,
@@ -3881,6 +5264,7 @@ export const CONTENT = {
     "mid": 900,
     "text": "500-1300"
    },
+   "reachText": null,
    "heightMm": {
     "min": 1000,
     "max": 1000,
@@ -3914,6 +5298,7 @@ export const CONTENT = {
     "mid": 2000,
     "text": "1000-3000"
    },
+   "reachText": null,
    "heightMm": {
     "min": 2000,
     "max": 2000,
@@ -3930,12 +5315,86 @@ export const CONTENT = {
      "note": "placeholder"
     }
    ]
+  },
+  {
+   "id": "mobile-robot",
+   "title": "PH Mobile manipulator",
+   "concept": "mobile-robot",
+   "payloadKg": {
+    "min": 5,
+    "max": 250,
+    "mid": 127.5,
+    "text": "5-250"
+   },
+   "reachMm": {
+    "min": 600,
+    "max": 1300,
+    "mid": 950,
+    "text": "600-1300"
+   },
+   "reachText": null,
+   "heightMm": {
+    "min": 1400,
+    "max": 1400,
+    "mid": 1400,
+    "text": "1400"
+   },
+   "speed": "PH placeholder driving speed",
+   "notes": "<p>PLACEHOLDER: notes for the PH Mobile manipulator, an AMR base carrying an arm.</p>",
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder robot source",
+     "url": "https://example.com/robot-mobile",
+     "note": "placeholder"
+    }
+   ]
+  },
+  {
+   "id": "humanoid",
+   "title": "PH Humanoid",
+   "concept": "humanoid",
+   "payloadKg": {
+    "min": 2,
+    "max": 25,
+    "mid": 13.5,
+    "text": "2-25"
+   },
+   "reachMm": {
+    "min": 500,
+    "max": 800,
+    "mid": 650,
+    "text": "500-800"
+   },
+   "reachText": null,
+   "heightMm": {
+    "min": 1700,
+    "max": 1700,
+    "mid": 1700,
+    "text": "1700"
+   },
+   "speed": "PH placeholder walking speed",
+   "notes": "<p>PLACEHOLDER: notes for the PH Humanoid.</p>",
+   "sources": [
+    {
+     "n": 1,
+     "title": "Placeholder robot source",
+     "url": "https://example.com/robot-humanoid",
+     "note": "placeholder"
+    },
+    {
+     "n": 2,
+     "title": "Second placeholder source",
+     "url": "https://example.com/robot-humanoid-2",
+     "note": "placeholder"
+    }
+   ]
   }
  ],
  "stats": {
-  "areas": 3,
-  "concepts": 17,
-  "sources": 34,
+  "areas": 6,
+  "concepts": 41,
+  "sources": 58,
   "unverifiedFlags": 2,
   "glossaryTerms": 22,
   "rides": 4,

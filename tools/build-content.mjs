@@ -96,15 +96,20 @@ function inline(src) {
 		/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
 		(_, t, u) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`,
 	);
-	s = s.replace(/\[unverified(?::\s*([^\]]*))?\]/gi, (_, note) => {
-		const n = note?.trim();
-		return `<span class="flag-unverified"${n ? ` title="${n}"` : ""}>unverified${n ? `: ${n}` : ""}</span>`;
-	});
+	s = flagUnverified(s);
 	s = s.replace(/\[(\d+(?:\s*[,–-]\s*\d+)*)\]/g, (_, n) => `<sup class="cite">[${n}]</sup>`);
 	s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 	s = s.replace(/(^|[^*\w])\*(?!\s)([^*]+?)\*(?!\w)/g, "$1<em>$2</em>");
 	s = s.replace(/\u0000(\d+)\u0000/g, (_, k) => `<code>${esc(codes[Number(k)])}</code>`);
 	return s;
+}
+
+/** Turn [unverified] / [unverified: note] in already-escaped HTML into visible flags (also inside code). */
+function flagUnverified(s) {
+	return s.replace(/\[unverified(?::\s*([^\]]*))?\]/gi, (_, note) => {
+		const n = note?.trim();
+		return `<span class="flag-unverified"${n ? ` title="${n}"` : ""}>unverified${n ? `: ${n}` : ""}</span>`;
+	});
 }
 
 const LIST_ITEM = /^\s*([-*]|\d+\.)\s+/;
@@ -145,7 +150,7 @@ function md(src) {
 			i++;
 			while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) buf.push(lines[i++]);
 			i++;
-			out.push(`<pre class="code"><code${lang ? ` data-lang="${esc(lang)}"` : ""}>${esc(buf.join("\n"))}</code></pre>`);
+			out.push(`<pre class="code"><code${lang ? ` data-lang="${esc(lang)}"` : ""}>${flagUnverified(esc(buf.join("\n")))}</code></pre>`);
 			continue;
 		}
 		if (/^\s*\|/.test(line)) {
@@ -790,6 +795,10 @@ function parseTown(file, ctx) {
 				sells: md(secText(h2, "sells")),
 				buysFrom: md(secText(h2, "buys from")),
 				sellsTo: md(secText(h2, "sells to")),
+				// Optional machine-readable value chain: the district ids this district sells to. The town
+				// map draws one unlabeled flow (trucks, cables) per entry.
+				...(m.supplies ? { supplies: csv(m.supplies) } : {}),
+				_line: h2.line,
 			});
 		} else if (h2.title.startsWith("Building:")) {
 			const id = h2.title.slice(9).trim();
@@ -808,6 +817,10 @@ function parseTown(file, ctx) {
 		}
 	}
 	const dIds = new Set(districts.map((d) => d.id));
+	for (const d of districts) {
+		for (const to of d.supplies ?? []) if (!dIds.has(to) || to === d.id) err(file, d._line, `district ${d.id}: supplies has unknown or self district ${to}`);
+		delete d._line;
+	}
 	for (const b of buildings) {
 		if (!dIds.has(b.district)) err(file, b._line, `building ${b.id}: unknown district ${b.district}`);
 		delete b._line;

@@ -37,7 +37,7 @@ What breaks: double feeds (two trays stuck together go down as one), missed feed
 ### Question
 The line needs about 3.3 trays a minute, and its denester is rated for about 120. What should the engineers choosing it care about most?
 - [ ] Its rated speed, since a faster denester makes a faster line :: Rated speed is not the limit: this one already runs at under 3% of its rating. A faster model adds nothing to line output.
-- [x] How rarely it double-feeds or jams with molded fiber trays, and how long a magazine lasts :: Right. At this rate, output is lost to jams, double feeds, and refills, and every stop at the first station starves all the stations after it.
+- [x] How rarely it double-feeds or jams with molded fiber trays, and how long a magazine lasts :: At this rate, output is lost to jams, double feeds, and refills, and every stop at the first station starves all the stations after it.
 - [ ] Very little: at under 3% of its rating it will barely wear, so it will seldom fail :: Running slowly does not stop trays from clinging together or rims from being crushed. Those failures stop the line or make a bad plate at any speed.
 - [ ] Its speed, because the denester sets the line's takt time :: Takt comes from demand, not from a machine: 200 plates an hour means one plate every 18 s, whatever the denester can do.
 
@@ -63,7 +63,7 @@ What breaks without a good conveyor: an item slips or shifts, so a robot's idea 
 The tray belt indexes: it moves one step in 1-2 s (illustrative), then stops. Which robots still have to hit a moving target?
 - [ ] None of them, because the belt stops before each robot works :: The tray belt stops, but the apple and cheese robots pick from their own ingredient belts, which keep moving.
 - [ ] Every robot, because the tray is still moving while they place :: On an indexing belt each robot places onto a stationary tray, so placing needs no tracking for the tray.
-- [x] The apple and cheese robots, which pick from continuously moving ingredient belts :: Right. They place onto a still tray but pick slices and wedges on the move, using a camera plus conveyor tracking to predict where each one is now.
+- [x] The apple and cheese robots, which pick from continuously moving ingredient belts :: They place onto a still tray but pick slices and wedges on the move, using a camera plus conveyor tracking to predict where each one is now.
 - [ ] Only the grape arm, because its bunches lie at random angles :: Random angles make the grape pick hard, but in this design the arm picks from a tote, not from a moving belt.
 
 ## Stop: grapes
@@ -87,7 +87,7 @@ Someone has to go into the grape cell to free a tangled bunch. Which setup actua
 - [ ] A warning light and a sign on the door :: Lights and signs are awareness devices: they only warn. Nothing stops the arm if someone walks in anyway.
 - [ ] Pressing the cell's emergency stop button, then reaching in :: An emergency stop is a backup to the guards, not a lockout. OSHA's lockout rule says push buttons do not isolate the power, so it cannot replace each worker's personal lock.
 - [ ] Waiting until the arm looks paused, then reaching in quickly :: An arm that looks paused may simply be waiting for its next tray. People cannot predict a robot's next motion, which is why guarding exists.
-- [x] An interlocked door that stops the arm when opened, plus locking the power off before going in :: Right. The interlock feeds the safety circuit, and lockout/tagout covers the maintenance work during which many robot accidents happen.
+- [x] An interlocked door that stops the arm when opened, plus locking the power off before going in :: The interlock feeds the safety circuit, and lockout/tagout covers the maintenance work during which many robot accidents happen.
 
 ## Stop: apples
 title: Apple station
@@ -110,7 +110,7 @@ Every station alone can beat 200 plates an hour. But with no buffers (small queu
 In the illustrative model, apple picks slow from 3.2 s to 4.0 s because slices stick together, and the line falls to about 165 plates an hour. Which single change gets it back above 200?
 - [ ] A faster delta with a shorter catalog cycle :: The delta moves for well under a second of each pick; most of the pick is camera, tracking, vacuum, and placing. Shaving its motion barely changes a 4.0 s pick.
 - [ ] Speeding up the grape station, which has the slowest single pick at 7.0 s :: The grape robot makes one pick per plate, so its cycle is only 8.5 s. Improving a station that is not the bottleneck only adds idle time.
-- [x] A second apple robot, so each one places two slices :: Right. Apple work per plate halves, the bottleneck moves to cheese, and the line rises to about 267 plates an hour, even though one more robot slightly lowers line availability.
+- [x] A second apple robot, so each one places two slices :: Apple work per plate halves, the bottleneck moves to cheese, and the line rises to about 267 plates an hour, even though one more robot slightly lowers line availability.
 - [ ] Nothing: at 17.5 s the apple station still fits inside the 18 s takt, so it cannot be the problem :: It fits takt on paper, but with no buffers every station's stops multiply to about 80% availability, so the coupled line falls short. Balance has to be checked with failures included.
 
 ## Stop: crackers
@@ -131,7 +131,7 @@ Epson's GX8 SCARA comes in an IP65 version, and FANUC sells food-grade SCARAs ra
 
 ### Question
 The spec says IP67. Suppose the daily washdown sprays the cracker robot with hot high-pressure jets. Which statement is true?
-- [x] Neither IP65 nor IP67 proves a machine survives an 80 bar, 80 C jet from 10 cm, so ask for IP69K plus IP67 :: Right. Each water digit is its own test, and none checks cleaning chemicals, so chemical resistance has to be confirmed separately.
+- [x] Neither IP65 nor IP67 proves a machine survives an 80 bar, 80 C jet from 10 cm, so ask for IP69K plus IP67 :: Each water digit is its own test, and none checks cleaning chemicals, so chemical resistance has to be confirmed separately.
 - [ ] IP67 is a higher number than IP65, so an IP67 robot has also passed the IP65 jet test :: Above 6 the water digits are separate tests. Water digit 7 is immersion, and a device that passes it has not necessarily passed the 5 or 6 jet tests.
 - [ ] IP69K is the top rating, so an IP69K robot is also proven against immersion :: IP69K proves resistance to hot high-pressure jets only. Immersion is the water-7 or water-8 test, so a device that needs both should list both.
 - [ ] The rating hardly matters here, because the cracker packs are wrapped :: Wrapping protects the crackers, not the robot. The robot still stands in a room that is washed down every day.
@@ -159,7 +159,7 @@ The room is held at 2-4 C and the cheese delta is stainless steel. Which stateme
 - [ ] At 2-4 C bacteria cannot grow, so the washdown is mostly for appearance :: Listeria can grow even in refrigerated food. The cold slows it but does not stop it.
 - [ ] Only the suction cups touch cheese, so only they need to meet the food-area rules :: Under EN 1672-2, any surface over the open tray that could drip into the food counts as food area, including the robot's arms.
 - [ ] A stainless robot is hygienic by default, whatever its shape :: Shape matters as much as material. Open tube ends, bolted metal-to-metal joints, and flat ledges trap water and food soil even in stainless steel.
-- [x] The cold slows Listeria but does not stop it, so the daily washdown matters more than the temperature :: Right. Listeria can also be hard to remove once it is in a plant, which is why equipment is shaped so the washdown reaches every surface.
+- [x] The cold slows Listeria but does not stop it, so the daily washdown matters more than the temperature :: Listeria can also be hard to remove once it is in a plant, which is why equipment is shaped so the washdown reaches every surface.
 
 ## Stop: inspection
 title: Inspection
@@ -179,7 +179,7 @@ The reject reason is often worth more than the reject. "Cheese count 2" on the H
 
 ### Question
 Inspection rejects about 2% of plates, mostly with the reason "cheese count 2". Which change means fewer plates are made with a missing wedge in the first place?
-- [x] Using the reject reason to find and fix what is failing at the cheese station :: Right. Quality improves only when reject reasons are fed back to the station causing them, for example a gripper that drops wedges.
+- [x] Using the reject reason to find and fix what is failing at the cheese station :: Quality improves only when reject reasons are fed back to the station causing them, for example a gripper that drops wedges.
 - [ ] Nothing more is needed: adding inspection has already raised quality :: Inspection only sorts. Plates leave the pick stations just as good or bad as before it was added.
 - [ ] Loosening the camera's threshold so fewer plates fail :: That trades false rejects for escapes: the reject count falls, but the cheese station makes just as many short plates, and more of them reach the aircraft.
 - [ ] A second camera to double-check every plate :: A second check still only sorts. The cheese station keeps missing wedges at the same rate.
@@ -203,7 +203,7 @@ What breaks: a lid not seated spills or exposes food, a crumb on the flange can 
 ### Question
 The lidder stops and the HMI marks it "blocked". Inspection and every pick station before it also stop. Where is the problem most likely?
 - [ ] Inside the lidder, which has jammed :: A jam shows as faulted. Blocked means the lidder works but has nowhere to send plates.
-- [x] Downstream at the outfeed, where a full rack has not been swapped :: Right. Blocked means no room downstream, and a full rack backs trays up through lidding and inspection until the pick stations stop.
+- [x] Downstream at the outfeed, where a full rack has not been swapped :: Blocked means no room downstream, and a full rack backs trays up through lidding and inspection until the pick stations stop.
 - [ ] Upstream at the cheese station, which stopped sending plates :: A missing supply would leave the lidder starved, not blocked.
 - [ ] The lidder is too slow for the 18 s beat :: The line needs about 3.3 lids a minute, below even small traysealers' 5-15 packs a minute. Speed is not the issue here.
 
@@ -228,7 +228,7 @@ The outfeed light curtain was placed for a 0.35 s total stop: 560 mm plus the re
 - [ ] Nothing changes, because the curtain itself is a top-grade safety device :: Even a Type 4 curtain, the kind that must not fail dangerously, says nothing about whether the robot stops before a hand arrives. Distance depends on stopping time.
 - [ ] The cell stays safe, because the robot itself complies with ISO 10218-1 :: ISO 10218-1 covers only the robot, as partly completed machinery. The integrator is responsible for the whole cell, guard distances included.
 - [ ] Adding a warning sign at the slot makes up for the difference :: Signs and lights are awareness devices: they warn but stop nothing, so they cannot make up for a curtain that is too close.
-- [x] The stopping time must be measured again, and the curtain moved farther out if needed :: Right. Minimum distance is hand speed × total stopping time, so a slower stop needs more distance.
+- [x] The stopping time must be measured again, and the curtain moved farther out if needed :: Minimum distance is hand speed × total stopping time, so a slower stop needs more distance.
 
 ## Puzzle
 title: What fixes it?
@@ -253,7 +253,7 @@ Each row is a real problem on this line. Pick the machine or idea that fixes it.
       "item": "Two molded fiber trays stick together and drop onto the belt as one",
       "answer": "denester",
       "why": {
-        "denester": "Right. Double feeds are the denester's classic failure. It runs at under 3% of its rated speed, so choose it for clean single feeds with molded fiber trays, not for speed.",
+        "denester": "Double feeds are the denester's classic failure. It runs at under 3% of its rated speed, so choose it for clean single feeds with molded fiber trays, not for speed.",
         "inspection": "Inspection might catch the bad plate at the end, but it only sorts. The double feed still happens at the first station, and each stop there starves every station after it.",
         "interlock": "Guarding keeps people away from moving robots. It does nothing about trays clinging to each other in the stack.",
         "ip69k": "A sealing rating keeps water out of a machine. It does not separate nested trays.",
@@ -266,7 +266,7 @@ Each row is a real problem on this line. Pick the machine or idea that fixes it.
       "answer": "inspection",
       "why": {
         "denester": "The denester only releases empty trays. It cannot know that a wedge goes missing later.",
-        "inspection": "Right. The camera counts the wedges, the pusher sends the plate to the rework lane, and the reason \"cheese count 2\" tells the operator which station to fix.",
+        "inspection": "The camera counts the wedges, the pusher sends the plate to the rework lane, and the reason \"cheese count 2\" tells the operator which station to fix.",
         "interlock": "A door switch protects people. It has nothing to do with counting wedges.",
         "ip69k": "A sealed housing keeps water out. It does not notice a missing wedge.",
         "second-robot": "Another cheese robot adds capacity, but it can still miss a wedge, and nothing would stop that plate going on to the aircraft.",
@@ -279,7 +279,7 @@ Each row is a real problem on this line. Pick the machine or idea that fixes it.
       "why": {
         "denester": "The denester has nothing to do with the grape cell. Refilling magazines from outside the guard cuts trips into cells, but freeing a bunch still means reaching in.",
         "inspection": "The inspection camera checks plates, not people. Stopping the robot when someone reaches in is the job of a guard wired to the safety circuit.",
-        "interlock": "Right. Opening the interlocked door tells the safety circuit to stop the arm, and locking the power off before going in covers the maintenance work during which many robot accidents happen.",
+        "interlock": "Opening the interlocked door tells the safety circuit to stop the arm, and locking the power off before going in covers the maintenance work during which many robot accidents happen.",
         "ip69k": "A rating keeps water and dust out. It does nothing to keep a person away from a moving arm.",
         "second-robot": "Another robot means more motion to guard, not less.",
         "faster-robot": "A faster arm only raises the stakes: a guard has to stop the robot before a hand can reach it, and faster motion makes that harder."
@@ -292,7 +292,7 @@ Each row is a real problem on this line. Pick the machine or idea that fixes it.
         "denester": "A denester does not protect a sensor. The QUPAQ denesters are themselves marketed as IP67-rated and should be cleaned the way the vendor allows, not blasted.",
         "inspection": "Inspection can catch a broken fragment that falls into food, but it does not keep water out of a sensor.",
         "interlock": "Door switches in the washdown zone need a suitable rating too, but a guard door does not shield a sensor from jets.",
-        "ip69k": "Right. IP67 proves dust-tightness and 30 minutes under 1 m of water, not survival of an 80 bar, 80 C jet from 10 cm. That is the IP69K test, so the spec should list both, plus resistance to the cleaning chemicals.",
+        "ip69k": "IP67 proves dust-tightness and 30 minutes under 1 m of water, not survival of an 80 bar, 80 C jet from 10 cm. That is the IP69K test, so the spec should list both, plus resistance to the cleaning chemicals.",
         "second-robot": "Adding a robot does not change what the sensor's seals were tested against.",
         "faster-robot": "Speed has nothing to do with whether a sensor survives the jets."
       }
@@ -305,7 +305,7 @@ Each row is a real problem on this line. Pick the machine or idea that fixes it.
         "inspection": "Inspection sorts finished plates. It adds no picking capacity.",
         "interlock": "An interlock can only stop a robot. It never adds speed.",
         "ip69k": "A washdown rating does not make picks any faster.",
-        "second-robot": "Right. In the illustrative model, two robots placing two slices each move the bottleneck to cheese and lift the line from about 165 to about 267 plates an hour when apple picks are slow.",
+        "second-robot": "In the illustrative model, two robots placing two slices each move the bottleneck to cheese and lift the line from about 165 to about 267 plates an hour when apple picks are slow.",
         "faster-robot": "Tempting, but the delta moves for well under a second of each pick. Most of the pick is camera, tracking, vacuum, and gentle placing, so a faster arm saves little."
       }
     }

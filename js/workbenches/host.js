@@ -1,12 +1,15 @@
 // Workbench host: a large modal on desktop, full screen on phones. Shows the workbench text
 // from content and mounts js/workbenches/<id>.js (default export { id, mount(el, ctx) }).
-// A missing module shows "This workbench is being built" instead of failing.
+// A missing module shows "This workbench is being built" instead of failing. The mounted
+// instance is kept on the modal handle (m.wbInstance) so tests can reach instance.test.
 
 import { h, isMissingModule } from "../core/dom.js";
 import { openModal } from "../ui/modal.js";
 import { levelSwitch } from "../ui/panel.js";
 
-const KNOWN = new Set(["wb1-dof", "wb2-ik", "wb3-control", "wb4-calibration", "wb5-teleop", "wb6-line-balancing"]);
+// Modules are discovered by importing js/workbenches/<id>.js for any workbench in content (no
+// manifest). The id comes from the address bar, so only plain ids are turned into a path.
+const SAFE_ID = /^[a-z0-9][a-z0-9-]*$/;
 
 export function openWorkbench(app, id, onClose) {
 	const wb = app.workbench(id);
@@ -29,6 +32,7 @@ export function openWorkbench(app, id, onClose) {
 		},
 	});
 	m.el.dataset.workbench = id;
+	if (app.state.workbench(id)?.solved) m.el.dataset.solved = "true";
 	if (!wb) {
 		m.body.append(h("p", { class: "empty" }, "This workbench has not been written yet."));
 		return m;
@@ -70,7 +74,7 @@ export function openWorkbench(app, id, onClose) {
 	unsubMotion = app.bus.on("motion", (v) => ctx.onMotionChange?.(v));
 
 	const missing = () => mount.replaceChildren(h("div", { class: "wb-missing", "data-wb-missing": id }, "This workbench is being built."));
-	if (!KNOWN.has(id)) {
+	if (!SAFE_ID.test(id)) {
 		missing();
 		return m;
 	}
@@ -82,6 +86,8 @@ export function openWorkbench(app, id, onClose) {
 				if (!def?.mount) throw new Error(`workbench ${id} has no default export with mount()`);
 				mount.replaceChildren();
 				instance = def.mount(mount, ctx) ?? null;
+				// Test hook: window.__rt.wbTest() returns the top workbench's instance.test.
+				m.wbInstance = instance;
 				mount.dataset.loaded = "true";
 			} catch (e) {
 				// A bug in the module: log it and say so, rather than pretending the file is missing.

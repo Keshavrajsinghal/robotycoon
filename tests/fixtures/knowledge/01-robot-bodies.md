@@ -321,3 +321,57 @@ def gantry_step(state):
 ### Sources
 1. [Placeholder source one](https://example.com/placeholder-one) — placeholder publisher; supports nothing real
 2. [Placeholder source two](https://example.org/placeholder-two) — placeholder; fake citation for layout
+
+## PH Mobile robots
+id: mobile-robot
+requires: dof
+
+### Plain
+PLACEHOLDER: PH Mobile robots is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.
+### Where the analogy breaks
+PLACEHOLDER: where the errand analogy for PH Mobile robots stops working.
+### Precise
+PLACEHOLDER: PH Mobile robots defined precisely with a fake citation [1].
+### On the cheese plate line
+PLACEHOLDER: PH Mobile robots on the cheese plate line.
+### Elsewhere
+PLACEHOLDER: PH Mobile robots in a car factory.
+### Why it exists
+PLACEHOLDER: why PH Mobile robots exists.
+### Connects to
+- [[dof]] — PLACEHOLDER: a fake connection.
+### Real products and tools
+- **Placeholder Product** — PLACEHOLDER: not real.
+### Common misconception
+**Misconception:** PLACEHOLDER: a myth.
+
+**Reality:** PLACEHOLDER: the fake reality [1].
+### Sources
+1. [Placeholder source](https://example.com/ph-mobile-robot) — placeholder
+
+## PH Humanoid robots
+id: humanoid
+requires: dof
+
+### Plain
+PLACEHOLDER: PH Humanoid robots is like an everyday errand. This text is fake and only tests the layout. Real text will replace it.
+### Where the analogy breaks
+PLACEHOLDER: where the errand analogy for PH Humanoid robots stops working.
+### Precise
+PLACEHOLDER: PH Humanoid robots defined precisely with a fake citation [1].
+### On the cheese plate line
+PLACEHOLDER: PH Humanoid robots on the cheese plate line.
+### Elsewhere
+PLACEHOLDER: PH Humanoid robots in a car factory.
+### Why it exists
+PLACEHOLDER: why PH Humanoid robots exists.
+### Connects to
+- [[dof]] — PLACEHOLDER: a fake connection.
+### Real products and tools
+- **Placeholder Product** — PLACEHOLDER: not real.
+### Common misconception
+**Misconception:** PLACEHOLDER: a myth.
+
+**Reality:** PLACEHOLDER: the fake reality [1].
+### Sources
+1. [Placeholder source](https://example.com/ph-humanoid) — placeholder

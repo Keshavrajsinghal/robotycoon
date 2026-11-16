@@ -206,13 +206,13 @@ PLACEHOLDER: which statement about arm-motion is true?
 
 ## Stop: gripper
 title: PH Gripper
-cargo: PH Slice released
-concepts: vacuum-gripper
+cargo: PH Bunch released
+concepts: soft-gripper
 
 ### Plain
 PLACEHOLDER: at ph gripper, the cargo changes in a fake way. This is placeholder text for layout testing.
 ### Precise
-PLACEHOLDER: the precise version for gripper uses real terms (defined in plain words) and links [[vacuum-gripper]].
+PLACEHOLDER: the precise version for gripper uses real terms (defined in plain words) and links [[soft-gripper]].
 ### Question
 PLACEHOLDER: which statement about gripper is true?
 - [ ] PLACEHOLDER wrong option A for gripper :: PLACEHOLDER: why A is wrong.
@@ -239,7 +239,7 @@ PLACEHOLDER: match each signal step to the part that does it.
     },
     {
       "id": "cup",
-      "label": "PH Vacuum cup"
+      "label": "PH Soft fingers"
     }
   ],
   "rows": [
@@ -249,7 +249,7 @@ PLACEHOLDER: match each signal step to the part that does it.
       "why": {
         "camera": "PH: right, the camera does this.",
         "drive": "PH: wrong, the drive moves motors.",
-        "cup": "PH: wrong, the cup holds things."
+        "cup": "PH: wrong, the fingers hold things."
       }
     },
     {
@@ -258,16 +258,16 @@ PLACEHOLDER: match each signal step to the part that does it.
       "why": {
         "camera": "PH: wrong, cameras only see.",
         "drive": "PH: right, that is the drive.",
-        "cup": "PH: wrong, cups do not power motors."
+        "cup": "PH: wrong, fingers do not power motors."
       }
     },
     {
-      "item": "PH Holds the apple slice",
+      "item": "PH Holds the grape bunch",
       "answer": "cup",
       "why": {
         "camera": "PH: wrong, it cannot hold.",
         "drive": "PH: wrong, it stays in the cabinet.",
-        "cup": "PH: right, suction holds the slice."
+        "cup": "PH: right, the fingers hold the bunch."
       }
     }
   ]

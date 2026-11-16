@@ -95,16 +95,18 @@ function drawFingerGripper(r, x, y, z, grip, s, C, angle = 0) {
 }
 
 /**
- * Six-axis articulated arm at (bx, by) reaching a tool tip at target [x, y, z]. The tool
- * (vacuum cup by default) hangs straight down from the wrist.
+ * Six-axis articulated arm at (bx, by), standing at height opts.z (default 0), reaching a tool
+ * tip at target [x, y, z]. The tool hangs straight down from the wrist: a vacuum cup by default,
+ * opts.tool "fingers" for soft fingers (opts.grip 0 closed .. 1 open), or "none".
  */
 export function drawSixAxis(r, bx, by, target, opts = {}) {
 	const s = opts.scale ?? 1;
+	const bz = opts.z ?? 0;
 	const C = { ...ROBOT_COLORS, body: "#f2f2ee", accent: "#2a9d8f", ...opts.colors };
 	const L1 = 0.78 * s;
 	const L2 = 0.72 * s;
 	const toolLen = 0.26 * s;
-	const S = [bx, by, 0.72 * s];
+	const S = [bx, by, bz + 0.72 * s];
 	const W = [target[0], target[1], target[2] + toolLen];
 	const yaw = Math.atan2(W[1] - S[1], W[0] - S[0]);
 	const f = [Math.cos(yaw), Math.sin(yaw)];
@@ -112,9 +114,9 @@ export function drawSixAxis(r, bx, by, target, opts = {}) {
 	const k = ik2(L1, L2, Math.hypot(W[0] - S[0], W[1] - S[1]), W[2] - S[2], true);
 	const E = [S[0] + f[0] * k.elbow[0], S[1] + f[1] * k.elbow[0], S[2] + k.elbow[1]];
 	const Wp = [S[0] + f[0] * k.wrist[0], S[1] + f[1] * k.wrist[0], S[2] + k.wrist[1]];
-	r.cylinder(bx, by, 0, 0.36 * s, 0.14 * s, C.joint, 10);
-	r.cylinder(bx, by, 0.14 * s, 0.3 * s, 0.34 * s, C.body, 10);
-	r.orientedBox(bx, by, 0.46 * s, 0.5 * s, 0.42 * s, 0.4 * s, yaw, C.body);
+	r.cylinder(bx, by, bz, 0.36 * s, 0.14 * s, C.joint, 10);
+	r.cylinder(bx, by, bz + 0.14 * s, 0.3 * s, 0.34 * s, C.body, 10);
+	r.orientedBox(bx, by, bz + 0.46 * s, 0.5 * s, 0.42 * s, 0.4 * s, yaw, C.body);
 	const off = (p, d) => [p[0] + side[0] * d, p[1] + side[1] * d, p[2]];
 	r.tube(off(S, -0.25 * s), off(S, 0.25 * s), 0.17 * s, C.accent, 10);
 	r.beam(off(S, 0.06 * s), off(E, 0.06 * s), 0.24 * s, 0.28 * s, C.body);
@@ -123,11 +125,35 @@ export function drawSixAxis(r, bx, by, target, opts = {}) {
 	r.tube(off(Wp, -0.09 * s), off(Wp, 0.09 * s), 0.08 * s, C.joint, 8);
 	const T = [Wp[0], Wp[1], Wp[2] - toolLen * 0.75];
 	r.tube(Wp, T, 0.05 * s, C.metal, 6);
-	if (opts.tool !== "none") {
+	if (opts.tool === "fingers") {
+		r.cylinder(T[0], T[1], target[2] + 0.12 * s, 0.03 * s, T[2] - target[2] - 0.12 * s, C.joint, 6);
+		drawSoftFingers(r, target[0], target[1], target[2], opts.grip ?? 0.5, s, yaw);
+	} else if (opts.tool !== "none") {
 		r.cylinder(T[0], T[1], T[2] - toolLen * 0.25, 0.03 * s, toolLen * 0.25, C.joint, 6);
 		r.cylinder(target[0], target[1], target[2], 0.07 * s, 0.035 * s, C.rubber, 8);
 	}
 	return { shoulder: S, elbow: E, wrist: Wp, tool: target };
+}
+
+/**
+ * Soft finger gripper: a hub with three curved silicone fingers whose tips meet at (x, y, z).
+ * grip: 0 closed (tips together, holding a stem) .. 1 open. angle turns the finger set about z.
+ */
+export function drawSoftFingers(r, x, y, z, grip = 0.5, s = 1, angle = 0) {
+	const hubZ = z + 0.12 * s;
+	r.cylinder(x, y, hubZ, 0.075 * s, 0.05 * s, ROBOT_COLORS.joint, 10);
+	const fingers = [0, 1, 2].map((i) => {
+		const a = angle + Math.PI / 6 + (i / 3) * Math.PI * 2;
+		const d = [Math.cos(a), Math.sin(a)];
+		const at = (rad, zz) => [x + d[0] * rad * s, y + d[1] * rad * s, zz];
+		return { root: at(0.055, hubZ), mid: at(0.075 + grip * 0.05, z + 0.06 * s), tip: at(0.012 + grip * 0.06, z) };
+	});
+	// Far fingers first.
+	fingers.sort((a, b) => a.mid[0] + a.mid[1] - (b.mid[0] + b.mid[1]));
+	for (const f of fingers) {
+		r.tube(f.root, f.mid, 0.02 * s, ROBOT_COLORS.orange, 6);
+		r.tube(f.mid, f.tip, 0.017 * s, ROBOT_COLORS.orange, 6);
+	}
 }
 
 /**

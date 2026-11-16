@@ -128,7 +128,7 @@ Robot joints need precise, fast-changing torque in both directions, including ho
 ### Common misconception
 **Misconception:** A motor's peak torque is what it can deliver whenever it is needed.
 
-**Reality:** Peak torque is a short burst limited by heat; the motor can only sustain its standstill or rated torque, which on the industrial motors above is roughly a fifth to a quarter of peak [1][2]. A robot that asks for near-peak torque on every move, without enough low-torque time in between, will overheat and fault even though no single move exceeded the peak.
+**Reality:** Peak torque is a short burst limited by heat; the motor can only sustain its standstill or rated torque, which on the two industrial motors checked here is roughly a fifth to a quarter of peak [1][2]. A robot that asks for near-peak torque on every move, without enough low-torque time in between, will overheat and fault even though no single move exceeded the peak.
 
 ### Key numbers
 - Peak torque versus standstill torque: about 3.8-4.9 times on two 400 V industrial servomotors, depending on frame size [1][2]
@@ -380,7 +380,7 @@ Torque in a servo motor is set by current, and current through the windings has 
 
 ### Code sketch
 ```text
-// What the drive firmware does once per PWM period (every 50-62.5 us in the examples above).
+// What the drive firmware does once per PWM period (every 50-62.5 us in the drives checked here).
 // Field-oriented current control of one 3-phase permanent-magnet motor.
 // Inputs set by slower loops: iq_ref (torque request) and id_ref (usually 0).
 

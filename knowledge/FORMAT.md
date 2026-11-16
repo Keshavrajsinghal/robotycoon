@@ -206,7 +206,8 @@ Stop metadata:
 - `replaces` (ride 2 learned stops only): the classical stop ids this learned stop collapses.
 
 Every stop needs Plain, Precise, and Question. Questions have 3 or 4 options, exactly one
-`[x]`, and every option has a `::` explanation.
+`[x]`, and every option has a `::` explanation. Do not start an explanation (here or in a puzzle's
+`why`) with "Right." or "Wrong.": the site shows the verdict next to it.
 
 Puzzle types and their `### Data` JSON:
 
@@ -256,6 +257,7 @@ Workbench ids: `wb1-dof`, `wb2-ik`, `wb3-control`, `wb4-calibration`, `wb5-teleo
 title: Parts Quarter
 concept: component-makers
 tagline: One line
+supplies: robot-row, integrators
 
 ### Plain
 ### Sells
@@ -270,6 +272,9 @@ district: parts
 ### Job functions
 - **Role** — what they do
 ```
+
+`supplies:` (optional) lists the district ids this district sells to, matching its "Sells to"
+section. The town map draws one unlabeled flow (delivery trucks, data cables) per entry.
 
 ### Showroom file (`sim/showroom.md`)
 
@@ -289,7 +294,9 @@ height_mm: 600
 ```
 
 `payload_kg` and `reach_mm` are numeric ranges; `height_mm` is a typical body height used to
-draw every robot at the same scale.
+draw every robot at the same scale. `reach_mm` is measured from the base outward, like an arm's
+reach; when makers list a working diameter (a delta), store half of it and say so in
+`reach_text`.
 Optional `reach_text:` replaces the numeric reach in the caption when `reach_mm` is not a
 reach (for a mobile base, `reach_mm` is the footprint length used for drawing, and
 `reach_text` says that travel is limited only by the mapped area).

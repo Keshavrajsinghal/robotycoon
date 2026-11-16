@@ -416,6 +416,14 @@ export class Scene {
 		const cam = this.camera;
 		const c = this.cache;
 		if (!c.valid && !(this.gesture && c.zoom && c.zoom !== cam.zoom)) this.renderCache();
+		else if (c.zoom && c.zoom !== cam.zoom) {
+			// Mid zoom the cache is drawn stretched. Once it no longer covers the view (a camera
+			// flight to a far ride, a deep link, a pinch out) redraw it rather than show bare sea.
+			const s = cam.zoom / c.zoom;
+			const x = w / 2 + (c.cx - cam.x) * cam.zoom - (c.w / 2) * s;
+			const y = h / 2 + (c.cy - cam.y) * cam.zoom - (c.h / 2) * s;
+			if (x > 1 || y > 1 || x + c.w * s < w - 1 || y + c.h * s < h - 1) this.renderCache();
+		}
 		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 		ctx.fillStyle = this.background;
 		ctx.fillRect(0, 0, w, h);
@@ -469,7 +477,10 @@ export class Scene {
 			const off = sx < -150 || sy < -80 || sx > this.w + 150 || sy > this.h + 150;
 			if (l.anchor.hidden !== off) l.anchor.hidden = off;
 			if (!off) l.anchor.style.transform = `translate(${Math.round(sx)}px, ${Math.round(sy)}px)`;
+			l.sx = sx; // anchor point in overlay px, for afterLabels
+			l.sy = sy;
 		}
+		this.afterLabels?.();
 	}
 
 	// -------------------------------------------------------------------------
@@ -493,11 +504,15 @@ export class Scene {
 			const r = cv.getBoundingClientRect();
 			return [e.clientX - r.left, e.clientY - r.top];
 		};
-		cv.addEventListener("pointerdown", (e) => {
+		// A pan or pinch may also start on a label (a button in the overlay). That pointer is tracked
+		// like a canvas pointer; a plain tap still reaches the label's own click, and a drag swallows it.
+		let swallowUntil = 0;
+		const down = (e, label) => {
 			if (e.button !== undefined && e.button > 0) return;
-			cv.setPointerCapture?.(e.pointerId);
+			swallowUntil = 0; // a new press: any click owed by the last gesture has fired or never will
+			(label ?? cv).setPointerCapture?.(e.pointerId);
 			const [x, y] = pos(e);
-			this.pointers.set(e.pointerId, { x, y });
+			this.pointers.set(e.pointerId, { x, y, label });
 			if (this.pointers.size === 1) {
 				this.gesture = { type: "tap", x0: x, y0: y, t0: performance.now(), cam0: { ...this.camera } };
 			} else if (this.pointers.size === 2) {
@@ -513,14 +528,32 @@ export class Scene {
 				this.camAnim = null;
 			}
 			this.requestFrame();
+		};
+		cv.addEventListener("pointerdown", (e) => down(e, null));
+		this.overlay?.addEventListener("pointerdown", (e) => {
+			const label = e.target.closest?.("button.label");
+			if (label) down(e, label);
 		});
-		cv.addEventListener("pointermove", (e) => {
+		// Runs in the capture phase, before the label's own click handler.
+		this.overlay?.addEventListener(
+			"click",
+			(e) => {
+				if (performance.now() > swallowUntil) return;
+				swallowUntil = 0;
+				e.stopPropagation();
+				e.preventDefault();
+			},
+			true,
+		);
+		const move = (e) => {
 			const [x, y] = pos(e);
-			if (!this.pointers.has(e.pointerId)) {
-				if (e.pointerType === "mouse") cv.style.cursor = this.hitTest(x, y) ? "pointer" : "grab";
+			const p = this.pointers.get(e.pointerId);
+			if (!p) {
+				if (e.pointerType === "mouse" && e.currentTarget === cv) cv.style.cursor = this.hitTest(x, y) ? "pointer" : "grab";
 				return;
 			}
-			this.pointers.set(e.pointerId, { x, y });
+			p.x = x;
+			p.y = y;
 			const g = this.gesture;
 			if (!g) return;
 			if (g.type === "tap" && Math.hypot(x - g.x0, y - g.y0) > TAP_SLOP) {
@@ -545,20 +578,26 @@ export class Scene {
 				this.clampCamera();
 				this.requestFrame();
 			}
-		});
+		};
+		cv.addEventListener("pointermove", move);
+		this.overlay?.addEventListener("pointermove", move);
 		const end = (e) => {
-			if (!this.pointers.has(e.pointerId)) return;
+			const p = this.pointers.get(e.pointerId);
+			if (!p) return;
 			const [x, y] = pos(e);
 			const g = this.gesture;
 			this.pointers.delete(e.pointerId);
-			if (g?.type === "tap" && e.type === "pointerup" && performance.now() - g.t0 < 700) {
+			if (p.label) {
+				// A tap on a label is the label's click; after a pan or pinch, swallow that click.
+				if (g?.type !== "tap") swallowUntil = performance.now() + 500;
+			} else if (g?.type === "tap" && e.type === "pointerup" && performance.now() - g.t0 < 700) {
 				const hit = this.hitTest(x, y);
 				this.onTap?.(hit, x, y);
 				if (hit) hit.onActivate?.();
 			}
 			if (this.pointers.size === 1 && g?.type === "pinch") {
-				const [p] = [...this.pointers.values()];
-				this.gesture = { type: "pan", x0: p.x, y0: p.y, t0: performance.now(), cam0: { ...this.camera } };
+				const [rest] = [...this.pointers.values()];
+				this.gesture = { type: "pan", x0: rest.x, y0: rest.y, t0: performance.now(), cam0: { ...this.camera } };
 			} else if (this.pointers.size === 0) {
 				this.gesture = null;
 				if (g?.type === "pinch" || this.cache.zoom !== this.camera.zoom) this.invalidate();
@@ -566,8 +605,10 @@ export class Scene {
 			}
 			this.requestFrame();
 		};
-		cv.addEventListener("pointerup", end);
-		cv.addEventListener("pointercancel", end);
+		for (const el of [cv, this.overlay]) {
+			el?.addEventListener("pointerup", end);
+			el?.addEventListener("pointercancel", end);
+		}
 		const wheel = (e) => {
 			e.preventDefault();
 			const [x, y] = pos(e);

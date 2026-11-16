@@ -62,7 +62,8 @@ export function initHud(app) {
 		const item = (label, onClick, opts2 = {}) => {
 			const b = h("button", { class: "menu-item", type: "button", role: "menuitem", disabled: opts2.disabled, "aria-current": opts2.current ? "true" : "false", "data-ride": opts2.rideId ?? "" }, h("span", {}, label), opts2.soon ? h("span", { class: "soon" }, "Opening soon") : null);
 			b.addEventListener("click", () => {
-				closeMenus();
+				// Hiding the menu would drop keyboard focus to the page: return it to the menu button.
+				closeMenus(true);
 				onClick();
 			});
 			menu.append(b);
@@ -105,12 +106,14 @@ export function initHud(app) {
 		const next = !app.reducedMotion();
 		app.state.set("reduceMotion", next === systemReducedMotion() ? null : next);
 	});
+	// closeMenus(true): on narrow screens these sit in the folded "More" menu, which hides, so focus
+	// goes back to its button (and the glossary dialog returns focus there when it closes).
 	town.addEventListener("click", () => {
-		closeMenus();
+		closeMenus(true);
 		app.router.go({ name: "town" });
 	});
 	gloss.addEventListener("click", () => {
-		closeMenus();
+		closeMenus(true);
 		app.router.go({ name: "glossary" });
 	});
 	route.addEventListener("click", () => app.route.toggle());

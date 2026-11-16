@@ -68,6 +68,7 @@ export class RideRunner extends Emitter {
 	load(ride, module, mode, startStopId = null) {
 		this.ride = ride;
 		this.module = module;
+		this.modeReturn = null;
 		this.mode = rideHasModes(ride) ? (mode === "learned" ? "learned" : "classical") : "classical";
 		this.buildTrack();
 		this.playing = false;
@@ -119,7 +120,9 @@ export class RideRunner extends Emitter {
 			total: this.stops.length,
 			finished: this.finished,
 			playing: this.playing,
-			moving: !!this.move,
+			// A move paused partway (Pause while riding) is not "moving" but is still in progress.
+			moving: !!this.move && !this.move.held,
+			held: !!this.move?.held,
 			target: this.move?.target ?? null,
 			speed: this.speed,
 			s: this.s,
@@ -134,11 +137,14 @@ export class RideRunner extends Emitter {
 		if (!this.track) return;
 		if (this.finished) this.jumpTo(0);
 		this.playing = true;
-		if (!this.move) this.dwell = 0.35;
+		if (this.move) this.move.held = false;
+		else this.dwell = 0.35;
 		this.emit("state");
 	}
 
+	/** Pause. A cart riding between stops stops where it is; Play resumes that move. */
 	pause() {
+		if (this.playing && this.move) this.move.held = true;
 		this.playing = false;
 		this.emit("state");
 	}
@@ -220,16 +226,22 @@ export class RideRunner extends Emitter {
 		if (!this.ride || !rideHasModes(this.ride) || mode === this.mode) return;
 		const order = this.ride.stops.map((s) => s.id);
 		const cur = this.stop;
+		const back = this.modeReturn;
+		this.modeReturn = null;
+		const left = this.mode;
 		this.mode = mode;
 		this.buildTrack();
 		let idx = -1;
 		if (cur) {
-			if (cur.replaces?.length) idx = this.stops.findIndex((s) => cur.replaces.includes(s.id));
+			// Switching straight back returns to the stop the rider switched from (grasp, not detection).
+			if (back && back.at === cur.id && back.mode === mode) idx = this.stops.findIndex((s) => s.id === back.stop);
+			if (idx < 0 && cur.replaces?.length) idx = this.stops.findIndex((s) => cur.replaces.includes(s.id));
 			if (idx < 0) idx = this.stops.findIndex((s) => s.id === cur.id);
 			if (idx < 0) idx = this.stops.findIndex((s) => s.replaces?.includes(cur.id));
 			if (idx < 0) idx = this.stops.findIndex((s) => order.indexOf(s.id) >= order.indexOf(cur.id));
 		}
 		if (idx < 0) idx = 0;
+		if (cur && this.stops[idx]) this.modeReturn = { at: this.stops[idx].id, mode: left, stop: cur.id };
 		this.playing = false;
 		this.emit("mode", mode);
 		this.jumpTo(idx);
@@ -282,6 +294,7 @@ export class RideRunner extends Emitter {
 		const k = dt * this.speed;
 		if (this.move) {
 			const m = this.move;
+			if (m.held) return false;
 			m.t += k;
 			if (m.t >= m.dur) this.finishMove();
 			else this.s = m.from + Math.sign(m.to - m.from) * travelled(m, m.t);

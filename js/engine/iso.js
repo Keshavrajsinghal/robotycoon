@@ -98,6 +98,30 @@ export function circlePoints(cx, cy, r, seg, phase = 0) {
 	return out;
 }
 
+// A sphere of radius r projects to an axis-aligned ellipse sqrt(2)*X*r px wide (each side) at zoom 1.
+const SPHERE_RX = Math.SQRT2 * ISO.X;
+// Spheres smaller than this on screen (CSS px, half-width) are drawn as a shaded disc.
+const SMALL_SPHERE_PX = 3.5;
+const unitSpheres = new Map();
+/** Unit-sphere vertex grid, rows 0..lat (pole to pole) by columns 0..lon (the last repeats the first). */
+function unitSphere(lat, lon, jitter) {
+	const key = `${lat}|${lon}|${jitter}`;
+	let grid = unitSpheres.get(key);
+	if (grid) return grid;
+	grid = [];
+	for (let i = 0; i <= lat; i++) {
+		const th = (i / lat) * Math.PI;
+		const row = [];
+		for (let j = 0; j <= lon; j++) {
+			const ph = (j / lon) * Math.PI * 2 + (i % 2 ? Math.PI / lon : 0) * jitter;
+			row.push([Math.sin(th) * Math.cos(ph), Math.sin(th) * Math.sin(ph), Math.cos(th)]);
+		}
+		grid.push(row);
+	}
+	unitSpheres.set(key, grid);
+	return grid;
+}
+
 function prismFaces(pts, z, h) {
 	const faces = [];
 	const n = pts.length;
@@ -317,29 +341,54 @@ export class IsoRenderer {
 		this.mesh(faces, color, { ...opts, center: [cx, cy, z + h / 3] });
 	}
 
-	/** Rough low-poly sphere (or ellipsoid with opts.sz vertical scale). */
+	/**
+	 * Rough low-poly sphere (or ellipsoid with opts.sz vertical scale). Below SMALL_SPHERE_PX on
+	 * screen (grapes and lamps at park zoom) the facets are too small to see, so it is drawn as a
+	 * two-tone disc: a few hundred of these per frame would otherwise cost thousands of faces.
+	 */
 	sphere(cx, cy, cz, r, color, detail = 1, opts = {}) {
 		const lat = 3 + detail * 2;
 		const lon = 6 + detail * 2;
 		const sz = opts.sz ?? 1;
-		const pt = (i, j) => {
-			const th = (i / lat) * Math.PI;
-			const ph = (j / lon) * Math.PI * 2 + (i % 2 ? Math.PI / lon : 0) * (opts.jitter ?? 0);
-			return [cx + Math.sin(th) * Math.cos(ph) * r, cy + Math.sin(th) * Math.sin(ph) * r, cz + Math.cos(th) * r * sz];
-		};
+		const rx = r * SPHERE_RX * this.zoom;
+		if (rx < SMALL_SPHERE_PX && !opts.edge && !opts.colors) {
+			this._disc(cx, cy, cz, rx, r * Math.sqrt(2 * ISO.Y * ISO.Y + ISO.Z * ISO.Z * sz * sz) * this.zoom, color, opts);
+			return;
+		}
+		const U = unitSphere(lat, lon, opts.jitter ?? 0);
+		const V = U.map((row) => row.map((u) => [cx + u[0] * r, cy + u[1] * r, cz + u[2] * r * sz]));
 		const faces = [];
 		for (let i = 0; i < lat; i++) {
 			for (let j = 0; j < lon; j++) {
-				const a = pt(i, j);
-				const b = pt(i, j + 1);
-				const c2 = pt(i + 1, j + 1);
-				const d = pt(i + 1, j);
+				const a = V[i][j];
+				const b = V[i][j + 1];
+				const c2 = V[i + 1][j + 1];
+				const d = V[i + 1][j];
 				if (i === 0) faces.push([a, d, c2]);
 				else if (i === lat - 1) faces.push([a, d, b]);
 				else faces.push([a, d, c2, b]);
 			}
 		}
 		this.mesh(faces, color, { ...opts, center: [cx, cy, cz] });
+	}
+
+	/** A small sphere's outline (an ellipse rx by ry in CSS px), shaded side color plus a lit cap. */
+	_disc(cx, cy, cz, rx, ry, color, opts) {
+		const c = this.ctx;
+		const [sx, sy] = this.toScreen(cx, cy, cz);
+		const prevAlpha = c.globalAlpha;
+		if (opts.alpha !== undefined) c.globalAlpha = prevAlpha * opts.alpha;
+		c.beginPath();
+		c.ellipse(sx, sy, rx, ry, 0, 0, Math.PI * 2);
+		this._fill(opts.flat ? color : shade(color, 0.8), opts.alpha === undefined || opts.alpha > 0.95);
+		if (!opts.flat) {
+			// The lit cap sits toward the sun, which projects up and to the left on screen.
+			c.beginPath();
+			c.ellipse(sx - 0.15 * rx, sy - 0.26 * ry, 0.62 * rx, 0.62 * ry, 0, 0, Math.PI * 2);
+			c.fillStyle = shade(color, 1);
+			c.fill();
+		}
+		c.globalAlpha = prevAlpha;
 	}
 
 	/** Oriented box whose long axis runs from p1 to p2 (arm links, beams). w is width, h height. */

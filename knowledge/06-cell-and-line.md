@@ -1041,7 +1041,8 @@ Belts and plastic parts can be made metal- or X-ray-detectable so a broken fragm
 inspection [5].
 
 ### On the cheese plate line
-Under the EN 1672-2 definitions above, every surface over the open trays counts as food area, because
+Under EN 1672-2, which defines the food area as surfaces exposed to food or from which anything can
+drain, drip, or be drawn back into it, every surface over the open trays counts as food area, because
 anything on it can drip into the food: the delta robots' arms and the grippers touching apple slices and
 cheese wedges, along with the ingredient belts that carry food directly [6]. The room runs at 2-4 C, which slows Listeria but
 does not stop it [3], so the daily washdown matters more than the temperature. Practical choices:
@@ -1077,7 +1078,7 @@ cannot fix a design that hides dirt, so hygiene has to be built in.
 **Misconception:** A stainless steel machine is automatically hygienic.
 
 **Reality:** Shape matters as much as material. A stainless frame of open-ended square tubes, bolted
-metal-to-metal joints, and flat ledges traps water and food soil, while the principles above (no
+metal-to-metal joints, and flat ledges traps water and food soil, while hygienic design principles (no
 crevices, no dead areas, drainable surfaces) decide whether it can be cleaned [2].
 
 ### Key numbers
@@ -1186,7 +1187,7 @@ compliance [14].
 - **SISTEMA** — free software from the German IFA for calculating ISO 13849-1 performance levels
 - **Pilz PNOZmulti and Siemens SIMATIC S7-1500F** — safety controllers that implement rated safety functions [17][18]
 - **A3 Standards Store** — sells ANSI/A3 R15.06-2025 in the US [4]
-- **ISO and IEC webstores** — publish the standards listed above [1][11]
+- **ISO and IEC webstores** — publish the ISO and IEC standards named in this concept [1][11]
 
 ### Common misconception
 **Misconception:** If the robot complies with ISO 10218, the robot cell is safe and legal.

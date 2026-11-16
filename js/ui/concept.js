@@ -52,9 +52,15 @@ export function deepSections(app, c) {
 	].filter(Boolean);
 }
 
+/** "N claims in this concept could not be confirmed", or null. Flags inside the text show inline too. */
+function unverifiedNote(c) {
+	if (!c.unverified) return null;
+	return h("p", { class: "meta-line", "data-unverified": String(c.unverified) }, h("span", { class: "flag-unverified" }, "unverified"), ` ${c.unverified} claim${c.unverified === 1 ? "" : "s"} in this concept could not be confirmed.`);
+}
+
 /** One linked concept inside the stop panel's "Read more". */
 export function readMoreConcept(app, c) {
-	return h("article", { class: "concept-detail", "data-concept-detail": c.id }, h("h3", {}, conceptLink(app, c.id, c.title)), ...deepSections(app, c));
+	return h("article", { class: "concept-detail", "data-concept-detail": c.id }, h("h3", {}, conceptLink(app, c.id, c.title)), unverifiedNote(c), ...deepSections(app, c));
 }
 
 function industrySections(app, c) {
@@ -91,7 +97,8 @@ export function openConcept(app, id, onClose) {
 				...c.requires.flatMap((r, i) => [i ? ", " : "", conceptLink(app, r)]),
 			),
 		);
-	if (c.unverified) m.body.append(h("p", { class: "meta-line" }, h("span", { class: "flag-unverified" }, "unverified"), ` ${c.unverified} claim${c.unverified === 1 ? "" : "s"} in this concept could not be confirmed.`));
+	const note = unverifiedNote(c);
+	if (note) m.body.append(note);
 	m.body.append(
 		h("div", { class: "card" }, h("div", { class: "card-kicker" }, "Plain"), prose(c.plain), c.analogyLimit ? h("div", { class: "analogy-limit prose" }, h("strong", {}, "Where the analogy breaks"), h("div", { html: c.analogyLimit })) : null),
 		h("div", { class: "card" }, h("div", { class: "card-kicker" }, "Precise"), prose(c.precise)),

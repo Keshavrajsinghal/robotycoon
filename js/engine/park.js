@@ -209,6 +209,9 @@ function buildTerrain(scene) {
 		}
 }
 
+/** Sand paths from each gate into its zone, [x0, y0, x1, y1]. Hedges leave a gap where these cross. */
+const PATH_RECTS = { factory: [35, 48.4, 40, 51.6], signal: [48.4, 32, 51.6, 40], rescue: [60, 45.4, 67, 48.6], lesson: [46.4, 60, 49.6, 78] };
+
 function buildPaths(scene) {
 	const z = ZONES;
 	// Plaza paving.
@@ -225,13 +228,7 @@ function buildPaths(scene) {
 		},
 	});
 	// Short paths from each gate into its zone.
-	const pathRects = [
-		[35, 48.4, 40, 51.6],
-		[48.4, 32, 51.6, 40],
-		[60, 45.4, 67, 48.6],
-		[46.4, 60, 49.6, 78],
-	];
-	for (const [x0, y0, x1, y1] of pathRects) {
+	for (const [x0, y0, x1, y1] of Object.values(PATH_RECTS)) {
 		groundRect(scene, x0 - 0.2, y0 - 0.2, x1 + 0.2, y1 + 0.2, PAL.pathEdge, { depth: -98 });
 		groundRect(scene, x0, y0, x1, y1, PAL.path, { depth: -97, z: 0.014 });
 	}
@@ -288,7 +285,9 @@ function buildHedges(scene, id) {
 	for (const [x, y, w, d] of segs) {
 		const cx = x + w / 2;
 		const cy = y + d / 2;
+		const pr = PATH_RECTS[id];
 		if (Math.hypot(cx - gate[0], cy - gate[1]) < 4.2) continue;
+		if (pr && x < pr[2] + 0.3 && x + w > pr[0] - 0.3 && y < pr[3] && y + d > pr[1]) continue;
 		object(scene, x, y, x + w, y + d, 0.55, (r) => r.box(x, y, 0, w, d, 0.55, PAL.hedge, { top: shade(PAL.hedge, 1.12) }));
 	}
 }

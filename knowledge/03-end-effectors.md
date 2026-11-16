@@ -310,7 +310,7 @@ on its guides and jaws [2], and the PGN-plus-P is IP40 [1]. A food line needs a 
 for washdown, or a sealed cover, instead.
 
 ### On the cheese plate line
-An alternative for the cheese station (this guide's main design is a delta with a suction cup on the wedge's flat top face; see [[vacuum-gripper|vacuum gripper]]) is to pick unwrapped wedges with an electric parallel gripper and food-grade plastic fingers cut with a V-notch matching the wedge angle, so the grip is mostly form-fit and the squeeze stays low. A pneumatic gripper at 350 N [1] would crush a wedge, and even the EGK 25's 20 N minimum [2] may dent a soft cheese, so a gripper whose force goes down to about 3 N, like the RG2 [3], fits better (the real limit needs a test on the actual cheese). The RG2's product page makes no food-contact or washdown claim [3], though, so this option would need a washdown-built gripper with similarly low force. The finger plastic must be approved for fatty-food contact, and washdown also rules out the IP20 and IP40 catalog parts above [1][2].
+An alternative for the cheese station (this guide's main design is a delta with a suction cup on the wedge's flat top face; see [[vacuum-gripper|vacuum gripper]]) is to pick unwrapped wedges with an electric parallel gripper and food-grade plastic fingers cut with a V-notch matching the wedge angle, so the grip is mostly form-fit and the squeeze stays low. A pneumatic gripper at 350 N [1] would crush a wedge, and even the EGK 25's 20 N minimum [2] may dent a soft cheese, so a gripper whose force goes down to about 3 N, like the RG2 [3], fits better (the real limit needs a test on the actual cheese). The RG2's product page makes no food-contact or washdown claim [3], though, so this option would need a washdown-built gripper with similarly low force. The finger plastic must be approved for fatty-food contact, and washdown also rules out catalog parts like the PGN-plus-P (IP40) and the EGK 25, whose guides and jaws are IP20 [1][2].
 
 ### Elsewhere
 In machine tending (a robot loading raw parts into a machine tool and unloading finished ones), a pneumatic parallel gripper with hardened steel fingers grabs machined shafts. There 350 N of grip and 0.01 mm repeatability [1] are exactly the point, and nothing is fragile.
@@ -340,7 +340,7 @@ Squeezing between hard jaws is the most direct way to hold a part firmly and kno
 - Stroke: 6 mm per jaw (compact pneumatic) to 26.5 mm per jaw (small electric); 110 mm total for a wide-opening cobot gripper [1][2][3]
 - Grip force: 3-50 N for small electric grippers, about 350 N for a 64-size pneumatic one, depending on size and drive [1][2][3]
 - Repeatability: 0.01-0.03 mm [1][2]
-- Closing time: 0.02 s pneumatic versus 0.37 s electric for the models above [1][2]
+- Closing time: 0.02 s pneumatic (Schunk PGN-plus-P 64-1) versus 0.37 s electric (Schunk EGK 25) [1][2]
 
 ### Sources
 1. [PGN-plus-P 64-1](https://schunk.com/be/fr/uchopovaci-systemy/paralelni-chapadlo/pgn-plus-p/pgn-plus-p-64-1/p/000000000000318496) — Schunk product page; stroke, force, repeatability, timing, pressure range, IP40, finger length
@@ -501,7 +501,7 @@ Position control alone fails whenever the world is not exactly where the robot t
 
 ### Key numbers
 - Axes: 6 (Fx, Fy, Fz, Tx, Ty, Tz) [1]
-- X/Y force range: 165-2800 N across the calibrations above, by model and calibration [1][2]
+- X/Y force range: 165-2800 N across the ATI Mini58 and Delta calibrations, by model and calibration [1][2]
 - X/Y force resolution: about 1/32-3/4 N, coarser as range grows [1][2]
 - Overload: 4.1-21 times rated capacity, by model and axis [1][2]
 

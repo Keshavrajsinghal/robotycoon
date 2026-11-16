@@ -9,8 +9,13 @@
 // the route list, answers every question (one wrong, then the right one), solves every puzzle
 // (one wrong attempt first), opens workbenches, the town map, a district, a building, the
 // showroom, the glossary, and a concept view, checks Plain/Precise persistence across a
-// reload, and checks that reduced motion makes the cart jump. Then a 360 px no-overflow check and
-// regression checks (top bar at 768 px, deep-link seen count, wheel-zoom cache). Screenshots go
+// reload, and checks that reduced motion makes the cart jump. Rides 2-4 must render a close-up
+// at every stop; ride 2's learned mode must swap the five classical stops for the policy stop
+// and its joint close-up must link to concepts; ride delay totals must grow along the ride;
+// every built workbench must solve through its test hook (window.__rt.wbTest().solve()); the
+// town's deployment trail must list every area 11 step. Then a 360 px no-overflow check and
+// regression checks (top bar at 768 px, deep-link seen count, wheel-zoom cache, pause holding the
+// cart mid-move, a deep link into one approach and the map during that flight, a bad save). Screenshots go
 // to tests/artifacts/. Exits non-zero with a list of problems.
 
 import { spawn } from "node:child_process";
@@ -217,8 +222,32 @@ async function run(browser, base, vp) {
 		expect(rec && (prior ? rec.choice === prior.choice : rec.correct === false), `question ${stopId}: first answer not recorded`);
 	};
 
+	// Rides 2-4 draw a close-up at the top of the stop panel for every stop.
+	const CLOSEUP_RIDES = new Set(["ride2", "ride3", "ride4"]);
+	const checkCloseup = async (stopId) => {
+		const ok = await page
+			.waitForFunction(
+				(id) => {
+					const body = document.getElementById("panel-body");
+					if (body?.dataset.stop !== id) return false;
+					const el = body.querySelector(".closeup canvas, .closeup svg");
+					if (!el) return false;
+					// The phone sheet may be collapsed: then only require that something was drawn into the box.
+					return body.offsetHeight === 0 || el.getBoundingClientRect().width > 40;
+				},
+				stopId,
+				{ timeout: 4000 },
+			)
+			.then(
+				() => true,
+				() => false,
+			);
+		expect(ok, `stop ${stopId}: no close-up drawing in the panel`);
+	};
+
 	for (const ride of rides.filter((r) => r.available && (!ONLY || r.id === ONLY))) {
 		const rc = content.rides.find((r) => r.id === ride.id);
+		const wantCloseup = CLOSEUP_RIDES.has(ride.id);
 		await step(`${ride.id} start from menu`, async () => {
 			await page.click("#ride-menu-btn");
 			await page.click(`.menu-item[data-ride="${ride.id}"]`);
@@ -226,6 +255,7 @@ async function run(browser, base, vp) {
 			await waitIdle();
 			const title = await page.locator("#panel-title").textContent();
 			expect(title === rc.stops[0].title, `panel shows "${title}", expected "${rc.stops[0].title}"`);
+			if (wantCloseup) await checkCloseup(rc.stops[0].id);
 			await screenshot(`${ride.id}-start`);
 		});
 		await step(`${ride.id} panel leaves the controls uncovered`, async () => {
@@ -249,6 +279,8 @@ async function run(browser, base, vp) {
 		await step(`${ride.id} ride start to finish`, async () => {
 			while ((await page.locator("#controls .speed").textContent()) !== "4x") await page.click("#controls .speed");
 			const stops = await rt(() => window.__rt.app.runner.stops.map((s) => s.id));
+			let prevTotal = null;
+			let firstTotal = null;
 			for (let i = 1; i <= stops.length; i++) {
 				await page.click('#controls [data-act="forward"]');
 				await waitIdle();
@@ -261,16 +293,25 @@ async function run(browser, base, vp) {
 					const tag = await page.locator(".label-cart .cargo").textContent();
 					expect(tag === stop.cargo, `stop ${stop.id}: cart tag "${tag}", expected "${stop.cargo}"`);
 					await answer(ride.id, stops[i - 1]);
+					if (wantCloseup) await checkCloseup(stop.id);
 					if (i === Math.floor(stops.length / 2)) await screenshot(`${ride.id}-mid`);
 					if (stop.delay) {
 						const total = Number(await page.locator(".delay-box").getAttribute("data-delay-total"));
 						const want = rc.stops.filter((x) => stops.indexOf(x.id) >= 0 && stops.indexOf(x.id) <= i).reduce((a, x) => a + (x.delay?.mid ?? 0), 0);
 						expect(Math.abs(total - want) < 0.01, `delay total ${total}, expected ${want}`);
+						// The running total never shrinks, and grows at every stop that adds delay.
+						if (prevTotal !== null) {
+							expect(total >= prevTotal, `delay total fell from ${prevTotal} to ${total} at ${stop.id}`);
+							if (stop.delay.mid > 0) expect(total > prevTotal, `delay total did not grow at ${stop.id} (${total})`);
+						}
+						if (firstTotal === null) firstTotal = total;
+						prevTotal = total;
 					}
 				} else {
 					expect(s.finished, "ride did not finish after the last stop");
 				}
 			}
+			if (firstTotal !== null) expect(prevTotal > firstTotal, `delay total did not increase along the ride (${firstTotal} to ${prevTotal})`);
 			await answer(ride.id, stops[stops.length - 1]);
 			await page.locator(`[data-ride-complete="${ride.id}"]`).waitFor();
 			await screenshot(`${ride.id}-complete`);
@@ -310,6 +351,10 @@ async function run(browser, base, vp) {
 				await page.click("#route-btn");
 				const greyed = await page.locator("#route-drawer .route-item:disabled").count();
 				expect(greyed === rc.stops.filter((s) => s.mode === "classical").length, `learned mode greys out ${greyed} stops`);
+				for (const ls of rc.stops.filter((s) => s.mode === "learned")) {
+					expect(await page.locator(`#route-drawer [data-stop="${ls.id}"]`).isEnabled(), `learned stop ${ls.id} is not on the learned route`);
+					for (const id of ls.replaces ?? []) expect(await page.locator(`#route-drawer [data-stop="${id}"]`).isDisabled(), `classical stop ${id} is still on the learned route`);
+				}
 				await screenshot(`${ride.id}-learned`);
 				await page.click('#route-drawer [aria-label="Close route list"]');
 				await page.click('.panel-body .mode-switch [data-mode="classical"]');
@@ -331,6 +376,26 @@ async function run(browser, base, vp) {
 			expect((await rt(() => window.__rt.state().playing)) === false, "Space did not pause");
 			await waitIdle();
 		});
+		if (rc.stops.some((s) => s.id === "joint") && wantCloseup)
+			await step(`${ride.id} joint close-up links`, async () => {
+				const ok = await rt(() => window.__rt.app.runner.goToStopId("joint", { jump: true }));
+				expect(ok, "could not ride to the joint stop");
+				await waitIdle();
+				await checkCloseup("joint");
+				const labels = page.locator(".panel-body .closeup [data-concept-label]");
+				await labels.first().waitFor({ state: "attached", timeout: 4000 });
+				const ids = await labels.evaluateAll((els) => els.map((e) => e.dataset.conceptLabel));
+				expect(ids.length > 0 && ids.every((id) => content.concepts[id]), `joint close-up links ${JSON.stringify(ids)}`);
+				const sheet = page.locator("#panel .sheet-toggle");
+				if (await sheet.isVisible()) await sheet.click();
+				await labels.first().click();
+				const modal = page.locator(".concept-modal");
+				await modal.waitFor();
+				const t = await modal.locator("h2").textContent();
+				expect(t === content.concepts[ids[0]].title, `joint close-up link opened "${t}"`);
+				await closeModal();
+				if (await sheet.isVisible()) await sheet.click();
+			});
 		await step(`${ride.id} workbench booths`, async () => {
 			for (const stop of rc.stops.filter((s) => s.workbench)) {
 				const ok = await rt((id) => window.__rt.app.runner.goToStopId(id, { jump: true }), stop.id);
@@ -369,7 +434,14 @@ async function run(browser, base, vp) {
 			const stopId = await rt(() => window.__rt.state().stopId);
 			const stop = rc.stops.find((s) => s.id === stopId);
 			const html = await page.locator(".panel-body .stop-text").innerHTML();
-			expect(html === stop.precise, "Precise did not switch the stop text");
+			// Compare against the browser's own serialization of the content HTML (the generator
+			// writes &quot; in text, which innerHTML reads back as a plain quote).
+			const want = await rt((h) => {
+				const t = document.createElement("template");
+				t.innerHTML = h;
+				return t.innerHTML;
+			}, stop.precise);
+			expect(html === want, "Precise did not switch the stop text");
 			await screenshot("precise");
 			await page.reload();
 			await page.waitForFunction(() => window.__rt?.ready);
@@ -419,6 +491,23 @@ async function run(browser, base, vp) {
 			if (exists) {
 				await modal.locator('[data-loaded="true"]').waitFor();
 				await screenshot(`workbench-${wb.id}`);
+				const hooks = await rt(() => {
+					const t = window.__rt.wbTest();
+					return t ? Object.keys(t) : null;
+				});
+				if (!hooks) P(`workbench ${wb.id}: no test hook (instance.test)`);
+				else {
+					const ok = await rt(() => window.__rt.wbTest().solve());
+					if (ok !== true) P(`workbench ${wb.id}: test.solve() returned ${JSON.stringify(ok)}`);
+					else {
+						const marked = await modal.getAttribute("data-solved");
+						if (marked !== "true") P(`workbench ${wb.id}: solved but the modal is not marked solved`);
+						const st = await rt((id) => window.__rt.app.state.workbench(id), wb.id);
+						if (!st?.solved) P(`workbench ${wb.id}: solved but not recorded in state`);
+					}
+					await noOverflow(`workbench ${wb.id} solved`);
+					await screenshot(`workbench-${wb.id}-solved`);
+				}
 			} else {
 				await modal.locator("[data-wb-missing]").waitFor();
 				missingShown = true;
@@ -464,6 +553,27 @@ async function run(browser, base, vp) {
 			await page.locator(`.town-panel [data-roles="${b.id}"]`).waitFor();
 			await screenshot("building");
 		}
+	});
+
+	await step("town deployment trail", async () => {
+		const steps = (content.areas?.find((a) => a.area === 11)?.concepts ?? []).filter((id) => content.concepts[id]);
+		if (!steps.length) return;
+		await page.evaluate(() => {
+			location.hash = "#/town";
+		});
+		await page.locator(".town-panel [data-step]").first().waitFor();
+		const listed = await page.locator(".town-panel [data-step]").count();
+		expect(listed === steps.length, `town panel lists ${listed} of ${steps.length} trail steps`);
+		const flags = await page.locator(".town-overlay .label-step").count();
+		expect(flags === steps.length, `town map draws ${flags} of ${steps.length} trail flags`);
+		await page.click(`.town-panel [data-step="${steps[0]}"]`);
+		await page.waitForFunction((t) => document.querySelector("#town-panel-title")?.textContent === t, content.concepts[steps[0]].title);
+		if (steps.length > 1) {
+			await page.click('.town-panel [data-step-nav="next"]');
+			await page.waitForFunction((t) => document.querySelector("#town-panel-title")?.textContent === t, content.concepts[steps[1]].title);
+		}
+		await noOverflow("town step");
+		await screenshot("town-step");
 	});
 
 	await step("showroom", async () => {
@@ -550,8 +660,90 @@ async function regressionChecks(browser, base) {
 	await page.waitForTimeout(700);
 	const z = await page.evaluate(() => ({ cache: window.__rt.app.scene.cache.zoom, cam: window.__rt.camera().zoom }));
 	if (z.cache !== z.cam) P(`after a wheel zoom the map cache is at zoom ${z.cache}, camera at ${z.cam}`);
+	// 4. Pause while riding holds the cart where it is (it once rode on to the next stop).
+	await rtCall(page, (id) => window.__rt.select(id), first.id);
+	await page.waitForFunction((id) => window.__rt.state().rideId === id, first.id);
+	await rtCall(page, () => window.__rt.play());
+	const rolling = await page.waitForFunction(() => window.__rt.state().moving, null, { timeout: 8000 }).then(
+		() => true,
+		() => false,
+	);
+	if (rolling) {
+		await page.waitForTimeout(200);
+		await rtCall(page, () => window.__rt.pause());
+		const a = await rtCall(page, () => window.__rt.state());
+		await page.waitForTimeout(600);
+		const b = await rtCall(page, () => window.__rt.state());
+		if (!b.held || b.moving || b.s !== a.s) P(`pause mid-move did not hold the cart (s ${a.s} -> ${b.s}, held=${b.held})`);
+		await rtCall(page, () => window.__rt.play());
+		await page.waitForTimeout(200);
+		if ((await rtCall(page, () => window.__rt.state())).s <= b.s) P("play after a held pause did not resume the move");
+		await rtCall(page, () => window.__rt.pause());
+	} else P("play did not start the cart moving");
+	await context.close();
+	// 5. A deep link to a stop that only one approach shows opens that approach (it once boarded
+	// at stop 1 of the other), asks no quick check about the never-visited stop before it, and the
+	// map is drawn during the camera flight there (the stretched cache once left bare sea).
+	const content = await (async () => {
+		context = await browser.newContext({ viewport: { width: 1100, height: 800 } });
+		page = await context.newPage();
+		page.on("pageerror", (e) => P(`page error: ${e.message}`));
+		await page.goto(`${base}/${q}`);
+		await page.waitForFunction(() => window.__rt?.ready);
+		const c = await rtCall(page, () => window.__rt.content);
+		await context.close();
+		return c;
+	})();
+	const moded = content.rides?.find((r) => r.stops.some((s) => s.mode === "learned") && r.stops.some((s) => s.mode === "classical"));
+	const only = moded?.stops.find((s) => s.mode === "learned");
+	if (only) {
+		context = await browser.newContext({ viewport: { width: 1100, height: 800 } });
+		page = await context.newPage();
+		page.on("pageerror", (e) => P(`page error: ${e.message}`));
+		await page.goto(`${base}/${q}#/ride/${moded.id}/${only.id}`);
+		await page.waitForFunction(() => window.__rt?.ready);
+		await page.waitForTimeout(250);
+		const sea = await page.evaluate(() => {
+			const cv = document.getElementById("park-canvas");
+			const bg = window.__rt.app.scene.background;
+			const want = [1, 3, 5].map((i) => Number.parseInt(bg.slice(i, i + 2), 16));
+			const d = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height).data;
+			let n = 0;
+			let hits = 0;
+			for (let y = 0; y < cv.height; y += 17)
+				for (let x = 0; x < cv.width; x += 17) {
+					const i = (y * cv.width + x) * 4;
+					n++;
+					if (Math.abs(d[i] - want[0]) < 6 && Math.abs(d[i + 1] - want[1]) < 6 && Math.abs(d[i + 2] - want[2]) < 6) hits++;
+				}
+			return hits / n;
+		});
+		if (sea > 0.5) P(`during the flight to a deep-linked stop ${Math.round(sea * 100)}% of the map is bare background`);
+		await page.waitForTimeout(900);
+		const s = await rtCall(page, () => window.__rt.state());
+		if (s.mode !== "learned" || s.stopId !== only.id) P(`deep link to ${moded.id}/${only.id} opened ${s.mode}/${s.stopId}`);
+		if (await page.locator("#panel-body [data-question]").count()) P(`deep link to ${only.id} shows a quick check about a stop never visited`);
+		await context.close();
+	}
+	// 6. A save with wrong types (an old or hand-edited one) must not stop the site from starting.
+	context = await browser.newContext({ viewport: { width: 1100, height: 800 } });
+	await context.addInitScript(() => {
+		if (sessionStorage.getItem("seeded")) return;
+		sessionStorage.setItem("seeded", "1");
+		localStorage.setItem("robotycoon.v1", JSON.stringify({ seen: null, answers: 5, puzzles: "x", modes: null, level: 7 }));
+	});
+	page = await context.newPage();
+	page.on("pageerror", (e) => P(`bad save: page error: ${e.message}`));
+	await page.goto(`${base}/${q}#/ride/${first.id}/${first.stops[1] ?? first.stops[0]}`);
+	const started = await page.waitForFunction(() => window.__rt?.ready, null, { timeout: 8000 }).then(
+		() => true,
+		() => false,
+	);
+	if (!started) P("a save with wrong types stopped the site from starting");
 	await context.close();
 }
+
+const rtCall = (page, fn, arg) => page.evaluate(fn, arg);
 
 async function main() {
 	if (!FIXTURE && !existsSync(join(ROOT, "js", "content.js"))) {

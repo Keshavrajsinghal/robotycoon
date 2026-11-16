@@ -630,7 +630,7 @@ Buses that bunch up still deliver everyone, but on a network, sending more than 
 The grape station's uplink shares the plant network with bulk uploads of inspection images. At shift change, the uploads saturate the link, router queues grow, and the teleop stream's jitter climbs from a few ms to tens of ms; the jitter buffer grows to cover it, so the operator's view lags by an extra 50-80 ms right when they are nudging a wedged grape bunch (illustrative). The fixes are giving teleop traffic network priority, capping the bulk upload, and letting the encoder follow the congestion controller's lower estimate.
 
 ### Elsewhere
-Connected cars on cellular links face exactly this: in the LTE study cited above, round trips from a moving car varied with a 29.5 ms standard deviation, so a remote-driving system over LTE must budget a jitter buffer on top of the average latency [5]. Voice calls show the FEC trade clearly: the Opus audio codec's built-in FEC costs about 20-30% extra bandwidth depending on the protection level [3].
+Connected cars on cellular links face exactly this: in one urban LTE study, round trips from a moving car varied with a 29.5 ms standard deviation, so a remote-driving system over LTE must budget a jitter buffer on top of the average latency [5]. Voice calls show the FEC trade clearly: the Opus audio codec's built-in FEC costs about 20-30% extra bandwidth depending on the protection level [3].
 
 ### Why it exists
 Shared, best-effort networks (the internet, cellular, Wi-Fi) give no timing guarantees, and these three impairments are how that shows up. Every mitigation spends either delay (buffers, retransmission) or bandwidth (FEC, headroom), so a teleop system must choose deliberately.

@@ -4,6 +4,7 @@
 title: Parts Quarter
 concept: component-makers
 tagline: The gears, motors, grippers, and cameras inside and on every robot.
+supplies: robot-row, integrators, factory-district, applications
 
 ### Plain
 Component makers are the parts suppliers of the robot world, like the companies that make brakes and tires for car brands. They build the gears, motors, sensors, grippers, and cameras that go inside or onto a robot. Most people never see their names, but no robot works without them. On the cheese plate line, the gears in the arms' joints and the suction cups and soft fingers on the ends of the arms come from here.
@@ -58,6 +59,7 @@ This building makes the electronics that go into and onto robots: [[encoder|enco
 title: Robot Row
 concept: robot-makers
 tagline: Arms and the control cabinets that drive them, sold to thousands of factories.
+supplies: integrators, factory-district, applications
 
 ### Plain
 A robot maker is like an engine maker that sells engines to boat builders. It designs and builds the arm and the cabinet that drives it, but on its own the arm does nothing useful: someone still has to give it a hand, eyes, a job, and a place in a line. The big brands sell the same arm to thousands of different factories.
@@ -121,6 +123,7 @@ After a cell starts running, the robot maker's share of its [[support|support]] 
 title: Integrator Yard
 concept: integrators
 tagline: The general contractors who turn parts into one working line for one plant.
+supplies: factory-district, applications
 
 ### Plain
 A system integrator is the general contractor of automation. Like a builder who buys lumber, windows, and a furnace from different makers and builds one family's house to fit their lot, it buys robots, grippers, cameras, conveyors, and fencing and builds one working line for one plant. It also programs all the pieces to work together and stays on call when something breaks.
@@ -184,6 +187,7 @@ The crews based here spend most days at customers' plants. They install the line
 title: Applications Lane
 concept: application-companies
 tagline: One standard robot station for one job, often leased instead of sold.
+supplies: factory-district
 
 ### Plain
 An application company sells a finished robot station for one job instead of a custom project. It is like buying a dishwasher instead of hiring a contractor to build a custom washing station: the machine is designed for exactly one task, and the same design ships to many customers. In robotics, that job might be putting food into meal trays or moving cases in a warehouse. Unlike a dishwasher, the station is often leased rather than sold, and its maker often keeps watching and updating it remotely.
@@ -239,6 +243,7 @@ Many application companies keep watching their stations after delivery: Chef Rob
 title: Model Lab
 concept: model-companies
 tagline: The learned robot "brains" that other companies adapt to their own robots.
+supplies: applications, robot-row, factory-district
 
 ### Plain
 A robot model company writes "brain" software that lets robots learn skills from examples instead of being programmed step by step. It is like a company that makes a phone operating system: it does not build the phone, but hopes many phone makers will run its software. Unlike a phone system, a robot model usually needs new examples recorded on the target robot doing the target task before it works reliably.
@@ -292,6 +297,7 @@ This office decides how models reach customers ([[model-companies]]): open weigh
 title: Tool Works
 concept: tooling-companies
 tagline: Simulation, programming, and data software sold to everyone else on the map.
+supplies: integrators, robot-row, applications, model-lab, factory-district
 
 ### Plain
 Tooling companies sell the tools everyone else uses to design, program, and debug robots. They are like the companies that make design software and laser measuring tools for builders: they never build a house themselves, but nearly every builder pays them. In robotics that means simulation software, programming tools, and software for recording and replaying what robots did.
@@ -345,6 +351,7 @@ This building writes the documentation and tutorials, helps users in forums and 
 title: Factory District
 concept: end-users
 tagline: The plants that pay for every robot on the map and run them every day.
+supplies: none
 
 ### Plain
 End users are the factories, warehouses, and kitchens that buy robots and run them every day. They are like a restaurant owner who buys ovens and dishwashers: the owner does not build the equipment, but pays for it, decides whether it was worth it, and lives with every breakdown. Unlike ovens, a robot line is usually custom-built for one plant. Every other company on this map ultimately gets its money from them ([[value-chain]]).
