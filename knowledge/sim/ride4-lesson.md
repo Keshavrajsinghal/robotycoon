@@ -54,7 +54,7 @@ What breaks without it: data piles up as unsearchable files on robot disks, and 
 ### Question
 The plant's internet link is down for a whole night. What happens to that day's takeover episodes?
 - [ ] They are lost, because recordings stream straight to the cloud :: Episodes wait on the station's local disk until the link allows. That queue is what lets a plant with a weak link still feed training.
-- [x] They stay queued on the station's disk and upload when the link returns, while the station keeps picking :: Recording and upload are separate steps. The disk queue absorbs the outage, and the backlog goes up when bandwidth returns.
+- [x] They queue on the station's disk and upload later :: The station keeps picking meanwhile, because recording and upload are separate steps. The disk queue absorbs the outage, and the backlog goes up when bandwidth returns.
 - [ ] The grape station stops picking until the upload finishes :: The policy runs on a computer at the station, not in the cloud, so picking does not depend on the uplink.
 - [ ] The fleet manager has each robot re-record the takeovers once the link is back :: A physical moment cannot be recorded twice. That is why stations save to disk first: once a recording is gone, so is the evidence.
 
@@ -115,10 +115,10 @@ Takeovers attack compounding error (a small mistake leads the policy into a situ
 Limits stay. A cloned policy rarely beats its demonstrators: it copies their speed and hesitations. Reinforcement learning (improving a policy by trial and error against a numeric score) can go past the demonstrator, but from scratch it needs far more attempts than real hardware allows, so it runs mostly in simulation, and tangled grape stems are where simulated contact is least trustworthy. Real-world methods such as HIL-SERL start from demonstrations and rely on human corrections during training. This ride's model is trained by imitation. What breaks without retraining: the station keeps meeting tangled bunches with the same weights, and operators keep rescuing them. See [[imitation-learning]].
 ### Question
 Most of the original grape demonstrations start from a bunch lying normally in the tote. Why does a takeover correction teach the policy something they cannot?
-- [x] It shows a person fixing a situation the deployed policy actually drifted into, not one someone planned in advance :: This is the DAgger idea: collect expert examples in the states the learner really reaches, which is where compounding error happens.
 - [ ] It gives the policy a reward score to maximize on hard bunches :: That is reinforcement learning. Behavior cloning has no score; it copies the action the person took at each moment.
 - [ ] It lets the policy reason about why its earlier grasp failed :: A learned policy is millions of numbers that map pixels and joint angles to targets. It cannot explain or reason; it only gets new examples to fit.
 - [ ] It teaches the policy to pick faster than any operator, because corrections are efficient :: A cloned policy copies the pace of the people it learns from, hesitations included, and rarely beats them.
+- [x] It shows a fix in a situation the policy really drifted into, not a planned one :: A person corrects the deployed policy where it actually went wrong. This is the DAgger idea: collect expert examples in the states the learner really reaches, which is where compounding error happens.
 
 ## Stop: simulation
 title: Simulation
@@ -158,7 +158,7 @@ Why it matters on the line: at 200 plates an hour, 99% success leaves 2 plates a
 ### Question
 After 20 tangled-bunch trials each, the new model has 16 successes and the old one 13 (illustrative). What can the team conclude?
 - [ ] The new model is better, because 80% beats 65% :: With 20 trials, 16 successes is consistent with a true rate anywhere from about 58% to 92%, a range that includes 65%. The gap could be luck.
-- [x] It may be better, but 20 trials cannot show it; keep running trials under the same conditions :: Small samples give wide ranges. More trials narrow them, and only then can a real difference be told apart from noise.
+- [x] It may be better, but 20 trials cannot show it yet :: Keep running trials under the same conditions. Small samples give wide ranges. More trials narrow them, and only then can a real difference be told apart from noise.
 - [ ] The new model will succeed on 80% of tangled bunches on the production line :: 80% is one small sample under test conditions. RT-1's success fell from 97% to 59% when only the background changed, so a single number can badly mislead.
 - [ ] Real trials are too noisy to compare models, so trust the simulator instead :: Real trials are the gold standard. The answer to noise is more trials, not a cheaper stand-in.
 
@@ -178,10 +178,10 @@ The release follows web practice. Shadow mode runs the new model on live sensor 
 The robot-specific part is a safe switch. The station's own software decides when the change may happen, so it can wait until the arm is stopped and the cell is idle. If the network or power drops mid-update, the station must still end up running the old model or the new one, never half of each. Model regressions are statistical, not crashes: one eight-hour shift is about 1,600 grape picks, enough to see misses jump from 1% to 3% but not to tell 1% from 1.2% (illustrative). So a canary runs at least one full shift.
 ### Question
 The new weights file is halfway copied to a grape station when the plant's network drops. What should happen?
-- [x] The station keeps running the old model and switches only after the whole file has arrived and the cell is idle :: Copying ahead and switching later means an interrupted copy changes nothing. The robot must end up on the old version or the new one, never half of each.
 - [ ] The station loads the half it has and fills in the rest when the network returns :: Half a weights file is not a smaller model; it is a broken one. A robot must never run a mix of two versions.
 - [ ] The station stops and waits for a technician to restore it :: Updates are designed so an interruption leaves a working robot with nobody nearby. Sending a technician for every hiccup is what remote updates exist to avoid.
 - [ ] An operator drives the arm by remote control until the network is back :: Remote control needs the same network that just dropped, and the old model is still on the station and working.
+- [x] It keeps running the old model until the whole file is in :: It switches only then, and only when the cell is idle. Copying ahead and switching later means an interrupted copy changes nothing. The robot must end up on the old version or the new one, never half of each.
 
 ## Stop: fleet
 title: The fleet
@@ -199,7 +199,7 @@ Each grape station reports picks per minute, missed picks, and model version. Wi
 What breaks without it: nobody knows which robot runs which version, and faults are found when production stops. The loop also closes here. New takeovers on new kinds of failure get flagged, and the ride starts again (see [[data-pipelines|data pipelines]]).
 ### Question
 Two weeks into the rollout, misses rise on the grape stations in one kitchen but not in the others (illustrative). What does the fleet manager let the team do first?
-- [x] Compare that kitchen's inventory against the healthy ones and open its saved failure recordings in a viewer :: The inventory shows what differs (model version, hardware revision, site), and the recordings show what the robot saw and did at the failing moment.
+- [x] Compare that kitchen's inventory with healthy ones and replay failures :: The inventory shows what differs (model version, hardware revision, site), and opening the saved failure recordings in a viewer shows what the robot saw and did at the failing moment.
 - [ ] Log in to each station one at a time to check what it runs :: That works for one robot, not dozens across three kitchens. The version inventory exists so nobody has to guess.
 - [ ] Check where each robot is on the map, since fleet management is mainly traffic control :: Traffic control matters for robots that drive. For fixed arms the fleet manager is the lighter half: health, versions, and alerts.
 - [ ] Wait for a line to stop, since fleet dashboards only report hard faults :: The agent streams metrics such as missed picks, so a slowly rising miss rate shows up before production stops. Model regressions rarely look like hard faults.
@@ -221,7 +221,7 @@ Three limits. A cloned policy runs no faster than the operators it learned from,
 ### Question
 Suppose one pass through the policy takes longer than the 20 ms between drive targets at 50 Hz, as pi0's 73 ms does. How does the arm keep moving smoothly?
 - [ ] It cannot: the arm has to slow down to the rate at which each pass finishes :: Chunking separates the two rates. What latency limits is reaction time to new events, set by how often a fresh chunk replaces the old one: every 0.5 s in this setup.
-- [x] Each pass plans about a second of targets, and the drives play them at 50 Hz while the next chunk is computed :: The drives always have a target from the current chunk, and asynchronous execution hides the inference delay. A watchdog covers the case where a fresh chunk arrives late.
+- [x] Each pass plans about a second of targets, played at 50 Hz while the next is computed :: The drives always have a target from the current chunk, and asynchronous execution hides the inference delay. A watchdog covers the case where a fresh chunk arrives late.
 - [ ] Each camera frame goes to a bigger GPU in the cloud, which answers within one tick :: The network adds delay and can drop out; in pi0's tests the same GPU took about 86 ms across the network versus 73 ms at the robot. Running at the station keeps timing predictable.
 
 ## Puzzle
@@ -253,12 +253,12 @@ In simulation, the new model scored higher on every condition, including simulat
       "why": "The simulator is a cheaper, partial stand-in. Fog belongs to the visual gap, and simulated fog only approximates the real thing. More simulated trials shrink the luck in the simulated score, not the systematic gap between simulator and reality. Real trials are the gold standard, and here they disagree with the simulator."
     },
     {
-      "text": "Keep the old model on the line. Replay the fogged-lens failures in a viewer, add fogged-lens episodes to the data, retrain, and rerun the whole suite.",
+      "text": "Keep the old model, add fogged-lens episodes, retrain, and rerun the suite.",
       "correct": true,
-      "why": "The suite exists to catch exactly this before an update reaches the line. Replaying the failures first shows whether the model, the camera, or something else is at fault. The tangled-bunch takeovers stay in the dataset, the next run adds what this one lacked, and the rerun suite checks that both cases hold."
+      "why": "The suite exists to catch exactly this before an update reaches the line. Replaying the fogged-lens failures in a viewer first shows whether the model, the camera, or something else is at fault. The tangled-bunch takeovers stay in the dataset, the next run adds what this one lacked, and the rerun suite checks that both cases hold."
     },
     {
-      "text": "Ship it to one line as a canary and see whether the fog misses show up there.",
+      "text": "Try it on one line as a canary and see whether the fog misses show up there.",
       "correct": false,
       "why": "The suite runs before an update reaches the line, and a canary comes after a model passes it. This regression is already measured with enough trials; a canary would only repeat the finding at the cost of real plates on that line."
     }

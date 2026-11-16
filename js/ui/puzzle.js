@@ -157,14 +157,17 @@ function budgetPuzzle(data) {
 	const sSaved = stat("Time saved");
 	const sResult = stat("Result");
 	const sCost = stat("Cost");
+	// Savings stay hidden until Check, so the rider has to reason from the ride instead of
+	// adding up visible numbers. A chosen card's saving shows with its explanation.
+	let checked = false;
 	const cards = data.options.map((o, i) => {
-		const why = h("span", { class: "p-why", hidden: true, html: o.why });
+		const why = h("span", { class: "p-why", hidden: true }, h("strong", {}, `Saves ${fmt(o.saves_ms)} ms.`), " ", h("span", { html: o.why }));
 		const b = h(
 			"button",
 			{ class: "p-budget-opt", type: "button", "aria-pressed": "false", "data-option": o.id },
 			h("span", { class: "check", "aria-hidden": "true" }),
 			h("span", { html: o.label }),
-			h("span", { class: "nums" }, `saves ${fmt(o.saves_ms)} ms`, h("br"), `cost ${fmt(o.cost)} ${unit}`),
+			h("span", { class: "nums" }, `cost ${fmt(o.cost)} ${unit}`),
 			why,
 		);
 		b.addEventListener("click", () => {
@@ -172,6 +175,7 @@ function budgetPuzzle(data) {
 			else chosen.add(i);
 			b.setAttribute("aria-pressed", chosen.has(i) ? "true" : "false");
 			for (const c of cards) c.why.hidden = true;
+			checked = false;
 			update();
 		});
 		return { b, why, o };
@@ -187,9 +191,9 @@ function budgetPuzzle(data) {
 	};
 	const update = () => {
 		const t = totals();
-		sSaved.v.textContent = `${fmt(t.saved)} ms`;
-		sResult.v.textContent = `${fmt(t.result)} ms`;
-		sResult.el.className = `p-stat ${t.result <= data.target_ms ? "ok" : ""}`;
+		sSaved.v.textContent = checked ? `${fmt(t.saved)} ms` : "—";
+		sResult.v.textContent = checked ? `${fmt(t.result)} ms` : "—";
+		sResult.el.className = `p-stat ${checked && t.result <= data.target_ms ? "ok" : ""}`;
 		sResult.el.querySelector(".k").textContent = `Result (target ${fmt(data.target_ms)} ms)`;
 		sCost.v.textContent = `${fmt(t.cost)} / ${fmt(data.budget)}`;
 		sCost.el.className = `p-stat ${t.cost > data.budget ? "over" : "ok"}`;
@@ -200,7 +204,7 @@ function budgetPuzzle(data) {
 		el: h(
 			"div",
 			{},
-			h("p", { class: "meta-line" }, `Starting at ${fmt(data.start_ms)} ms.`),
+			h("p", { class: "meta-line" }, `Starting at ${fmt(data.start_ms)} ms. Each choice's saving shows when you check.`),
 			h("div", { class: "p-budget-stats", "aria-live": "polite" }, sSaved.el, sResult.el, sCost.el),
 			h("div", { class: "p-budget-opts", style: { marginTop: "12px" } }, cards.map((c) => c.b)),
 		),
@@ -208,6 +212,8 @@ function budgetPuzzle(data) {
 			const t = totals();
 			if (!chosen.size) return { solved: false, message: "Choose at least one option first." };
 			for (const c of cards) c.why.hidden = !chosen.has(cards.indexOf(c));
+			checked = true;
+			update();
 			const targetMet = t.result <= data.target_ms;
 			const budgetMet = t.cost <= data.budget;
 			const solved = targetMet && budgetMet;

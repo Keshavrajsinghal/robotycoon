@@ -258,9 +258,9 @@ Without per-stage accounting, teams optimize the wrong thing, such as paying for
 | Decode | up to about 10 ms (one rig: 10.5 ms of receive-side processing, decoding not broken out) | Hardware decoder, resolution | [3] |
 | Display | average half the refresh interval: 8.3 ms at 60 Hz, 4.2 ms at 120 Hz, plus the panel's own processing | Refresh rate, monitor mode | [1][3] |
 | Human perception and reaction | about 213-231 ms mean for a simple visual reaction; longer for decisions | Task, practice | [12] |
-| Input device sampling | about 1-5 ms (measured about 2 ms, up to 5 ms) | USB polling interval | [3] |
+| Input device sampling | about 1-5 ms (measured about 2 ms, up to 5 ms); a wait for the next poll averages half the polling interval: 4 ms at 125 Hz, 0.5 ms at 1000 Hz (arithmetic) | USB polling interval | [3] |
 | Command send (network one way) | same physics as above; one 5G rig measured an average 10.3 ms for its TCP command packets (direction not stated) | Distance, link | [3] |
-| Robot receive and controller cycle | 2 ms per cycle at 500 Hz to 10 ms at 100 Hz | Controller and bridge rates | [3][10] |
+| Robot receive and controller cycle | 2 ms per cycle at 500 Hz to 10 ms at 100 Hz; the budget counts a whole cycle: about half a cycle waiting for the next read, plus receive and processing (illustrative) | Controller and bridge rates | [3][10] |
 | Motion: command to visible movement | an arm's command smoothing alone can span 30-200 ms (the allowed range of UR's servoj lookahead setting); an estimated 270 ms for a car's steering actuator | Acceleration limits, smoothing filters, servo tuning | [3][17] |
 
 - Human-factors targets: about 20 ms motion-to-photon, below which VR users generally do not notice delay [2]; below 150 ms one way for transparent interactivity [7]; 100 ms or less for telesurgery [8].
@@ -284,16 +284,16 @@ BUDGET = [
     ("display",                     18.0,  9.0, "60 Hz -> 120 Hz, monitor game mode"),
     # --- operator (not counted: humans track continuously, ~213-231 ms simple reaction) ---
     # --- command back (motion-to-motion) ---
-    ("input device sampling",        8.0,  1.0, "125 Hz -> 1000 Hz USB polling"),
+    ("input device sampling",        4.0,  0.5, "125 Hz -> 1000 Hz USB polling (half a poll on average)"),
     ("command network one way",     48.0, 12.0, "same link as video"),
-    ("robot receive + control cycle", 10.0, 2.0, "100 Hz bridge -> 500 Hz interface"),
+    ("robot receive + control cycle", 10.0, 2.0, "100 Hz bridge -> 500 Hz interface (a whole cycle: wait + receive)"),
     ("motion starts",               60.0, 30.0, "lighter command smoothing filter"),
 ]
 
 def total(col):
     return sum(row[col] for row in BUDGET)
 
-print(f"untuned loop: {total(1):.0f} ms")   # ~402 ms
+print(f"untuned loop: {total(1):.0f} ms")   # ~398 ms
 print(f"tuned loop:   {total(2):.0f} ms")   # ~110 ms both ways, under the 150 ms one-way guideline
 for stage, before, after, why in sorted(BUDGET, key=lambda r: r[2] - r[1]):
     print(f"{stage:32s} saves {before - after:5.1f} ms  ({why})")

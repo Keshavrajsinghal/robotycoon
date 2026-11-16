@@ -171,7 +171,7 @@ export function initPanel(app) {
 		const gloss = h("button", { class: "btn", type: "button" }, "Glossary");
 		gloss.addEventListener("click", () => app.router.go({ name: "glossary" }));
 		body.append(
-			h("p", {}, "Ride carts through a robot factory park. Each ride follows one thing, and this panel explains what happens to it at every stop."),
+			h("p", {}, "Ride carts through a robot factory park. Each ride follows one thing, and this panel explains what happens to it at every stop. To start, choose a ride gate on the map, or press Ride on one of the rides below."),
 			h("div", { class: "panel-row" }, levelSwitch(app)),
 			h("div", { class: "ride-cards" }, cards),
 			h("div", { class: "panel-row" }, town, gloss),
@@ -187,6 +187,11 @@ export function initPanel(app) {
 		setHead(`${ride.title} · Stop ${i + 1} of ${r.stops.length}`, stop.title, stop.cargo, stop.cargoDetail);
 		body.dataset.stop = stop.id;
 		const parts = [modeSwitch(ride), h("div", { class: "panel-row" }, levelSwitch(app))];
+		// On a phone the collapsed sheet shows only its first ~200 px, so the stop's explanation
+		// comes right after the switches; on wider screens the illustration leads.
+		const text = h("div", { class: "prose stop-text", html: level === "precise" ? stop.precise : stop.plain });
+		const textFirst = app.isPhone();
+		if (textFirst) parts.push(text);
 		if (i === 0 && ride.intro)
 			parts.push(h("section", { class: "card ride-intro" }, h("div", { class: "card-kicker" }, "About this ride"), h("div", { class: "prose", html: level === "precise" ? ride.intro.precise : ride.intro.plain })));
 		const mod = app.rides.get(ride.id)?.module;
@@ -204,7 +209,7 @@ export function initPanel(app) {
 				}
 			});
 		}
-		parts.push(h("div", { class: "prose stop-text", html: level === "precise" ? stop.precise : stop.plain }));
+		if (!textFirst) parts.push(text);
 		parts.push(delayBox(r.stops, i));
 		// Only quiz on a stop the rider has been to: a route-list jump or deep link skips stops.
 		if (i > 0 && app.state.isSeen(ride.id, r.stops[i - 1].id)) parts.push(questionCard(app, ride, r.stops[i - 1], { kicker: "Quick check on the last stop" }));
@@ -251,11 +256,23 @@ export function initPanel(app) {
 		);
 	}
 
+	/** Selector that finds the same control after a re-render ("" when there is none). */
+	function focusKey(a) {
+		const q = a.closest("[data-question]");
+		if (q && a.matches(".q-option")) return `[data-question="${CSS.escape(q.dataset.question)}"] .q-option[data-index="${a.dataset.index}"]`;
+		for (const k of ["data-level", "data-mode", "data-workbench", "data-open-puzzle", "data-start-ride"]) if (a.hasAttribute(k)) return `[${k}="${CSS.escape(a.getAttribute(k))}"]`;
+		return a.matches(".read-more > summary") ? ".read-more > summary" : "";
+	}
+
 	function render() {
 		cleanup?.();
 		cleanup = null;
 		const keepScroll = body.scrollTop;
 		const sameView = body.dataset.view === `${view.type}:${view.index ?? ""}`;
+		// Re-rendering destroys the focused control; a keyboard rider keeps focus on its
+		// replacement, or on the panel title when it is gone.
+		const active = document.activeElement;
+		const key = active && body.contains(active) ? focusKey(active) : null;
 		body.replaceChildren();
 		delete body.dataset.stop;
 		if (view.type === "stop") renderStop(view.index);
@@ -263,6 +280,7 @@ export function initPanel(app) {
 		else renderWelcome();
 		body.dataset.view = `${view.type}:${view.index ?? ""}`;
 		body.scrollTop = sameView ? keepScroll : 0;
+		if (key !== null) ((key && body.querySelector(key)) || title).focus({ preventScroll: true });
 	}
 
 	function showView(v, { reveal = true } = {}) {

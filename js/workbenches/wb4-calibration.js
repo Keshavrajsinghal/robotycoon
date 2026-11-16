@@ -173,6 +173,7 @@ function mount(el, ctx) {
 	let bunches = [];
 	let missSinceCal = false;
 	let last = null; // last pick result
+	let aimed = null; // the bunch being picked: its pixel and where the calibration puts it
 	let solved = false;
 	let solvedFired = false;
 	let busy = false; // calibrating
@@ -279,6 +280,7 @@ function mount(el, ctx) {
 	const swatch = (cls) => h("span", { class: `wb4-sw ${cls}`, "aria-hidden": "true" });
 	const solvedEl = h("div", { class: "wb4-solved", role: "status", hidden: true }, "Solved");
 	const resultEl = h("p", { class: "wb4-result", "aria-live": "polite" });
+	const aimEl = h("p", { class: "wb4-readout wb4-aim", "aria-live": "polite", hidden: true });
 	const pickBtns = [];
 	const pickRow = h("div", { class: "wb4-picks", role: "group", "aria-label": "Pick a bunch" });
 	const nextBtn = h("button", { type: "button", class: "btn wb4-next", onclick: () => act(nextTote) }, "Next tote");
@@ -338,6 +340,7 @@ function mount(el, ctx) {
 			),
 		),
 		h("div", { class: "wb4-pickbar" }, h("span", { class: "wb4-kicker" }, "Pick"), pickRow, nextBtn),
+		aimEl,
 		resultEl,
 		h(
 			"div",
@@ -485,6 +488,8 @@ function mount(el, ctx) {
 		const err = dist(est, b.P);
 		const res = { bunch: b, est, err, hit: err <= cfg.tol };
 		last = null;
+		aimed = { bunch: b, n: i + 1, px: b.det, est };
+		updateUi();
 		const homeAng = Math.atan2(home[1], home[0]);
 		const steps = [
 			moveStep(est, b.ang + Math.PI / 2, travel(est)),
@@ -522,6 +527,7 @@ function mount(el, ctx) {
 		finish();
 		clearShown();
 		last = null;
+		aimed = null;
 		placeBunches();
 		updateUi();
 		render();
@@ -531,6 +537,7 @@ function mount(el, ctx) {
 		finish();
 		clearShown();
 		last = null;
+		aimed = null;
 		// Counts once the learner has recalibrated a camera that was out of calibration; a later
 		// calibration of an unmoved camera keeps that, so calibrating twice does not lose it.
 		const fixes = calib.fixes || missSinceCal || M.drift(cam, calib) > cfg.tol;
@@ -591,6 +598,7 @@ function mount(el, ctx) {
 
 	function onBump() {
 		finish();
+		aimed = null;
 		if (view.run && !busy) view.run = null;
 		cam = M.camera(cfg, pose());
 		updateDetections();
@@ -614,6 +622,14 @@ function mount(el, ctx) {
 		calBtn.disabled = busy;
 		nextBtn.disabled = busy;
 		lensBox.disabled = busy;
+		// The pixel the learner picked, where the stored calibration puts it in the robot frame, and
+		// after the pick, where the bunch really was.
+		aimEl.hidden = !aimed || busy;
+		if (aimed && !busy) {
+			const { n, px, est, bunch } = aimed;
+			const truth = last?.bunch === bunch ? `; actually at x ${bunch.P[0].toFixed(1)}, y ${bunch.P[1].toFixed(1)} mm` : "";
+			setText(aimEl, `Bunch ${n}: pixel (${Math.round(px[0])}, ${Math.round(px[1])}) maps to robot x ${est[0].toFixed(1)}, y ${est[1].toFixed(1)} mm${truth}`);
+		}
 		if (busy) {
 			setText(resultEl, `Calibrating: ${view.run?.collected ?? 0} of ${cfg.poses} point pairs`);
 			resultEl.dataset.state = "";

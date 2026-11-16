@@ -203,12 +203,17 @@ PLACEHOLDER: notice which changes move the line rate and which do not.
   "stop_s": 20,
   "short_stop_s": 30,
   "buffer": {"cost": 1, "capacity": 4},
+  "robot_types": [
+    {"id": "ph-delta", "kind": "delta", "label": "PH delta", "motion_s": 0.4, "cost": 5},
+    {"id": "ph-scara", "kind": "scara", "label": "PH SCARA", "motion_s": 0.3, "cost": 6},
+    {"id": "ph-arm", "kind": "six-axis", "label": "PH six-axis arm", "motion_s": 0.5, "cost": 7}
+  ],
   "stations": [
     {"id": "denester", "work_s": 2.0, "picks": 1, "availability": 0.99},
-    {"id": "grapes", "work_s": 9.0, "picks": 1, "availability": 0.95, "tool": {"saves_s": 3.0, "cost": 2, "label": "PH softer gripper"}},
-    {"id": "apples", "work_s": 17.0, "picks": 4, "availability": 0.98, "parallel_cost": 5, "parallel_label": "PH second apple robot", "tool": {"saves_s": 1.0, "cost": 2, "label": "PH faster robot"}},
-    {"id": "crackers", "work_s": 6.0, "picks": 2, "availability": 0.99},
-    {"id": "cheese", "work_s": 10.0, "picks": 3, "availability": 0.98, "tool": {"saves_s": 2.0, "cost": 2, "label": "PH wedge cup"}},
+    {"id": "grapes", "work_s": 9.0, "picks": 1, "availability": 0.95, "robot": "ph-arm", "tool": {"saves_s": 3.0, "cost": 2, "label": "PH softer gripper"}},
+    {"id": "apples", "work_s": 17.0, "picks": 4, "availability": 0.98, "robot": "ph-delta", "robot_options": ["ph-delta", "ph-scara", "ph-arm"], "max_robots": 2, "tool": {"saves_s": 1.0, "cost": 2, "label": "PH faster robot"}},
+    {"id": "crackers", "work_s": 6.0, "picks": 2, "availability": 0.99, "robot": "ph-scara"},
+    {"id": "cheese", "work_s": 10.0, "picks": 3, "availability": 0.98, "robot": "ph-delta", "max_robots": 2, "tool": {"saves_s": 2.0, "cost": 2, "label": "PH wedge cup"}},
     {"id": "inspection", "work_s": 1.5, "availability": 1},
     {"id": "lidding", "work_s": 5.0, "availability": 0.98, "tool": {"saves_s": 1.5, "cost": 1, "label": "PH faster press"}},
     {"id": "outfeed", "work_s": 3.0, "availability": 0.99}

@@ -24,6 +24,8 @@ import {
 	drawTray,
 	EVENT,
 	ease,
+	flightBar,
+	flightFar,
 	HEADING,
 	LAST_SLOT,
 	LINE_X,
@@ -47,6 +49,16 @@ const LINE_Y0 = 30.6;
 const LINE_Y1 = 69.4;
 /** Pose shown when motion is reduced: mid-cycle, robots busy, plates on still trays. */
 const FROZEN = CYCLE * 40 + 3.2;
+/** Stops where the cargo tray sits in its belt pitch (indexed at the infeed, lifted off at the outfeed). */
+const ON_FLIGHT = new Set(["infeed", "grapes", "apples", "crackers", "cheese", "inspection", "lidding"]);
+
+/** A tray with the belt flights behind and ahead of it from the infeed on; far bars first. */
+function plateOnFlights(r, stopId, x, y, z, heading, s, drawTrayFn) {
+	const sides = ON_FLIGHT.has(stopId) ? [-1, 1] : [];
+	for (const sd of sides) if (flightFar(heading, sd)) flightBar(r, x, y, z, s, heading, sd);
+	drawTrayFn();
+	for (const sd of sides) if (!flightFar(heading, sd)) flightBar(r, x, y, z, s, heading, sd);
+}
 
 // ---------------------------------------------------------------------------
 // Static pieces
@@ -180,7 +192,7 @@ export default {
 
 	drawCargo(r, stopId, pos) {
 		const [x, y, z] = pos.anchor;
-		drawPlate(r, x, y, z, pos.heading, PLATE_AFTER[stopId] ?? {}, { scale: 1.45 });
+		plateOnFlights(r, stopId, x, y, z, pos.heading, 1.45, () => drawPlate(r, x, y, z, pos.heading, PLATE_AFTER[stopId] ?? {}, { scale: 1.45 }));
 		if (stopId === "outfeed") codeMark(r, x, y, z, 1.45, 1, pos.heading);
 	},
 
@@ -207,7 +219,7 @@ export default {
 			const items = PLATE_AFTER[stopId] ?? {};
 			// drawPlate's inspection badge floats too high for this zoom (it was cut off at the top of
 			// the canvas), so the close-up draws the same badge just above the food or the lid.
-			drawPlate(r, 0, 0, 0, HEADING, { ...items, pass: false }, { lineScale: 0.3 });
+			plateOnFlights(r, stopId, 0, 0, 0, HEADING, 1, () => drawPlate(r, 0, 0, 0, HEADING, { ...items, pass: false }, { lineScale: 0.3 }));
 			if (stopId === "outfeed") codeMark(r, 0, 0, 0, 1, 0.3);
 			if (items.pass) passMark(r, 0, 0, 0.31);
 		};

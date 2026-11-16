@@ -8677,12 +8677,12 @@ export const CONTENT = {
     "myth": "<p>Teleoperation latency is the network ping.</p>",
     "reality": "<p>On a 5G testbed, sending each video frame over the network took about 15 ms of a roughly 193 ms G2G, while the camera alone took an estimated 120 ms <sup class=\"cite\">[3]</sup>. A ping measures tiny packets, not frames waiting in camera buffers, encoders, jitter buffers, and screens.</p>"
    },
-   "keyNumbers": "<table><thead><tr><th>Stage (frame out, then command back)</th><th>Typical range</th><th>What it depends on</th><th>Source</th></tr></thead><tbody><tr><td>Camera: wait for the next frame</td><td>0-33 ms at 30 fps (average 17); 0-17 ms at 60 fps (average 8)</td><td>Frame rate</td><td><sup class=\"cite\">[1]</sup></td></tr><tr><td>Camera: exposure and sensor readout</td><td>readout is rows times row time: about 30-100 ms for full-frame reads on two 12-14 MP rolling-shutter sensors (about 10 and 31 microseconds per row), proportionally less for fewer rows (720 rows at 10 microseconds is about 7 ms); exposure adds more in dim light</td><td>Rows read, sensor speed, lighting</td><td><sup class=\"cite\">[16]</sup></td></tr><tr><td>Camera stage as measured end to end</td><td>whole G2G as low as 8 ms with a 300 fps lab camera; about 120 ms camera share in a vehicle teleoperation rig</td><td>Camera buffering and drivers</td><td><sup class=\"cite\">[1]</sup><sup class=\"cite\">[3]</sup></td></tr><tr><td>Image signal processing (color, denoise, scaling)</td><td>about 4-8 ms per 1080p frame and about 27 ms per 4K frame for one ISP running on an NVIDIA Jetson Orin's vision accelerator</td><td>Resolution; whether a dedicated ISP block, accelerator, or GPU does it</td><td><sup class=\"cite\">[19]</sup></td></tr><tr><td>Encode</td><td>buffering up to about one frame interval when the encoder buffer is one frame (bitrate divided by frame rate), as NVIDIA recommends; one rig: frames published every 30 ms plus about 9 ms of server processing, codec not stated</td><td>B-frames, lookahead, buffer size</td><td><sup class=\"cite\">[3]</sup><sup class=\"cite\">[11]</sup></td></tr><tr><td>Packetize and send (serialization)</td><td>about 1-15 ms (a 20.8 kb frame at 1.38 Mb/s takes 15 ms)</td><td>Frame size versus uplink rate</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Network one way</td><td>fiber floor about 200 km per ms: 50 km 0.25 ms, 1,000 km 5 ms, MIT to San Diego (about 3,000 miles, 4,800 km) at least 24 ms; backbone one way about 7 ms (Europe) to 56 ms (trans-Pacific); LTE added about 35 ms (median) in one rig</td><td>Distance, routing, last-mile link</td><td><sup class=\"cite\">[4]</sup><sup class=\"cite\">[5]</sup><sup class=\"cite\">[6]</sup><sup class=\"cite\">[13]</sup></td></tr><tr><td>Jitter buffer</td><td>about 0 ms (wired LAN) to tens of ms; must cover the arrival spread, and LTE round trips from a moving car had a 29.5 ms standard deviation in one study</td><td>Measured jitter</td><td><sup class=\"cite\">[14]</sup></td></tr><tr><td>Decode</td><td>up to about 10 ms (one rig: 10.5 ms of receive-side processing, decoding not broken out)</td><td>Hardware decoder, resolution</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Display</td><td>average half the refresh interval: 8.3 ms at 60 Hz, 4.2 ms at 120 Hz, plus the panel's own processing</td><td>Refresh rate, monitor mode</td><td><sup class=\"cite\">[1]</sup><sup class=\"cite\">[3]</sup></td></tr><tr><td>Human perception and reaction</td><td>about 213-231 ms mean for a simple visual reaction; longer for decisions</td><td>Task, practice</td><td><sup class=\"cite\">[12]</sup></td></tr><tr><td>Input device sampling</td><td>about 1-5 ms (measured about 2 ms, up to 5 ms)</td><td>USB polling interval</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Command send (network one way)</td><td>same physics as above; one 5G rig measured an average 10.3 ms for its TCP command packets (direction not stated)</td><td>Distance, link</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Robot receive and controller cycle</td><td>2 ms per cycle at 500 Hz to 10 ms at 100 Hz</td><td>Controller and bridge rates</td><td><sup class=\"cite\">[3]</sup><sup class=\"cite\">[10]</sup></td></tr><tr><td>Motion: command to visible movement</td><td>an arm's command smoothing alone can span 30-200 ms (the allowed range of UR's servoj lookahead setting); an estimated 270 ms for a car's steering actuator</td><td>Acceleration limits, smoothing filters, servo tuning</td><td><sup class=\"cite\">[3]</sup><sup class=\"cite\">[17]</sup></td></tr></tbody></table><ul><li>Human-factors targets: about 20 ms motion-to-photon, below which VR users generally do not notice delay <sup class=\"cite\">[2]</sup>; below 150 ms one way for transparent interactivity <sup class=\"cite\">[7]</sup>; 100 ms or less for telesurgery <sup class=\"cite\">[8]</sup>.</li><li>Measured totals: G2G about 193 ms and end-to-end about 500 ms on a 5G driving rig <sup class=\"cite\">[3]</sup>; G2G 150-200 ms over LTE in another rig <sup class=\"cite\">[6]</sup>.</li></ul>",
+   "keyNumbers": "<table><thead><tr><th>Stage (frame out, then command back)</th><th>Typical range</th><th>What it depends on</th><th>Source</th></tr></thead><tbody><tr><td>Camera: wait for the next frame</td><td>0-33 ms at 30 fps (average 17); 0-17 ms at 60 fps (average 8)</td><td>Frame rate</td><td><sup class=\"cite\">[1]</sup></td></tr><tr><td>Camera: exposure and sensor readout</td><td>readout is rows times row time: about 30-100 ms for full-frame reads on two 12-14 MP rolling-shutter sensors (about 10 and 31 microseconds per row), proportionally less for fewer rows (720 rows at 10 microseconds is about 7 ms); exposure adds more in dim light</td><td>Rows read, sensor speed, lighting</td><td><sup class=\"cite\">[16]</sup></td></tr><tr><td>Camera stage as measured end to end</td><td>whole G2G as low as 8 ms with a 300 fps lab camera; about 120 ms camera share in a vehicle teleoperation rig</td><td>Camera buffering and drivers</td><td><sup class=\"cite\">[1]</sup><sup class=\"cite\">[3]</sup></td></tr><tr><td>Image signal processing (color, denoise, scaling)</td><td>about 4-8 ms per 1080p frame and about 27 ms per 4K frame for one ISP running on an NVIDIA Jetson Orin's vision accelerator</td><td>Resolution; whether a dedicated ISP block, accelerator, or GPU does it</td><td><sup class=\"cite\">[19]</sup></td></tr><tr><td>Encode</td><td>buffering up to about one frame interval when the encoder buffer is one frame (bitrate divided by frame rate), as NVIDIA recommends; one rig: frames published every 30 ms plus about 9 ms of server processing, codec not stated</td><td>B-frames, lookahead, buffer size</td><td><sup class=\"cite\">[3]</sup><sup class=\"cite\">[11]</sup></td></tr><tr><td>Packetize and send (serialization)</td><td>about 1-15 ms (a 20.8 kb frame at 1.38 Mb/s takes 15 ms)</td><td>Frame size versus uplink rate</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Network one way</td><td>fiber floor about 200 km per ms: 50 km 0.25 ms, 1,000 km 5 ms, MIT to San Diego (about 3,000 miles, 4,800 km) at least 24 ms; backbone one way about 7 ms (Europe) to 56 ms (trans-Pacific); LTE added about 35 ms (median) in one rig</td><td>Distance, routing, last-mile link</td><td><sup class=\"cite\">[4]</sup><sup class=\"cite\">[5]</sup><sup class=\"cite\">[6]</sup><sup class=\"cite\">[13]</sup></td></tr><tr><td>Jitter buffer</td><td>about 0 ms (wired LAN) to tens of ms; must cover the arrival spread, and LTE round trips from a moving car had a 29.5 ms standard deviation in one study</td><td>Measured jitter</td><td><sup class=\"cite\">[14]</sup></td></tr><tr><td>Decode</td><td>up to about 10 ms (one rig: 10.5 ms of receive-side processing, decoding not broken out)</td><td>Hardware decoder, resolution</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Display</td><td>average half the refresh interval: 8.3 ms at 60 Hz, 4.2 ms at 120 Hz, plus the panel's own processing</td><td>Refresh rate, monitor mode</td><td><sup class=\"cite\">[1]</sup><sup class=\"cite\">[3]</sup></td></tr><tr><td>Human perception and reaction</td><td>about 213-231 ms mean for a simple visual reaction; longer for decisions</td><td>Task, practice</td><td><sup class=\"cite\">[12]</sup></td></tr><tr><td>Input device sampling</td><td>about 1-5 ms (measured about 2 ms, up to 5 ms); a wait for the next poll averages half the polling interval: 4 ms at 125 Hz, 0.5 ms at 1000 Hz (arithmetic)</td><td>USB polling interval</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Command send (network one way)</td><td>same physics as above; one 5G rig measured an average 10.3 ms for its TCP command packets (direction not stated)</td><td>Distance, link</td><td><sup class=\"cite\">[3]</sup></td></tr><tr><td>Robot receive and controller cycle</td><td>2 ms per cycle at 500 Hz to 10 ms at 100 Hz; the budget counts a whole cycle: about half a cycle waiting for the next read, plus receive and processing (illustrative)</td><td>Controller and bridge rates</td><td><sup class=\"cite\">[3]</sup><sup class=\"cite\">[10]</sup></td></tr><tr><td>Motion: command to visible movement</td><td>an arm's command smoothing alone can span 30-200 ms (the allowed range of UR's servoj lookahead setting); an estimated 270 ms for a car's steering actuator</td><td>Acceleration limits, smoothing filters, servo tuning</td><td><sup class=\"cite\">[3]</sup><sup class=\"cite\">[17]</sup></td></tr></tbody></table><ul><li>Human-factors targets: about 20 ms motion-to-photon, below which VR users generally do not notice delay <sup class=\"cite\">[2]</sup>; below 150 ms one way for transparent interactivity <sup class=\"cite\">[7]</sup>; 100 ms or less for telesurgery <sup class=\"cite\">[8]</sup>.</li><li>Measured totals: G2G about 193 ms and end-to-end about 500 ms on a 5G driving rig <sup class=\"cite\">[3]</sup>; G2G 150-200 ms over LTE in another rig <sup class=\"cite\">[6]</sup>.</li></ul>",
    "specs": null,
    "code": {
     "lang": "python",
-    "text": "# Ride 3 latency budget: grape-station takeover, operator 1,000 km away.\n# Values in ms are ILLUSTRATIVE, chosen inside the sourced ranges in Key numbers.\n# (stage, untuned, tuned, what changed)\nBUDGET = [\n    # --- video frame out (glass-to-glass) ---\n    (\"camera: wait for next frame\", 16.7,  8.3, \"30 -> 60 fps\"),\n    (\"camera: exposure + readout\",  15.0,  5.0, \"brighter light, shorter exposure\"),\n    (\"image signal processing\",      5.0,  3.0, \"on-chip ISP, no extra GPU copy\"),\n    (\"encode\",                      70.0,  5.0, \"no B-frames, no lookahead, 1-frame buffer\"),\n    (\"packetize + send\",            15.0,  4.0, \"steady frame sizes (intra refresh, CBR)\"),\n    (\"network one way\",             48.0, 12.0, \"LTE (+35 ms) -> wired; fiber floor is 5 ms\"),\n    (\"jitter buffer\",               80.0, 15.0, \"wired link has little jitter\"),\n    (\"decode\",                       8.0,  4.0, \"hardware decoder\"),\n    (\"display\",                     18.0,  9.0, \"60 Hz -> 120 Hz, monitor game mode\"),\n    # --- operator (not counted: humans track continuously, ~213-231 ms simple reaction) ---\n    # --- command back (motion-to-motion) ---\n    (\"input device sampling\",        8.0,  1.0, \"125 Hz -> 1000 Hz USB polling\"),\n    (\"command network one way\",     48.0, 12.0, \"same link as video\"),\n    (\"robot receive + control cycle\", 10.0, 2.0, \"100 Hz bridge -> 500 Hz interface\"),\n    (\"motion starts\",               60.0, 30.0, \"lighter command smoothing filter\"),\n]\n\ndef total(col):\n    return sum(row[col] for row in BUDGET)\n\nprint(f\"untuned loop: {total(1):.0f} ms\")   # ~402 ms\nprint(f\"tuned loop:   {total(2):.0f} ms\")   # ~110 ms both ways, under the 150 ms one-way guideline\nfor stage, before, after, why in sorted(BUDGET, key=lambda r: r[2] - r[1]):\n    print(f\"{stage:32s} saves {before - after:5.1f} ms  ({why})\")\n# Biggest savings: encoder settings and the jitter buffer, not raw distance.",
-    "html": "<pre class=\"code\"><code data-lang=\"python\"># Ride 3 latency budget: grape-station takeover, operator 1,000 km away.\n# Values in ms are ILLUSTRATIVE, chosen inside the sourced ranges in Key numbers.\n# (stage, untuned, tuned, what changed)\nBUDGET = [\n    # --- video frame out (glass-to-glass) ---\n    (&quot;camera: wait for next frame&quot;, 16.7,  8.3, &quot;30 -&gt; 60 fps&quot;),\n    (&quot;camera: exposure + readout&quot;,  15.0,  5.0, &quot;brighter light, shorter exposure&quot;),\n    (&quot;image signal processing&quot;,      5.0,  3.0, &quot;on-chip ISP, no extra GPU copy&quot;),\n    (&quot;encode&quot;,                      70.0,  5.0, &quot;no B-frames, no lookahead, 1-frame buffer&quot;),\n    (&quot;packetize + send&quot;,            15.0,  4.0, &quot;steady frame sizes (intra refresh, CBR)&quot;),\n    (&quot;network one way&quot;,             48.0, 12.0, &quot;LTE (+35 ms) -&gt; wired; fiber floor is 5 ms&quot;),\n    (&quot;jitter buffer&quot;,               80.0, 15.0, &quot;wired link has little jitter&quot;),\n    (&quot;decode&quot;,                       8.0,  4.0, &quot;hardware decoder&quot;),\n    (&quot;display&quot;,                     18.0,  9.0, &quot;60 Hz -&gt; 120 Hz, monitor game mode&quot;),\n    # --- operator (not counted: humans track continuously, ~213-231 ms simple reaction) ---\n    # --- command back (motion-to-motion) ---\n    (&quot;input device sampling&quot;,        8.0,  1.0, &quot;125 Hz -&gt; 1000 Hz USB polling&quot;),\n    (&quot;command network one way&quot;,     48.0, 12.0, &quot;same link as video&quot;),\n    (&quot;robot receive + control cycle&quot;, 10.0, 2.0, &quot;100 Hz bridge -&gt; 500 Hz interface&quot;),\n    (&quot;motion starts&quot;,               60.0, 30.0, &quot;lighter command smoothing filter&quot;),\n]\n\ndef total(col):\n    return sum(row[col] for row in BUDGET)\n\nprint(f&quot;untuned loop: {total(1):.0f} ms&quot;)   # ~402 ms\nprint(f&quot;tuned loop:   {total(2):.0f} ms&quot;)   # ~110 ms both ways, under the 150 ms one-way guideline\nfor stage, before, after, why in sorted(BUDGET, key=lambda r: r[2] - r[1]):\n    print(f&quot;{stage:32s} saves {before - after:5.1f} ms  ({why})&quot;)\n# Biggest savings: encoder settings and the jitter buffer, not raw distance.</code></pre>"
+    "text": "# Ride 3 latency budget: grape-station takeover, operator 1,000 km away.\n# Values in ms are ILLUSTRATIVE, chosen inside the sourced ranges in Key numbers.\n# (stage, untuned, tuned, what changed)\nBUDGET = [\n    # --- video frame out (glass-to-glass) ---\n    (\"camera: wait for next frame\", 16.7,  8.3, \"30 -> 60 fps\"),\n    (\"camera: exposure + readout\",  15.0,  5.0, \"brighter light, shorter exposure\"),\n    (\"image signal processing\",      5.0,  3.0, \"on-chip ISP, no extra GPU copy\"),\n    (\"encode\",                      70.0,  5.0, \"no B-frames, no lookahead, 1-frame buffer\"),\n    (\"packetize + send\",            15.0,  4.0, \"steady frame sizes (intra refresh, CBR)\"),\n    (\"network one way\",             48.0, 12.0, \"LTE (+35 ms) -> wired; fiber floor is 5 ms\"),\n    (\"jitter buffer\",               80.0, 15.0, \"wired link has little jitter\"),\n    (\"decode\",                       8.0,  4.0, \"hardware decoder\"),\n    (\"display\",                     18.0,  9.0, \"60 Hz -> 120 Hz, monitor game mode\"),\n    # --- operator (not counted: humans track continuously, ~213-231 ms simple reaction) ---\n    # --- command back (motion-to-motion) ---\n    (\"input device sampling\",        4.0,  0.5, \"125 Hz -> 1000 Hz USB polling (half a poll on average)\"),\n    (\"command network one way\",     48.0, 12.0, \"same link as video\"),\n    (\"robot receive + control cycle\", 10.0, 2.0, \"100 Hz bridge -> 500 Hz interface (a whole cycle: wait + receive)\"),\n    (\"motion starts\",               60.0, 30.0, \"lighter command smoothing filter\"),\n]\n\ndef total(col):\n    return sum(row[col] for row in BUDGET)\n\nprint(f\"untuned loop: {total(1):.0f} ms\")   # ~398 ms\nprint(f\"tuned loop:   {total(2):.0f} ms\")   # ~110 ms both ways, under the 150 ms one-way guideline\nfor stage, before, after, why in sorted(BUDGET, key=lambda r: r[2] - r[1]):\n    print(f\"{stage:32s} saves {before - after:5.1f} ms  ({why})\")\n# Biggest savings: encoder settings and the jitter buffer, not raw distance.",
+    "html": "<pre class=\"code\"><code data-lang=\"python\"># Ride 3 latency budget: grape-station takeover, operator 1,000 km away.\n# Values in ms are ILLUSTRATIVE, chosen inside the sourced ranges in Key numbers.\n# (stage, untuned, tuned, what changed)\nBUDGET = [\n    # --- video frame out (glass-to-glass) ---\n    (&quot;camera: wait for next frame&quot;, 16.7,  8.3, &quot;30 -&gt; 60 fps&quot;),\n    (&quot;camera: exposure + readout&quot;,  15.0,  5.0, &quot;brighter light, shorter exposure&quot;),\n    (&quot;image signal processing&quot;,      5.0,  3.0, &quot;on-chip ISP, no extra GPU copy&quot;),\n    (&quot;encode&quot;,                      70.0,  5.0, &quot;no B-frames, no lookahead, 1-frame buffer&quot;),\n    (&quot;packetize + send&quot;,            15.0,  4.0, &quot;steady frame sizes (intra refresh, CBR)&quot;),\n    (&quot;network one way&quot;,             48.0, 12.0, &quot;LTE (+35 ms) -&gt; wired; fiber floor is 5 ms&quot;),\n    (&quot;jitter buffer&quot;,               80.0, 15.0, &quot;wired link has little jitter&quot;),\n    (&quot;decode&quot;,                       8.0,  4.0, &quot;hardware decoder&quot;),\n    (&quot;display&quot;,                     18.0,  9.0, &quot;60 Hz -&gt; 120 Hz, monitor game mode&quot;),\n    # --- operator (not counted: humans track continuously, ~213-231 ms simple reaction) ---\n    # --- command back (motion-to-motion) ---\n    (&quot;input device sampling&quot;,        4.0,  0.5, &quot;125 Hz -&gt; 1000 Hz USB polling (half a poll on average)&quot;),\n    (&quot;command network one way&quot;,     48.0, 12.0, &quot;same link as video&quot;),\n    (&quot;robot receive + control cycle&quot;, 10.0, 2.0, &quot;100 Hz bridge -&gt; 500 Hz interface (a whole cycle: wait + receive)&quot;),\n    (&quot;motion starts&quot;,               60.0, 30.0, &quot;lighter command smoothing filter&quot;),\n]\n\ndef total(col):\n    return sum(row[col] for row in BUDGET)\n\nprint(f&quot;untuned loop: {total(1):.0f} ms&quot;)   # ~398 ms\nprint(f&quot;tuned loop:   {total(2):.0f} ms&quot;)   # ~110 ms both ways, under the 150 ms one-way guideline\nfor stage, before, after, why in sorted(BUDGET, key=lambda r: r[2] - r[1]):\n    print(f&quot;{stage:32s} saves {before - after:5.1f} ms  ({why})&quot;)\n# Biggest savings: encoder settings and the jitter buffer, not raw distance.</code></pre>"
    },
    "sources": [
     {
@@ -13777,9 +13777,9 @@ export const CONTENT = {
         "why": "Rated speed is not the limit: this one already runs at under 3% of its rating. A faster model adds nothing to line output."
        },
        {
-        "text": "How rarely it double-feeds or jams with molded fiber trays, and how long a magazine lasts",
+        "text": "How rarely it jams or double-feeds, and how long a magazine of trays lasts",
         "correct": true,
-        "why": "At this rate, output is lost to jams, double feeds, and refills, and every stop at the first station starves all the stations after it."
+        "why": "At this rate, output is lost to jams, double feeds of molded fiber trays, and refills, and every stop at the first station starves all the stations after it."
        },
        {
         "text": "Very little: at under 3% of its rating it will barely wear, so it will seldom fail",
@@ -13823,9 +13823,9 @@ export const CONTENT = {
         "why": "On an indexing belt each robot places onto a stationary tray, so placing needs no tracking for the tray."
        },
        {
-        "text": "The apple and cheese robots, which pick from continuously moving ingredient belts",
+        "text": "The apple and cheese robots, which pick from moving belts",
         "correct": true,
-        "why": "They place onto a still tray but pick slices and wedges on the move, using a camera plus conveyor tracking to predict where each one is now."
+        "why": "Their ingredient belts run continuously. They place onto a still tray but pick slices and wedges on the move, using a camera plus conveyor tracking to predict where each one is now."
        },
        {
         "text": "Only the grape arm, because its bunches lie at random angles",
@@ -13856,7 +13856,7 @@ export const CONTENT = {
       "prompt": "<p>Someone has to go into the grape cell to free a tangled bunch. Which setup actually keeps them safe?</p>",
       "options": [
        {
-        "text": "A warning light and a sign on the door",
+        "text": "A flashing warning light over the door and a clear sign telling people to keep out",
         "correct": false,
         "why": "Lights and signs are awareness devices: they only warn. Nothing stops the arm if someone walks in anyway."
        },
@@ -13871,9 +13871,9 @@ export const CONTENT = {
         "why": "An arm that looks paused may simply be waiting for its next tray. People cannot predict a robot's next motion, which is why guarding exists."
        },
        {
-        "text": "An interlocked door that stops the arm when opened, plus locking the power off before going in",
+        "text": "An interlocked door, plus locking out the power first",
         "correct": true,
-        "why": "The interlock feeds the safety circuit, and lockout/tagout covers the maintenance work during which many robot accidents happen."
+        "why": "The interlock stops the arm when the door opens and feeds the safety circuit, and lockout/tagout (each worker locks the power off before going in) covers the maintenance work during which many robot accidents happen."
        }
       ]
      }
@@ -13941,9 +13941,9 @@ export const CONTENT = {
       "prompt": "<p>The spec says IP67. Suppose the daily washdown sprays the cracker robot with hot high-pressure jets. Which statement is true?</p>",
       "options": [
        {
-        "text": "Neither IP65 nor IP67 proves a machine survives an 80 bar, 80 C jet from 10 cm, so ask for IP69K plus IP67",
+        "text": "Ask for IP69K as well as IP67, since neither IP65 nor IP67 tests hot high-pressure jets",
         "correct": true,
-        "why": "Each water digit is its own test, and none checks cleaning chemicals, so chemical resistance has to be confirmed separately."
+        "why": "Of these ratings, only IP69K's test (the same jet as water digit 9) sprays an 80 bar, 80 C jet from 10 cm. Each water digit is its own test, and none checks cleaning chemicals, so chemical resistance has to be confirmed separately."
        },
        {
         "text": "IP67 is a higher number than IP65, so an IP67 robot has also passed the IP65 jet test",
@@ -13999,9 +13999,9 @@ export const CONTENT = {
         "why": "Shape matters as much as material. Open tube ends, bolted metal-to-metal joints, and flat ledges trap water and food soil even in stainless steel."
        },
        {
-        "text": "The cold slows Listeria but does not stop it, so the daily washdown matters more than the temperature",
+        "text": "The cold only slows Listeria, so the washdown matters more than the temperature",
         "correct": true,
-        "why": "Listeria can also be hard to remove once it is in a plant, which is why equipment is shaped so the washdown reaches every surface."
+        "why": "Cold does not stop Listeria, so the daily washdown does the real work. Listeria can also be hard to remove once it is in a plant, which is why equipment is shaped so the washdown reaches every surface."
        }
       ]
      }
@@ -14068,12 +14068,12 @@ export const CONTENT = {
       "prompt": "<p>The lidder stops and the HMI marks it &quot;blocked&quot;. Inspection and every pick station before it also stop. Where is the problem most likely?</p>",
       "options": [
        {
-        "text": "Inside the lidder, which has jammed",
+        "text": "Inside the lidder itself, which has jammed on a crooked lid or tray",
         "correct": false,
         "why": "A jam shows as faulted. Blocked means the lidder works but has nowhere to send plates."
        },
        {
-        "text": "Downstream at the outfeed, where a full rack has not been swapped",
+        "text": "Downstream at the outfeed: a full rack not yet swapped",
         "correct": true,
         "why": "Blocked means no room downstream, and a full rack backs trays up through lidding and inspection until the pick stations stop."
        },
@@ -14126,7 +14126,7 @@ export const CONTENT = {
         "why": "Signs and lights are awareness devices: they warn but stop nothing, so they cannot make up for a curtain that is too close."
        },
        {
-        "text": "The stopping time must be measured again, and the curtain moved farther out if needed",
+        "text": "Measure the stopping time again, and move the curtain farther out if needed",
         "correct": true,
         "why": "Minimum distance is hand speed × total stopping time, so a slower stop needs more distance."
        }
@@ -14280,9 +14280,9 @@ export const CONTENT = {
         "why": "A normal PLC looks at its inputs only at the start of each scan; signals too fast for that go to dedicated counter modules."
        },
        {
-        "text": "The program may see it up to about 11 ms later, which is harmless here because the tray is stopped and the next one is 18 s away",
+        "text": "Up to about 11 ms, which is harmless because the tray is stopped",
         "correct": true,
-        "why": "Total delay is sensor time plus up to one scan, and delay only turns into position error when something is moving."
+        "why": "Total delay is sensor time plus up to one scan, and delay only turns into position error when something is moving. Here the tray is stopped and the next one is 18 s away."
        },
        {
         "text": "A faster photo-eye would bring the delay close to zero",
@@ -14311,14 +14311,14 @@ export const CONTENT = {
       "prompt": "<p>The detector keeps missing bunches that sit in glare from the overhead lamp. Which change is most likely to fix it?</p>",
       "options": [
        {
-        "text": "A camera with twice the pixels",
-        "correct": false,
-        "why": "More pixels do not remove glare, and on the same cable twice the pixels roughly halves the frame rate."
-       },
-       {
         "text": "Different lighting, such as a diffuse dome light",
         "correct": true,
         "why": "Diffuse light removes glare on shiny or curved surfaces, and lighting is among the most important factors in reliable vision."
+       },
+       {
+        "text": "A camera with twice the pixels",
+        "correct": false,
+        "why": "More pixels do not remove glare, and on the same cable twice the pixels roughly halves the frame rate."
        },
        {
         "text": "Recalibrating the camera's lens",
@@ -14352,6 +14352,11 @@ export const CONTENT = {
       "prompt": "<p>To see more of the tote, someone proposes mounting a stereo depth camera twice as high. Area 4's worked example puts its depth error at about 2 mm at 1 m. What should they expect at 2 m?</p>",
       "options": [
        {
+        "text": "About 1 mm, since a wider view averages out the error",
+        "correct": false,
+        "why": "Distance makes stereo depth worse, not better, which is why area 4's apple example moves its plate-mounted camera in close for the final look."
+       },
+       {
         "text": "About 2 mm, since datasheet accuracy holds at any distance",
         "correct": false,
         "why": "Datasheet figures come from friendly test conditions, and stereo error changes a lot with distance."
@@ -14365,11 +14370,6 @@ export const CONTENT = {
         "text": "About 8 mm, since stereo error grows with the square of distance",
         "correct": true,
         "why": "Far objects shift fewer pixels between the two views, so the same fraction-of-a-pixel matching error costs four times the depth at twice the distance."
-       },
-       {
-        "text": "About 1 mm, since a wider view averages out the error",
-        "correct": false,
-        "why": "Distance makes stereo depth worse, not better, which is why area 4's apple example moves its plate-mounted camera in close for the final look."
        }
       ]
      }
@@ -14395,22 +14395,22 @@ export const CONTENT = {
       "prompt": "<p>The grape model marks a bunch with confidence 0.95. What does that number tell you?</p>",
       "options": [
        {
-        "text": "The pick will succeed 95% of the time",
+        "text": "The pick will succeed 95% of the time, so about 1 pick in 20 will fail",
         "correct": false,
         "why": "It scores the detection, not the whole pick, and even as a detection score it is not a measured probability."
        },
        {
-        "text": "It is a score; how often 0.95 detections are right has to be measured on images from the real line",
+        "text": "A score: how often 0.95 is right must be measured on the line",
         "correct": true,
-        "why": "Networks are often overconfident, so teams set thresholds from counted hits and misses, and recount after any change of lighting, camera, or product."
+        "why": "The count has to come from images from the real line. Networks are often overconfident, so teams set thresholds from counted hits and misses, and recount after any change of lighting, camera, or product."
        },
        {
-        "text": "95% of the outlined pixels belong to the bunch",
+        "text": "95% of the pixels inside the outline belong to the bunch, not the background",
         "correct": false,
         "why": "The mask lists the pixels; the confidence is a separate score for the detection as a whole."
        },
        {
-        "text": "Nothing useful, so every detection should be used",
+        "text": "Nothing useful, so every detection should be used whatever its score",
         "correct": false,
         "why": "A low-confidence detection is a normal failure that the sequencing logic routes to a new picture or a skip."
        }
@@ -14443,11 +14443,6 @@ export const CONTENT = {
         "why": "Repeatability only promises a return to a taught point; camera-guided targets depend on calibration and accuracy."
        },
        {
-        "text": "They land about 5 mm off, consistently, until hand-eye calibration is redone",
-        "correct": true,
-        "why": "The miss is about the angle in radians times the distance, and because the error is fixed, the robot misses confidently every time."
-       },
-       {
         "text": "They scatter randomly by about 0.5 mm",
         "correct": false,
         "why": "A moved camera gives a consistent offset, not scatter, and at 600 mm half a degree is about 5 mm."
@@ -14456,6 +14451,11 @@ export const CONTENT = {
         "text": "Recalibrating the lens intrinsics fixes it",
         "correct": false,
         "why": "The lens did not change; a moved mount needs a new hand-eye calibration."
+       },
+       {
+        "text": "They land about 5 mm off, consistently, until hand-eye calibration is redone",
+        "correct": true,
+        "why": "The miss is about the angle in radians times the distance, and because the error is fixed, the robot misses confidently every time."
        }
       ]
      }
@@ -14481,14 +14481,14 @@ export const CONTENT = {
       "prompt": "<p>The planner's top-scoring grasp needs a wrist tilt that would push a joint past its limit. What should happen?</p>",
       "options": [
        {
-        "text": "Run it anyway, since the score already accounts for everything",
-        "correct": false,
-        "why": "The score rates the contact on the bunch, not whether the arm can get there."
-       },
-       {
         "text": "Drop it and try the next-best candidate, without taking a new picture",
         "correct": true,
         "why": "Planners rank candidates and walk down the list until one passes reach, collision, and placement checks."
+       },
+       {
+        "text": "Run it anyway, since the score already accounts for everything",
+        "correct": false,
+        "why": "The score rates the contact on the bunch, not whether the arm can get there."
        },
        {
         "text": "Stop the line and call a technician",
@@ -14524,19 +14524,19 @@ export const CONTENT = {
       "prompt": "<p>Someone leaves a cleaning brush in a corner of the tote. Nobody adds it to the planning scene, and no sensor sees it. The planner reports a collision-free path. What follows?</p>",
       "options": [
        {
-        "text": "The arm cannot hit the brush, because the path was checked",
+        "text": "The arm cannot hit the brush, because the planner checked the whole path for collisions",
         "correct": false,
         "why": "The checker knows only its model; an object missing from the planning scene does not exist for it."
-       },
-       {
-        "text": "The arm may hit it, because collision checking is only as good as its model",
-        "correct": true,
-        "why": "That is why cells keep padding, physical guarding, and certified safety functions; the planner's check is a planning aid."
        },
        {
         "text": "The planner refuses to plan because something seems wrong",
         "correct": false,
         "why": "A planner senses nothing; it tests postures against the scene it was given."
+       },
+       {
+        "text": "The arm may hit it, because collision checking is only as good as its model",
+        "correct": true,
+        "why": "That is why cells keep padding, physical guarding, and certified safety functions; the planner's check is a planning aid."
        },
        {
         "text": "Trajectory generation slows the arm near the brush",
@@ -14566,14 +14566,9 @@ export const CONTENT = {
       "prompt": "<p>A bunch lies inside the arm's listed reach, but against the far tote wall, and the grasp needs a steep wrist tilt. Can the arm do it?</p>",
       "options": [
        {
-        "text": "Yes, because inside the reach envelope means reachable",
+        "text": "Yes, because any point inside the listed reach envelope is reachable",
         "correct": false,
         "why": "Listed reach describes position alone; the needed tilt may be impossible at that spot."
-       },
-       {
-        "text": "Not necessarily: IK must succeed for the full six-number pose, within joint limits and away from singularities",
-        "correct": true,
-        "why": "Position and tilt decide together; when IK fails, the software tries another grasp or another bunch."
        },
        {
         "text": "Yes, if the solver iterates long enough, since every pose has a solution",
@@ -14584,6 +14579,11 @@ export const CONTENT = {
         "text": "No, because six-axis arms cannot tilt the gripper",
         "correct": false,
         "why": "Tilting is what the three wrist joints are for, which is why this station gets a six-axis arm."
+       },
+       {
+        "text": "Not necessarily: IK must solve the full six-number pose within joint limits",
+        "correct": true,
+        "why": "The answer must also stay away from singularities. Position and tilt decide together; when IK fails, the software tries another grasp or another bunch."
        }
       ]
      }
@@ -14615,14 +14615,14 @@ export const CONTENT = {
       "prompt": "<p>The policy outputs a wild joint target, far outside the arm's range. What happens next?</p>",
       "options": [
        {
-        "text": "The arm follows it, because the network drives the motors directly",
-        "correct": false,
-        "why": "The policy only outputs targets; the drives and their feedback loops do the moving."
-       },
-       {
         "text": "Hand-written joint limits clamp it, and the safety system can still stop the arm",
         "correct": true,
         "why": "Learned mode replaces the decisions from pixels to joint targets; limits, safety circuits, and cell sequencing stay conventional."
+       },
+       {
+        "text": "The arm follows it, because the network drives the motors directly",
+        "correct": false,
+        "why": "The policy only outputs targets; the drives and their feedback loops do the moving."
        },
        {
         "text": "Nothing can catch it, because learned mode removed the robot controller's checks",
@@ -14665,17 +14665,17 @@ export const CONTENT = {
         "why": "STO only removes torque; the motor coasts, and a gravity-loaded axis drops onto its brake."
        },
        {
-        "text": "The controller brakes the arm along its path under power, then torque is removed and the brakes clamp",
-        "correct": true,
-        "why": "This is a category 1 stop, the kind this design uses for its robots."
-       },
-       {
         "text": "The line PLC's program stops the arm",
         "correct": false,
         "why": "The line PLC can read safety signals but cannot override them; rated safety hardware does the stopping."
        },
        {
-        "text": "The holding brakes stop the moving arm, as they do every time",
+        "text": "The arm is braked on its path under power, then torque is cut and the brakes clamp",
+        "correct": true,
+        "why": "The controller does the braking while the motors still have power. This is a category 1 stop, the kind this design uses for its robots."
+       },
+       {
+        "text": "The motors' holding brakes clamp at once and stop the moving arm, as they do every time",
         "correct": false,
         "why": "Brakes are built to hold; stopping a moving arm uses up a limited budget, such as 2,000 stops on one Beckhoff motor brake."
        }
@@ -14705,24 +14705,24 @@ export const CONTENT = {
       "prompt": "<p>The power fails while the arm holds the bunch above the tray. What keeps the arm from folding down?</p>",
       "options": [
        {
-        "text": "The motors hold position on their own",
+        "text": "The servo motors keep holding their last position on their own",
         "correct": false,
         "why": "A servo motor holds only while it is powered and controlled."
        },
        {
-        "text": "Each joint's holding brake clamps the motor shaft as power drops, and the gear ratio multiplies its hold",
-        "correct": true,
-        "why": "The brake is fail-safe: a power cut, a broken cable, or an emergency stop all leave it clamped."
-       },
-       {
-        "text": "The encoders lock the joints in place",
+        "text": "The encoders lock each joint at its last measured angle",
         "correct": false,
         "why": "An encoder only measures the angle; it cannot hold anything."
        },
        {
-        "text": "The gearbox's lack of play keeps each joint still",
+        "text": "The gearbox's lack of play keeps each joint still without power",
         "correct": false,
         "why": "Without a brake, gravity turns an unpowered joint backward through its gearbox."
+       },
+       {
+        "text": "Each joint's holding brake, which clamps as power drops",
+        "correct": true,
+        "why": "The brake clamps the motor shaft, and the gear ratio multiplies its hold. It is fail-safe: a power cut, a broken cable, or an emergency stop all leave it clamped."
        }
       ]
      }
@@ -14744,28 +14744,28 @@ export const CONTENT = {
      "delay": null,
      "mode": "both",
      "replaces": [],
-     "plain": "<p>All six joints turn together, and the arm swings into a new pose over the bunch. Like a human arm, it has a waist, a shoulder, an elbow, and a wrist that bends and twists, so it can reach the bunch and tilt the fingers to match how it lies. Those six separate motions are why this guide gives the grape station this kind of arm, a judgment call rather than a rule.</p>",
+     "plain": "<p>All six joints turn together: the arm reaches into the tote, the fingers close on the bunch, and the arm swings it over to the tray. Like a human arm, it has a waist, a shoulder, an elbow, and a wrist that bends and twists, so it can reach the bunch and tilt the fingers to match how it lies. Those six separate motions are why this guide gives the grape station this kind of arm, a judgment call rather than a rule.</p>",
      "precise": "<p><a class=\"concept-link\" href=\"#concept/dof\" data-concept=\"dof\">Degrees of freedom</a> (DoF: the number of independent motions needed to say where every part of the robot is) decide which tool poses (position plus orientation) are possible. Placing a tool anywhere and pointing it any way takes six: three for position, three for orientation. In a six-axis arm the first three joints (base, shoulder, elbow) mostly place the wrist, and the last three mostly set which way the fingers point. The apple station only lifts, turns, and sets down flat slices, which a 4-axis delta (an overhead robot whose gripper plate stays level) can do; it cannot tilt its gripper.</p><p>Spec sheets add reach (the farthest the wrist gets, often only with the tool pointing one way), payload (the most mass allowed at the flange, the arm's mounting plate, gripper included), and repeatability (how tightly it returns to a taught point: 0.02-0.025 mm on ABB's hygienic IRB 1200). Accuracy (landing on a point given only as numbers) is far weaker: ABB puts the typical gap on an uncalibrated arm at 8-15 mm, and about 0.5 mm with its per-robot calibration.</p><p>Speed is no constraint at 18 s per bunch; reaching into the tote is. Temperature can be: the IRB 1200 lists +5 °C as its lowest operating temperature, so it is not rated for the 2-4 °C room, and the station needs an arm rated for the cold. Without six DoF, some grasp poses are impossible, however good the software is.</p>",
      "question": {
       "prompt": "<p>Why not give the apple station a six-axis arm too, since it can do everything a delta can?</p>",
       "options": [
+       {
+        "text": "Apple picks are top-down, so a 4-axis delta covers them",
+        "correct": true,
+        "why": "Two more joints would add motors, mass, cost, and error sources the job never uses. A six-axis arm earns its cost only when the tool must tilt or reach around things, as at the grape tote. The delta also runs the standard pick loop faster (about 0.3 s against 0.42 s), though at 18 s per plate that speed matters little."
+       },
        {
         "text": "It should, because more degrees of freedom are always better",
         "correct": false,
         "why": "Extra DoF help only when the task uses them, and a top-down pick never tilts the gripper."
        },
        {
-        "text": "Apple picks are top-down, which a 4-axis delta fully covers; two more joints would add motors, mass, cost, and error sources the job never uses",
-        "correct": true,
-        "why": "A six-axis arm earns its cost only when the tool must tilt or reach around things, as at the grape tote. The delta also runs the standard pick loop faster (about 0.3 s against 0.42 s), though at 18 s per plate that speed matters little."
-       },
-       {
-        "text": "A six-axis arm cannot reach far enough",
+        "text": "A six-axis arm cannot reach far enough across the apple belt",
         "correct": false,
         "why": "Six-axis arms span 370-4,683 mm of reach; reach is not the reason."
        },
        {
-        "text": "A delta is more precise than a six-axis arm",
+        "text": "A delta is more precise than a six-axis arm of similar size",
         "correct": false,
         "why": "Small six-axis arms repeat within 0.01-0.025 mm and deltas within 0.03-0.1 mm, so precision is not the reason."
        }
@@ -14798,9 +14798,9 @@ export const CONTENT = {
         "why": "Their squeeze rises with air pressure, and set too high they bruise soft items."
        },
        {
-        "text": "A harder squeeze can pop berries off the stem; soft fingers trade grip force for gentleness",
+        "text": "A harder squeeze can pop berries off or bruise them",
         "correct": true,
-        "why": "That trade-off is built in, which is why soft fingers suit delicate, irregular items rather than every job."
+        "why": "Soft fingers trade grip force for gentleness. That trade-off is built in, which is why soft fingers suit delicate, irregular items rather than every job."
        },
        {
         "text": "The fingers stop bending, because bending comes from the rubber, not the air",
@@ -14926,9 +14926,9 @@ export const CONTENT = {
         "why": "Most soft grippers feel nothing and simply curl to a set air pressure. The check has to come from somewhere else, here a second picture."
        },
        {
-        "text": "Follow a written failure arrow: stop the pick and post a request for help, with a time limit",
+        "text": "Stop the pick and post a request for help, with a time limit",
         "correct": true,
-        "why": "A state machine handles only the failures someone wrote down. A help state with a timeout keeps the line moving at 18 s per plate."
+        "why": "This follows a written failure arrow. A state machine handles only the failures someone wrote down. A help state with a timeout keeps the line moving at 18 s per plate."
        },
        {
         "text": "Retry the same grasp until it works",
@@ -14967,9 +14967,9 @@ export const CONTENT = {
         "why": "The robot runs on its own and the person answers a narrow question, such as where the stem is. Waymo, for example, states that its remote agents advise and do not drive."
        },
        {
-        "text": "An answer that takes a few seconds still works, and one operator can serve many robots",
+        "text": "A few seconds of delay is fine, and one operator can serve many robots",
         "correct": true,
-        "why": "The robot plans and executes the motion itself, so the person is outside the control loop. Direct control ties up one operator per robot for the whole takeover."
+        "why": "An answer that takes a few seconds still works: the robot plans and executes the motion itself, so the person is outside the control loop. Direct control ties up one operator per robot for the whole takeover."
        },
        {
         "text": "Direct control needs more bandwidth, and bandwidth is the main cost of teleoperation",
@@ -15024,9 +15024,9 @@ export const CONTENT = {
         "why": "Network time depends on distance and the link, not on how often pictures are taken. At 60 fps there are more frames to send, not faster ones."
        },
        {
-        "text": "An event waits for the next frame slot, which averages about 17 ms at 30 fps and about 8 ms at 60 fps",
+        "text": "The wait for the next frame slot halves, about 17 to 8 ms",
         "correct": true,
-        "why": "This is a wait, not work: it costs half a frame interval on average, so a faster frame rate shrinks it directly."
+        "why": "An event waits for the next frame slot: about 17 ms on average at 30 fps, 8 ms at 60. This is a wait, not work: it costs half a frame interval on average, so a faster frame rate shrinks it directly."
        }
       ]
      }
@@ -15055,9 +15055,9 @@ export const CONTENT = {
       "prompt": "<p>The operator says the video lags. A teammate proposes switching the codec from H.264 to AV1. Which change would most likely cut the lag?</p>",
       "options": [
        {
-        "text": "Keep H.264 and turn off B-frames and lookahead, with a one-frame encoder buffer",
+        "text": "Keep H.264, but turn off B-frames and lookahead",
         "correct": true,
-        "why": "Encoder delay comes mostly from settings. In area 9's budget this takes the stage from about 70 ms to about 5 ms."
+        "why": "Encoder delay comes mostly from settings. With a one-frame encoder buffer as well, area 9's budget takes the stage from about 70 ms to about 5 ms."
        },
        {
         "text": "Switch to AV1, since newer codecs are faster",
@@ -15070,7 +15070,7 @@ export const CONTENT = {
         "why": "Bitrate trades against quality, not delay. The encoder still waits for future frames, and bigger frames take longer to push onto the link."
        },
        {
-        "text": "Make every frame a keyframe, so no frame depends on another",
+        "text": "Make every frame a keyframe, so no frame ever has to wait for or depend on another",
         "correct": false,
         "why": "That does remove the wait for future frames, but complete pictures are large, so every frame takes longer to push onto the link, and lookahead can still hold frames back. Intra refresh repairs the picture without those bursts."
        }
@@ -15108,9 +15108,9 @@ export const CONTENT = {
         "why": "Both travel at the same physical speed, about 200 km per millisecond in fiber. The difference is what happens after a loss."
        },
        {
-        "text": "A resent packet would arrive after its frame was needed, and under TCP every later frame would wait for it",
+        "text": "Resends arrive too late, and under TCP later frames wait behind them",
         "correct": true,
-        "why": "At 30 fps a frame is due every 33 ms, and a resend takes at least one round trip. UDP lets the receiver skip the gap and move on."
+        "why": "A resent packet would arrive after its frame was needed: at 30 fps a frame is due every 33 ms, and a resend takes at least one round trip. Under TCP every later frame would wait for it. UDP lets the receiver skip the gap and move on."
        },
        {
         "text": "UDP never loses packets on a good network, so reliability is not needed",
@@ -15118,7 +15118,7 @@ export const CONTENT = {
         "why": "UDP has no resending at all, and loss still happens, for example on plant Wi-Fi. WebRTC handles it with resends that fit the budget, extra recovery data, or intra refresh."
        },
        {
-        "text": "TCP would be fine with Nagle's algorithm turned off",
+        "text": "TCP would work just as well once Nagle's algorithm is turned off",
         "correct": false,
         "why": "Turning off Nagle stops TCP holding back small writes, but a lost packet still blocks everything behind it for at least one round trip."
        }
@@ -15197,9 +15197,9 @@ export const CONTENT = {
       "prompt": "<p>At shift change, bulk uploads of inspection images fill the plant's link. What happens to the operator's view?</p>",
       "options": [
        {
-        "text": "Router queues grow, jitter climbs, the jitter buffer grows to cover it, and the view lags tens of ms more",
+        "text": "The view lags tens of ms more, as queues and jitter grow",
         "correct": true,
-        "why": "Area 9's illustrative case adds 50-80 ms of lag. The fixes are network priority for teleop traffic, a cap on bulk uploads, and an encoder that follows the congestion controller's lower estimate."
+        "why": "Router queues grow, jitter climbs, and the jitter buffer grows to cover it. Area 9's illustrative case adds 50-80 ms of lag. The fixes are network priority for teleop traffic, a cap on bulk uploads, and an encoder that follows the congestion controller's lower estimate."
        },
        {
         "text": "Nothing, as long as the link has spare capacity on average",
@@ -15231,15 +15231,15 @@ export const CONTENT = {
      ],
      "workbench": "wb5-teleop",
      "delay": {
-      "min": 221,
+      "min": 213,
       "max": 239,
-      "mid": 230,
-      "text": "221-239"
+      "mid": 226,
+      "text": "213-239"
      },
      "mode": "both",
      "replaces": [],
      "plain": "<p>A person at a desk watches the video and pushes a hand controller to guide the arm. It is like steering a car by watching a slightly late video of the road: they always react to what happened a moment ago. A simple reaction takes about a fifth of a second, and working out how to untangle two bunches takes longer.</p>",
-     "precise": "<p>This is direct control (the operator's device streams motion targets many times a second and the robot follows them). The device is a SpaceMouse (a 6-DOF puck, meaning six independent directions of motion: push, pull, or twist a knob to move the tool along and around three axes), set up with an enable button that must stay held for any motion, speed capped at 50 mm/s, and the gripper on a button (illustrative settings). It commands velocity, so it needs a dead zone (a small band around the resting position that counts as zero), or a resting hand makes the arm drift. Commands are expressed in the camera's view, so &quot;push away&quot; means away on screen.</p><p>The meter adds a simple visual reaction time, about 213-231 ms mean, plus 8 ms of device sampling (the computer asks the puck for a reading 125 times a second over USB; illustrative). That is a rough stand-in. Decisions take longer, and people predict and move continuously, so delay changes how they work more than it adds one fixed step. Area 9's machine budget leaves the human out for that reason.</p><p>Targets come from human studies. Below 150 ms one way, most applications feel essentially transparent (ITU-T G.114, a telecom standards body's guideline on delay); in a telesurgery study, delays of 100 ms or less were acceptable. At delays of seconds, operators fall back to moving, then waiting to see the result. With about 400 ms of machine delay, this operator is far outside the comfortable zone.</p>",
+     "precise": "<p>This is direct control (the operator's device streams motion targets many times a second and the robot follows them). The device is a SpaceMouse (a 6-DOF puck, meaning six independent directions of motion: push, pull, or twist a knob to move the tool along and around three axes), set up with an enable button that must stay held for any motion, speed capped at 50 mm/s, and the gripper on a button (illustrative settings). It commands velocity, so it needs a dead zone (a small band around the resting position that counts as zero), or a resting hand makes the arm drift. Commands are expressed in the camera's view, so &quot;push away&quot; means away on screen.</p><p>The meter adds a simple visual reaction time, about 213-231 ms mean, plus a wait of 0-8 ms for the next device reading (the computer asks the puck for a reading 125 times a second over USB, so about 4 ms on average; illustrative). That is a rough stand-in. Decisions take longer, and people predict and move continuously, so delay changes how they work more than it adds one fixed step. Area 9's machine budget leaves the human out for that reason.</p><p>Targets come from human studies. Below 150 ms one way, most applications feel essentially transparent (ITU-T G.114, a telecom standards body's guideline on delay); in a telesurgery study, delays of 100 ms or less were acceptable. At delays of seconds, operators fall back to moving, then waiting to see the result. With about 400 ms of machine delay, this operator is far outside the comfortable zone.</p>",
      "question": {
       "prompt": "<p>With about 400 ms of machine delay around the loop, what happens when the operator tries to nudge the bunch quickly?</p>",
       "options": [
@@ -15254,9 +15254,9 @@ export const CONTENT = {
         "why": "The cap limits how far the arm moves during the delay, but the operator still acts on an old picture. It reduces the damage; it does not remove the lag."
        },
        {
-        "text": "They see each result late, so quick corrections overshoot; operators slow down, and at long delays they move and wait",
+        "text": "Each result shows up late, so quick corrections overshoot",
         "correct": true,
-        "why": "If they hold a push until they see the arm move, it has already traveled about 20 mm at the 50 mm/s cap (arithmetic). At a 3.5 s delay, every subject in a 1970 MIT study moved, then waited to see the result."
+        "why": "Operators slow down, and at long delays they move and wait. If they hold a push until they see the arm move and then let go, the arm has gone about 20 mm by the time the release reaches it (50 mm/s times about 400 ms; arithmetic). At a 3.5 s delay, every subject in a 1970 MIT study moved, then waited to see the result."
        },
        {
         "text": "A VR headset would remove the lag by making the view immersive",
@@ -15329,7 +15329,7 @@ export const CONTENT = {
      "mode": "both",
      "replaces": [],
      "plain": "<p>The arm's controller receives the command and starts to move, smoothing it so the arm does not jerk. Like a train's dead-man's pedal, the robot keeps checking that commands are still coming; if they stop, it stops by itself and keeps hold of the bunch. Once the bunch is free and gripped, the robot places it in the tray on its own.</p>",
-     "precise": "<p>Two stages close the loop. The controller cycle (the fixed beat at which new commands are read) is 10 ms at 100 Hz through this setup's bridge, versus 2 ms at 500 Hz through an interface such as Universal Robots' RTDE (a real-time data link into the arm's controller). Then motion: a smoothing filter softens each new target. On one arm the smoothing setting alone spans 30-200 ms; a low value reacts fast, and a high value prevents overshoot. Area 9's budget uses 60 ms (illustrative), so 70 ms in all. In this ride's design, once the bunches are apart and one is gripped, the operator hands control back and the station's own program places it.</p><p>Around the whole loop that is about 402 ms of machine delay, plus the operator's reaction: about 624 ms on the meter. For scale, a measured 5G teleoperated-driving rig had about 500 ms end to end, not counting human reaction.</p><p>Safety stays local. A <a class=\"concept-link\" href=\"#concept/watchdogs\" data-concept=\"watchdogs\">watchdog</a> (a timer that triggers a safe action when an expected signal stops arriving) brings the arm to a controlled stop (braking smoothly to a halt and holding position, rather than cutting power) if no fresh command arrives within 250 ms, keeping the gripper closed so the bunch is not dropped. After 2 s without heartbeats it ends the takeover, parks the arm, and lets the next plate pass without grapes so inspection rejects it (illustrative values). At the 50 mm/s cap, a 250 ms timeout allows up to 12.5 mm of motion before the stop begins (arithmetic), plus braking distance. What breaks without the watchdog: interfaces such as RTDE keep their last input value, so a dropped link could leave a velocity command running. The hardwired emergency stop works whether or not the link is up.</p>",
+     "precise": "<p>Two stages close the loop. The controller cycle (the fixed beat at which new commands are read) is 10 ms at 100 Hz through this setup's bridge, versus 2 ms at 500 Hz through an interface such as Universal Robots' RTDE (a real-time data link into the arm's controller). This stage counts a whole cycle, not the half-cycle average wait of a camera frame or a USB poll: a command waits about half a cycle for the next read, then the bridge needs time to receive it and pass it to the arm (illustrative). Then motion: a smoothing filter softens each new target. On one arm the smoothing setting alone spans 30-200 ms; a low value reacts fast, and a high value prevents overshoot. Area 9's budget uses 60 ms (illustrative), so 70 ms in all. In this ride's design, once the bunches are apart and one is gripped, the operator hands control back and the station's own program places it.</p><p>Around the whole loop that is about 398 ms of machine delay, plus the operator's reaction: about 620 ms on the meter. For scale, a measured 5G teleoperated-driving rig had about 500 ms end to end, not counting human reaction.</p><p>Safety stays local. A <a class=\"concept-link\" href=\"#concept/watchdogs\" data-concept=\"watchdogs\">watchdog</a> (a timer that triggers a safe action when an expected signal stops arriving) brings the arm to a controlled stop (braking smoothly to a halt and holding position, rather than cutting power) if no fresh command arrives within 250 ms, keeping the gripper closed so the bunch is not dropped. After 2 s without heartbeats it ends the takeover, parks the arm, and lets the next plate pass without grapes so inspection rejects it (illustrative values). At the 50 mm/s cap, a 250 ms timeout allows up to 12.5 mm of motion before the stop begins (arithmetic), plus braking distance. What breaks without the watchdog: interfaces such as RTDE keep their last input value, so a dropped link could leave a velocity command running. The hardwired emergency stop works whether or not the link is up.</p>",
      "question": {
       "prompt": "<p>Mid-move, the operator's link drops. What should happen, and where must that decision live?</p>",
       "options": [
@@ -15349,9 +15349,9 @@ export const CONTENT = {
         "why": "The link is the thing that failed, and a stop sent over a network cannot guarantee timing. The guaranteed stop must live on the robot."
        },
        {
-        "text": "The robot's own computer sees no fresh command within its timeout, makes a controlled stop, and keeps hold of the bunch",
+        "text": "The robot's own computer notices the silence and makes a controlled stop",
         "correct": true,
-        "why": "Only the local side can guarantee timing. The remote operator can ask for a stop, but the guarantee that it happens never depends on the network."
+        "why": "It sees no fresh command within its timeout, stops, and keeps hold of the bunch. Only the local side can guarantee timing. The remote operator can ask for a stop, but the guarantee that it happens never depends on the network."
        }
       ]
      }
@@ -15360,9 +15360,9 @@ export const CONTENT = {
    "puzzle": {
     "title": "Get direct control under 150 ms",
     "type": "budget",
-    "prompt": "<p>The meter ended near 624 ms. About 222 ms of that is the operator's own reaction, which no purchase removes. The other 402 ms is machine delay around the loop: video out plus command back. Direct control wants that loop near 150 ms. ITU-T's guideline for essentially transparent interactivity is below 150 ms one way, and this loop covers both directions.</p><p>Choose improvements that bring the machine loop to 150 ms or less within 12 effort points. The model is illustrative: delays and savings come from area 9's budget for this one setup, costs are invented effort points, and savings simply add, which real systems only roughly do.</p>",
+    "prompt": "<p>The meter ended near 620 ms. About 222 ms of that is the operator's own reaction, which no purchase removes. The other 398 ms is machine delay around the loop: video out plus command back. Direct control wants that loop near 150 ms. ITU-T's guideline for essentially transparent interactivity is below 150 ms one way, and this loop covers both directions.</p><p>The ride's meter showed where the machine delay sits: capture about 37 ms (including the wait for the next frame), encode 70 ms, send 15 ms, the network 48 ms each way, decode and display about 106 ms (80 ms of it the jitter buffer), the wait for the next device reading about 4 ms, and the arm 70 ms (a 10 ms controller cycle plus 60 ms of smoothing).</p><p>Choose improvements that bring the machine loop to 150 ms or less within 12 effort points. The model is illustrative: delays and savings come from area 9's budget for this one setup, costs are invented effort points, and savings simply add, which real systems only roughly do.</p>",
     "data": {
-     "start_ms": 402,
+     "start_ms": 398,
      "target_ms": 150,
      "budget": 12,
      "unit": "effort points",
@@ -15398,16 +15398,16 @@ export const CONTENT = {
       {
        "id": "input-polling",
        "label": "1000 Hz USB polling for the SpaceMouse",
-       "saves_ms": 7,
+       "saves_ms": 3.5,
        "cost": 1,
-       "why": "125 Hz polling adds up to 8 ms; 1000 Hz brings it to about 1 ms. Small, but cheap."
+       "why": "125 Hz polling makes a push wait up to 8 ms, about 4 on average; 1000 Hz cuts that to about 0.5 ms. Small, but cheap."
       },
       {
        "id": "controller-rate",
        "label": "500 Hz controller interface instead of a 100 Hz bridge",
        "saves_ms": 8,
        "cost": 2,
-       "why": "A 100 Hz bridge reads commands every 10 ms; a 500 Hz interface such as Universal Robots' RTDE reads them every 2 ms."
+       "why": "A 100 Hz bridge reads commands every 10 ms; a 500 Hz interface such as Universal Robots' RTDE reads them every 2 ms. Counting a whole cycle for receiving and acting on each command, that saves about 8 ms."
       },
       {
        "id": "smoothing",
@@ -15439,7 +15439,7 @@ export const CONTENT = {
       }
      ]
     },
-    "debrief": "<p>Every solution includes low-latency encoder settings (about 76 ms, cheap in this model) and a wired uplink with a smaller jitter buffer (about 137 ms); together they cover most of the 252 ms. In this model lighter smoothing (30 ms) is also needed, plus one more small saving, such as the 60 fps camera or the 120 Hz monitor, to get under 150 ms. Distance, bandwidth, and a newer codec did little: the 1,000 km of fiber costs only about 5 ms each way, extra bandwidth only shortens the 15 ms send stage, and AV1 changes the bit count, not the wait. Every useful option together reaches about 110 ms, area 9's tuned loop, but costs more than the budget.</p><p>Switching to remote assist changes the problem instead of racing it. The operator clicks the stem on one still image, and the robot plans and executes the pick itself, with its own collision checks and limits. The person is no longer inside the control loop, so the answer has seconds, not 150 ms: at 18 s per plate, a reply within a few seconds keeps the plate on schedule, and one operator can cover several stations. Waymo's remote agents work at a median one-way latency of about 150 ms to its U.S. centers (so about 300 ms there and back, twice this puzzle's target), fine for advice but poor for steering, which is why they advise rather than drive. Direct control stays for the rare case a click cannot fix, with the watchdog standing by.</p>"
+    "debrief": "<p>Every solution includes low-latency encoder settings (about 76 ms, cheap in this model) and a wired uplink with a smaller jitter buffer (about 137 ms); together they cover most of the 248 ms. In this model lighter smoothing (30 ms) is also needed, plus one more saving of at least 5 ms to reach 150 ms: the 60 fps camera, the 120 Hz monitor, or the 500 Hz controller interface (faster USB polling alone falls just short). Distance, bandwidth, and a newer codec did little: the 1,000 km of fiber costs only about 5 ms each way, extra bandwidth only shortens the 15 ms send stage, and AV1 changes the bit count, not the wait. Every useful option together reaches about 110 ms, area 9's tuned loop, but costs more than the budget.</p><p>Switching to remote assist changes the problem instead of racing it. The operator clicks the stem on one still image, and the robot plans and executes the pick itself, with its own collision checks and limits. The person is no longer inside the control loop, so the answer has seconds, not 150 ms: at 18 s per plate, a reply within a few seconds keeps the plate on schedule, and one operator can cover several stations. Waymo's remote agents work at a median one-way latency of about 150 ms to its U.S. centers (so about 300 ms there and back, twice this puzzle's target), fine for advice but poor for steering, which is why they advise rather than drive. Direct control stays for the rare case a click cannot fix, with the watchdog standing by.</p>"
    }
   },
   {
@@ -15519,9 +15519,9 @@ export const CONTENT = {
         "why": "Episodes wait on the station's local disk until the link allows. That queue is what lets a plant with a weak link still feed training."
        },
        {
-        "text": "They stay queued on the station's disk and upload when the link returns, while the station keeps picking",
+        "text": "They queue on the station's disk and upload later",
         "correct": true,
-        "why": "Recording and upload are separate steps. The disk queue absorbs the outage, and the backlog goes up when bandwidth returns."
+        "why": "The station keeps picking meanwhile, because recording and upload are separate steps. The disk queue absorbs the outage, and the backlog goes up when bandwidth returns."
        },
        {
         "text": "The grape station stops picking until the upload finishes",
@@ -15637,11 +15637,6 @@ export const CONTENT = {
       "prompt": "<p>Most of the original grape demonstrations start from a bunch lying normally in the tote. Why does a takeover correction teach the policy something they cannot?</p>",
       "options": [
        {
-        "text": "It shows a person fixing a situation the deployed policy actually drifted into, not one someone planned in advance",
-        "correct": true,
-        "why": "This is the DAgger idea: collect expert examples in the states the learner really reaches, which is where compounding error happens."
-       },
-       {
         "text": "It gives the policy a reward score to maximize on hard bunches",
         "correct": false,
         "why": "That is reinforcement learning. Behavior cloning has no score; it copies the action the person took at each moment."
@@ -15655,6 +15650,11 @@ export const CONTENT = {
         "text": "It teaches the policy to pick faster than any operator, because corrections are efficient",
         "correct": false,
         "why": "A cloned policy copies the pace of the people it learns from, hesitations included, and rarely beats them."
+       },
+       {
+        "text": "It shows a fix in a situation the policy really drifted into, not a planned one",
+        "correct": true,
+        "why": "A person corrects the deployed policy where it actually went wrong. This is the DAgger idea: collect expert examples in the states the learner really reaches, which is where compounding error happens."
        }
       ]
      }
@@ -15724,9 +15724,9 @@ export const CONTENT = {
         "why": "With 20 trials, 16 successes is consistent with a true rate anywhere from about 58% to 92%, a range that includes 65%. The gap could be luck."
        },
        {
-        "text": "It may be better, but 20 trials cannot show it; keep running trials under the same conditions",
+        "text": "It may be better, but 20 trials cannot show it yet",
         "correct": true,
-        "why": "Small samples give wide ranges. More trials narrow them, and only then can a real difference be told apart from noise."
+        "why": "Keep running trials under the same conditions. Small samples give wide ranges. More trials narrow them, and only then can a real difference be told apart from noise."
        },
        {
         "text": "The new model will succeed on 80% of tangled bunches on the production line",
@@ -15761,11 +15761,6 @@ export const CONTENT = {
       "prompt": "<p>The new weights file is halfway copied to a grape station when the plant's network drops. What should happen?</p>",
       "options": [
        {
-        "text": "The station keeps running the old model and switches only after the whole file has arrived and the cell is idle",
-        "correct": true,
-        "why": "Copying ahead and switching later means an interrupted copy changes nothing. The robot must end up on the old version or the new one, never half of each."
-       },
-       {
         "text": "The station loads the half it has and fills in the rest when the network returns",
         "correct": false,
         "why": "Half a weights file is not a smaller model; it is a broken one. A robot must never run a mix of two versions."
@@ -15779,6 +15774,11 @@ export const CONTENT = {
         "text": "An operator drives the arm by remote control until the network is back",
         "correct": false,
         "why": "Remote control needs the same network that just dropped, and the old model is still on the station and working."
+       },
+       {
+        "text": "It keeps running the old model until the whole file is in",
+        "correct": true,
+        "why": "It switches only then, and only when the cell is idle. Copying ahead and switching later means an interrupted copy changes nothing. The robot must end up on the old version or the new one, never half of each."
        }
       ]
      }
@@ -15805,9 +15805,9 @@ export const CONTENT = {
       "prompt": "<p>Two weeks into the rollout, misses rise on the grape stations in one kitchen but not in the others (illustrative). What does the fleet manager let the team do first?</p>",
       "options": [
        {
-        "text": "Compare that kitchen's inventory against the healthy ones and open its saved failure recordings in a viewer",
+        "text": "Compare that kitchen's inventory with healthy ones and replay failures",
         "correct": true,
-        "why": "The inventory shows what differs (model version, hardware revision, site), and the recordings show what the robot saw and did at the failing moment."
+        "why": "The inventory shows what differs (model version, hardware revision, site), and opening the saved failure recordings in a viewer shows what the robot saw and did at the failing moment."
        },
        {
         "text": "Log in to each station one at a time to check what it runs",
@@ -15853,7 +15853,7 @@ export const CONTENT = {
         "why": "Chunking separates the two rates. What latency limits is reaction time to new events, set by how often a fresh chunk replaces the old one: every 0.5 s in this setup."
        },
        {
-        "text": "Each pass plans about a second of targets, and the drives play them at 50 Hz while the next chunk is computed",
+        "text": "Each pass plans about a second of targets, played at 50 Hz while the next is computed",
         "correct": true,
         "why": "The drives always have a target from the current chunk, and asynchronous execution hides the inference delay. A watchdog covers the case where a fresh chunk arrives late."
        },
@@ -15883,12 +15883,12 @@ export const CONTENT = {
        "why": "The simulator is a cheaper, partial stand-in. Fog belongs to the visual gap, and simulated fog only approximates the real thing. More simulated trials shrink the luck in the simulated score, not the systematic gap between simulator and reality. Real trials are the gold standard, and here they disagree with the simulator."
       },
       {
-       "text": "Keep the old model on the line. Replay the fogged-lens failures in a viewer, add fogged-lens episodes to the data, retrain, and rerun the whole suite.",
+       "text": "Keep the old model, add fogged-lens episodes, retrain, and rerun the suite.",
        "correct": true,
-       "why": "The suite exists to catch exactly this before an update reaches the line. Replaying the failures first shows whether the model, the camera, or something else is at fault. The tangled-bunch takeovers stay in the dataset, the next run adds what this one lacked, and the rerun suite checks that both cases hold."
+       "why": "The suite exists to catch exactly this before an update reaches the line. Replaying the fogged-lens failures in a viewer first shows whether the model, the camera, or something else is at fault. The tangled-bunch takeovers stay in the dataset, the next run adds what this one lacked, and the rerun suite checks that both cases hold."
       },
       {
-       "text": "Ship it to one line as a canary and see whether the fog misses show up there.",
+       "text": "Try it on one line as a canary and see whether the fog misses show up there.",
        "correct": false,
        "why": "The suite runs before an update reaches the line, and a canary comes after a model passes it. This regression is already measured with enough trials; a canary would only repeat the finding at the cost of real plates on that line."
       }
@@ -16189,7 +16189,7 @@ export const CONTENT = {
    "goal": "<p>The grape camera's bracket was knocked during washdown and nobody noticed. Pick a bunch to see what that does, recalibrate the camera to the robot, and land a pick within the allowed offset.</p>",
    "plain": "<p>The camera reports where a bunch sits in its picture, but the arm can only reach for a spot measured from its own base, so a stored conversion rule turns one into the other. It is like a mall map with a &quot;you are here&quot; dot: if someone bumps the map stand so it turns a little, every direction you read off it is wrong in the same way, and you walk confidently to the wrong shop. Here the camera was knocked, so the fingers close off center on every bunch. Recalibrating means the arm holds a pattern at spots it knows, the camera finds the pattern, and the rule is worked out again.</p>",
    "precise": "<p>The grape camera is fixed above the tote, so this is <a class=\"concept-link\" href=\"#concept/hand-eye-calibration\" data-concept=\"hand-eye-calibration\">hand-eye calibration</a> in its eye-to-hand form: finding the camera's pose (its position plus orientation) relative to the robot base. On a real cell the six-axis arm holds a calibration board in place of its fingers and moves it through many poses (Zivid suggests 10-20), tilting it about different axes, because the rotation between poses is what makes the camera's pose solvable. The solver then finds all six numbers of that pose, three shifts and three turns, from the equation AX = XB (A is how the robot moved between two poses, B is how the camera saw the board move, and X is the unknown fixed shift plus rotation that ties the two together). This bench is a simplification of that. The board tilts in the picture, but the bench uses only where its center lands in the flat layer where the bunches lie, and fits a 2D similarity (a map that can only turn, scale, and shift the flat image) to those points by least squares (picking the map that makes the sum of squared misfits smallest). It treats a small camera tilt as a sideways slide of the view, ignoring the slight stretch a real tilt adds, and it ignores the depth reading a real cell uses to place each bunch in 3D.</p><p>The result is one link in a chain of <a class=\"concept-link\" href=\"#concept/frames\" data-concept=\"frames\">coordinate frames</a> (each an origin plus axes that positions are measured from): the robot multiplies the base-to-camera transform (the conversion rule between two frames) by the bunch's position in the camera frame to get the bunch in its own frame. Before that, <a class=\"concept-link\" href=\"#concept/camera-calibration\" data-concept=\"camera-calibration\">camera calibration</a> measures the lens itself, including radial distortion (bending that grows toward the image edges), which a map that only turns, scales, and shifts cannot undo. A knocked bracket needs a new hand-eye calibration, not a new lens calibration, because the lens did not change.</p><p>Rotation errors are the dangerous ones because they grow with distance: the miss is about the angle in radians (1 degree is about 0.017 radians) times the distance, so with the camera 600 mm up, a 0.1° tilt moves the computed point about 1 mm and 0.5° about 5 mm, while a sideways shift passes straight through, millimeter for millimeter. The arm is repeatable (it returns to a taught spot very consistently) but not inherently accurate (a new spot given as numbers can be off by more), so the board positions it reports carry their own error, and the fit keeps a residual (the misfit left over); Zivid expects sub-millimeter translation residuals on smaller robots and millimeter-level ones on larger robots. A good residual does not prove good picks, which is why Zivid recommends a touch test (the robot points a sharp tool at a feature the camera found). Without this calibration, every camera measurement lands off by a fixed but unknown amount, and the robot misses consistently.</p>",
-   "howTo": "<ul><li>Tap a bunch in the camera image, or press its number in the Pick row. The fingers go where the stored calibration puts that bunch's yellow center cross; the top view and its inset show the offset in millimeters. While the camera is out of calibration, a note under Calibrate says how far off the stored calibration is.</li><li>Press Calibrate. The arm holds the board at 10 spots, the camera finds each one (green dots), and the new calibration replaces the old one. Pick again.</li><li>Knock the camera with the sliders: Tilt x and Tilt y lean it so its view slides along the robot's x or y axis, Turn spins it about the vertical axis, and Height raises or lowers it. Pick after each knock. Reset sliders returns them to zero; it does not undo the washdown knock.</li><li>Untick Lens correction, then press Calibrate, to fit the raw, bent image. Next tote brings new bunches.</li></ul>",
+   "howTo": "<ul><li>Tap a bunch in the camera image, or press its number in the Pick row. The fingers go where the stored calibration puts that bunch's yellow center cross. The line under the Pick row shows that pixel and the robot coordinates it converts to, then where the bunch really was; the top view and its inset show the offset in millimeters. While the camera is out of calibration, a note under Calibrate says how far off the stored calibration is.</li><li>Press Calibrate. The arm holds the board at 10 spots, the camera finds each one (green dots), and the new calibration replaces the old one. Pick again.</li><li>Knock the camera with the sliders: Tilt x and Tilt y lean it so its view slides along the robot's x or y axis, Turn spins it about the vertical axis, and Height raises or lowers it. Pick after each knock. Reset sliders returns them to zero; it does not undo the washdown knock.</li><li>Untick Lens correction, then press Calibrate, to fit the raw, bent image. Next tote brings new bunches.</li></ul>",
    "notice": "<ul><li>Before you recalibrate, every pick misses, by roughly 10-20 mm and always in about the same direction. In the top view, the dashed orange outline (where the robot believes the camera looks) sits off the solid blue one (where it really looks): a fixed offset, so the robot misses confidently every time.</li><li>After calibrating, set Tilt x to 0.5 deg. The note under Calibrate reads about 5 mm, the lever-arm rule at 600 mm, and picks land about that far off, give or take the fuzzy bunch center. That uses most of the 8 mm allowance (illustrative; <a class=\"concept-link\" href=\"#concept/soft-gripper\" data-concept=\"soft-gripper\">soft fingers</a> need only a rough center point, but no source gives a number), so little margin is left and an occasional pick misses. At 1 deg nearly every pick misses.</li><li>A turn's error grows from the image center outward: at Turn 1 deg the note shows well under a millimeter at the center but about 5 mm at the tote corners, which is still inside the allowance. At Turn 3 deg it is about 16 mm at the corners: a bunch near the middle is still hit, while one near the wall often misses. Height behaves the same way. With Lens correction off, the fit residual jumps from a few tenths of a millimeter to about 3 mm, because a map that only turns, scales, and shifts cannot follow the lens's bending.</li><li>The readout is the conversion rule itself: a turn of about 180 deg (the camera is mounted turned half a circle from the robot's axes, so the arm enters the camera image from the right), about 0.24 mm per pixel, and where the image center sits, in millimeters from the robot base. Recalibrating after the washdown knock moves that center by about 15 mm.</li></ul>",
    "data": {
     "note": "From concepts: the camera 600 mm above the tote, its view of about 570 x 460 mm, and about 0.24 mm between points (used here as millimeters per pixel) are area 4's grape example camera, a structured light camera like the Zivid 2+ MR60 (depth-camera); image_px is that view divided by 0.24 mm. 600 mm is also the distance in the lever-arm rule (hand-eye-calibration: 0.1 degree at 600 mm is about 1 mm, 0.5 degree about 5 mm). Ten calibration poses is the low end of the 10-20 pose pairs Zivid suggests (hand-eye-calibration). Illustrative: board_noise_px of 0.3, of the order of the 0.19-0.31 px reprojection errors in camera-calibration; robot_pose_error_mm of 0.3, chosen so the fit residual lands in the sub-millimeter range Zivid expects on smaller robots (hand-eye-calibration); the tote center 560 mm from the robot base; the camera turned 180 degrees from the robot's axes; lens_k1; the bunch size and its 1.5 mm center noise; the 8 mm tolerance (soft-gripper says soft fingers need only a rough center point but gives no number); the washdown knock; and the slider ranges. The model treats a small tilt as a sideways slide of the view (height times angle) and fits a flat 2D similarity, a simplification of the 3D eye-to-hand solve in hand-eye-calibration.",
@@ -16245,7 +16245,7 @@ export const CONTENT = {
    "howTo": "<ul><li>Press Start, or just begin. In Direct, hold and drag the round move pad (or click the video or the pad and hold the arrow keys). The arm moves while you hold and stops when you let go, like the enable button in Ride 3. The wrist camera in the corner of the video magnifies the spot under the fingers: press Grip (or Space) when its white ring sits on a stem's dot.</li><li>In Assist, tap a dashed ring on a stem, or choose one with the arrow keys and press Enter.</li><li>Drag Video delay and Command delay until the round trip reaches the target. A plate counts only if the round trip stayed at the target from your first action on that plate; Reset starts a fresh plate.</li><li>To see the watchdog, keep the arm moving (hold an arrow key, or hold the pad with one finger) and press Cut link (click it, or tap it with a second finger). Try it with Watchdog on, then off.</li><li>Show robot's live view draws where the arm really is, which a real operator never sees. Jitter and Packet loss add uneven and missing packets; the live network view shows each one.</li></ul>",
    "notice": "<ul><li>At 110 ms a quick hand can drive to a stem and stop on it. At 400 ms the same quick hand overshoots: at the cap the arm travels about 20 mm during one round trip, twice the grip tolerance, and quick corrections swing back and forth until the plate runs out. Slowing down near the stem, or moving and then waiting to see the result, still works at 400 ms; it just takes longer.</li><li>In Assist the round trip hardly matters: in this model the bunch is gripped within a few seconds even at the slowest settings, because the robot closes its own loop. That is why most deployed fleets prefer remote assist, and keep direct control for problems a click cannot fix, such as Ride 3's knotted bunches.</li><li>Cut the link while the arm moves at full speed. With the watchdog on, the arm stops about 12.5 mm after the last command arrived (50 mm/s times 250 ms; a real arm then adds its braking distance). With it off, the arm keeps going on its last command until the robot's own zone limit (the edge of the area its controller allows) stops it.</li><li>Jitter makes some packets arrive after newer ones; those are dropped, and the frame age jumps. The watchdog's 250 ms is set far longer than this normal jitter; a timeout shorter than the jitter would stop the arm for no reason.</li></ul>",
    "data": {
-    "note": "From area 9: plate_time_s (18 s per plate at 200 plates an hour, teleop-modes); speed_cap_m_s (the 50 mm/s rescue cap, operator-interfaces, an illustrative setting there); watchdog_ms and heartbeat_timeout_ms (250 ms and 2 s, watchdogs, illustrative values there); camera_fps (the 30 fps camera of Ride 3's untuned setup, latency-budget; kept at every slider setting, a simplification); command_rate_hz (100 Hz velocity commands, webrtc and udp-vs-tcp); video_ms.default and command_ms.default (about 65 and 45 ms: the video-out and command-back rows of the tuned budget in latency-budget's code sketch, together about 110 ms); target_rtt_ms (about 400 ms, latency-budget's untuned loop: about 276 ms glass-to-glass plus about 126 ms command back). Illustrative modeling choices: tote_length_m, tote_width_m, bunches_per_tote, robot_speed_m_s, grip_tolerance_m, grip_time_ms, every slider limit, and the jitter and loss defaults; the jitter range is chosen to cover delay spreads of the size network-impairments reports for LTE (round trips from a moving car with a 29.5 ms standard deviation in one study), not measured.",
+    "note": "From area 9: plate_time_s (18 s per plate at 200 plates an hour, teleop-modes); speed_cap_m_s (the 50 mm/s rescue cap, operator-interfaces, an illustrative setting there); watchdog_ms and heartbeat_timeout_ms (250 ms and 2 s, watchdogs, illustrative values there); camera_fps (the 30 fps camera of Ride 3's untuned setup, latency-budget; kept at every slider setting, a simplification); command_rate_hz (100 Hz velocity commands, webrtc and udp-vs-tcp); video_ms.default and command_ms.default (about 65 and 45 ms: the video-out and command-back rows of the tuned budget in latency-budget's code sketch, together about 110 ms); target_rtt_ms (about 400 ms, latency-budget's untuned loop: about 276 ms glass-to-glass plus about 122 ms command back). Illustrative modeling choices: tote_length_m, tote_width_m, bunches_per_tote, robot_speed_m_s, grip_tolerance_m, grip_time_ms, every slider limit, and the jitter and loss defaults; the jitter range is chosen to cover delay spreads of the size network-impairments reports for LTE (round trips from a moving car with a 29.5 ms standard deviation in one study), not measured.",
     "plate_time_s": 18,
     "tote_length_m": 0.6,
     "tote_width_m": 0.4,
@@ -16299,11 +16299,11 @@ export const CONTENT = {
    ],
    "goal": "<p>Get the line back to 200 plates an hour, within the budget, after slow apple picks have dropped it to about 165. Every station still fits inside the 18 s takt, so first work out why the line falls short.</p>",
    "plain": "<p>Apple slices have started sticking together, so each apple pick takes longer and the line makes about 165 plates an hour instead of the 200 it needs. Every station still finishes its plate inside the 18 seconds it gets, yet the line falls short: a stop anywhere stops the whole belt, and the slowest station has too little spare time to make up for it. It is like hikers roped together: when any one of them stops, the whole rope stops, and the group moves only as fast as its slowest member. Win the time back at the station everyone waits for, not at the ones that already have time to spare.</p>",
-   "precise": "<p>In this line's illustrative model (area 6's sketch, not measurements), apple picks have slowed from 3.2 s to 4.0 s because slices stick together. The apple station's cycle time (how long it takes per plate) is now 4 × 4.0 s plus the 1.5 s index (the belt moving every tray on by one station, shown as transfer in the chart) = 17.5 s, still inside the 18 s takt time (the time budget per plate that 200 plates an hour sets). The line misses anyway. With no buffers (small queues between stations), any station stopping stops the whole indexing line, so if stops are independent it runs for roughly the product of the stations' availabilities (each station's share of time not stopped). That is the availability factor of OEE (overall equipment effectiveness: one score for how much planned time turned into good product). The product is about 80%, so the slowest station must fit inside about 80% of takt, the solid limit line. The apple station does not, which makes it the bottleneck (the station whose capacity caps the whole line), and the line makes about 165 plates an hour.</p><p>The theory of constraints says: find the constraint (the bottleneck), get the most out of it, run everything else at its pace, then add capacity there. A second apple delta placing two slices each adds that capacity: it moves the bottleneck to cheese and lifts the line to about 267 plates an hour, even though one more robot slightly lowers line availability. Handing one slice to the cracker station's SCARA splits the work the same way, moving it to a neighbor with time to spare (an illustrative design change: that station would need its own slice feed and camera). A faster delta barely helps: on a benchmark loop a delta moves in roughly 0.3-0.6 s, and most of a 4.0 s pick is camera, tracking, vacuum, and gentle placing. Speeding up the grape station only adds idle time, because it is not the bottleneck.</p><p>A buffer splits the line into parts that stop independently, each with its own limit. The theory of constraints places one before the constraint so it never starves (sits idle for lack of input) and one after it so it never blocks (sits idle because the next station has no room). That wins back output lost to other stations' stops, but it cannot make the apple station faster or stop it stopping: protected on both sides, it still needs 17.5 s per plate and is down for its own 3% of the time, so its limit, 97% of takt, is about 17.46 s and the line stays just under 200. Time lost at the bottleneck is output lost for the whole line. What breaks without balancing: the line pays for robots that sit idle and still misses its target.</p>",
-   "howTo": "<p>Tap or click a column, or the station in the picture, to open its panel; the apple station starts open. Each bar is that station's cycle: solid for work, striped for the transfer (the belt index). The dashed line is takt and the solid line is the limit with stops counted; a red bar is over its limit, and the panel shows how the station's cycle and limit are worked out. Tick a change to buy it and tick it again to undo it; the line rate, the budget, and the bars update at once, and Reset clears everything. Buffer in front adds a rack before the selected station and gives each part of the line its own limit line. Stop this station halts it for a moment so you can watch the rest of the line, with and without a buffer.</p>",
-   "notice": "<ul><li>At the start every bar is under the dashed 18 s takt line, yet the line makes about 165 plates an hour. In the picture, when any station stops (red sign), every other station waits with it, which is why the real limit sits below takt.</li><li>Fewer vision retries at the grape station change nothing, and the faster delta adds only a few plates an hour.</li><li>Buffers help, but even with one on each side of the apple station the line stays just under 200: a buffer protects the bottleneck from other stations' stops, it does not speed it up.</li><li>Sharing the apple work fixes it. With a second delta, the bottleneck moves on to the cheese station.</li></ul>",
+   "precise": "<p>In this line's illustrative model (area 6's sketch, not measurements), apple picks have slowed from 3.2 s to 4.0 s because slices stick together. The apple station's cycle time (how long it takes per plate) is now 4 × 4.0 s plus the 1.5 s index (the belt moving every tray on by one station, shown as transfer in the chart) = 17.5 s, still inside the 18 s takt time (the time budget per plate that 200 plates an hour sets). The line misses anyway. With no buffers (small queues between stations), any station stopping stops the whole indexing line, so if stops are independent it runs for roughly the product of the stations' availabilities (each station's share of time not stopped). That is the availability factor of OEE (overall equipment effectiveness: one score for how much planned time turned into good product). The product is about 80%, so the slowest station must fit inside about 80% of takt, the solid limit line. The apple station does not, which makes it the bottleneck (the station whose capacity caps the whole line), and the line makes about 165 plates an hour.</p><p>The theory of constraints says: find the constraint (the bottleneck), get the most out of it, run everything else at its pace, then add capacity there. A second apple delta placing two slices each adds that capacity: it moves the bottleneck to cheese and lifts the line to about 267 plates an hour, even though one more robot slightly lowers line availability. Handing one slice to the cracker station's SCARA splits the work the same way, moving it to a neighbor with time to spare (an illustrative design change: that station would need its own slice feed and camera). A faster robot barely helps: on a benchmark loop a delta moves in roughly 0.3-0.6 s and a SCARA in 0.28-0.33 s, while most of a 4.0 s pick is camera, tracking, vacuum, and gentle placing. A small six-axis arm is slower (0.42 s on its benchmark loop, against about 0.3 s for a lightly loaded delta); its extra joints pay off only where the tool must tilt, as at the grape tote. Speeding up the grape station only adds idle time, because it is not the bottleneck.</p><p>A buffer splits the line into parts that stop independently, each with its own limit. The theory of constraints places one before the constraint so it never starves (sits idle for lack of input) and one after it so it never blocks (sits idle because the next station has no room). That wins back output lost to other stations' stops, but it cannot make the apple station faster or stop it stopping: protected on both sides, it still needs 17.5 s per plate and is down for its own 3% of the time, so its limit, 97% of takt, is about 17.46 s and the line stays just under 200. Time lost at the bottleneck is output lost for the whole line. What breaks without balancing: the line pays for robots that sit idle and still misses its target.</p>",
+   "howTo": "<p>Tap or click a column, or the station in the picture, to open its panel; the apple station starts open. Each bar is that station's cycle: solid for work, striped for the transfer (the belt index). The dashed line is takt and the solid line is the limit with stops counted; a red bar is over its limit, and the panel shows how the station's cycle and limit are worked out. At a robot station, choose its robot type (each shows its time per pick and its price) and how many robots share the picks; the robot already there counts toward what you buy. Tick a change to buy it and tick it again to undo it; the line rate, the budget, and the bars update at once, and Reset clears everything. Buffer in front adds a rack before the selected station and gives each part of the line its own limit line. Stop this station halts it for a moment so you can watch the rest of the line, with and without a buffer.</p>",
+   "notice": "<ul><li>At the start every bar is under the dashed 18 s takt line, yet the line makes about 165 plates an hour. In the picture, when any station stops (red sign), every other station waits with it, which is why the real limit sits below takt.</li><li>Fewer vision retries at the grape station change nothing. Swapping the apple delta for a faster delta or a SCARA barely moves the line rate, and a six-axis arm lowers it: the arm moves for well under a second of each 4 s pick.</li><li>Buffers help, but even with one on each side of the apple station the line stays just under 200: a buffer protects the bottleneck from other stations' stops, it does not speed it up.</li><li>Sharing the apple work fixes it: two apple deltas, or one slice handed to the cracker station. With a second delta, the bottleneck moves on to the cheese station.</li></ul>",
    "data": {
-    "note": "Station times, picks per plate, the 1.5 s index, and station availabilities are the illustrative values of the line-balancing code sketch (area 6), with apple picks slowed from 3.2 s to 4.0 s as in its slices-sticking case; work_s = picks x seconds per pick (apple 4 x 4.0, grape 1 x 7.0, cracker 2 x 2.5 worst case, cheese 3 x 3.0). The 200 plates/h target and its 18 s takt come from cycle-time. The second apple delta (two slices each, its availability counted twice) follows the same sketch. That buffers decouple stations comes from line-balancing and conveyor; treating each buffer as big enough to ride out every stop is an illustrative simplification (the animation's rack holds buffer.capacity plates). The faster delta's 0.6 s saving (0.15 s per pick) is illustrative and small because speed-specs says a delta moves for well under a second of each pick. The grape station's 2.0 s saving (the sketch blames grape time on vision retries on tangled bunches), the cracker station taking one apple slice at 4.0 s, every cost, the budget, the buffer capacity, the 20 s random stop length, and the 30 s stop button are illustrative modeling choices.",
+    "note": "Station times, picks per plate, the 1.5 s index, and station availabilities are the illustrative values of the line-balancing code sketch (area 6), with apple picks slowed from 3.2 s to 4.0 s as in its slices-sticking case; work_s = picks x seconds per pick with each station's installed robot (apple 4 x 4.0, grape 1 x 7.0, cracker 2 x 2.5 worst case, cheese 3 x 3.0). The 200 plates/h target and its 18 s takt come from cycle-time. Robot types: motion_s is each type's benchmark-loop time from speed-specs (delta about 0.3 s on the 25/305/25 mm loop; faster delta 0.26 s, the Adept Quattro's time with 0.1 kg; SCARA 0.3 s, inside its 0.28-0.33 s; small six-axis arm 0.42 s). Changing a station's robot type changes each pick by the difference in motion time only; that the rest of each pick (camera, tracking, vacuum, gentle placing) stays the same for every type is an illustrative simplification, as are the types offered at each station (the grape station keeps its six-axis arm because bunches lying at random angles need wrist tilt, area 1). Extra robots share a station's picks and count its availability once each, as the sketch's second apple delta does; each pick is made whole by one robot, so the busiest robot sets the station's work (two deltas on three cheese wedges leave one of them two). That buffers decouple stations comes from line-balancing and conveyor; treating each buffer as big enough to ride out every stop is an illustrative simplification (the animation's rack holds buffer.capacity plates). The grape station's 2.0 s saving (the sketch blames grape time on vision retries on tangled bunches), the cracker station taking one apple slice at 4.0 s (with the installed robots at both stations; a different robot type at either end changes that pick by the motion-time difference, like any other pick), every robot price and cost, counting the installed robot's price toward a new setup, max_robots, the budget, the buffer capacity, the 20 s random stop length, and the 30 s stop button are illustrative modeling choices.",
     "target_per_hour": 200,
     "budget": 8,
     "cost_unit": "pts",
@@ -16314,6 +16314,36 @@ export const CONTENT = {
      "cost": 2,
      "capacity": 4
     },
+    "robot_types": [
+     {
+      "id": "delta",
+      "kind": "delta",
+      "label": "Delta",
+      "motion_s": 0.3,
+      "cost": 6
+     },
+     {
+      "id": "fast-delta",
+      "kind": "delta",
+      "label": "Faster delta (shorter catalog cycle)",
+      "motion_s": 0.26,
+      "cost": 9
+     },
+     {
+      "id": "scara",
+      "kind": "scara",
+      "label": "SCARA",
+      "motion_s": 0.3,
+      "cost": 8
+     },
+     {
+      "id": "six-axis",
+      "kind": "six-axis",
+      "label": "Six-axis arm",
+      "motion_s": 0.42,
+      "cost": 10
+     }
+    ],
     "stations": [
      {
       "id": "denester",
@@ -16326,6 +16356,8 @@ export const CONTENT = {
       "work_s": 7,
       "picks": 1,
       "availability": 0.93,
+      "robot": "six-axis",
+      "max_robots": 2,
       "tool": {
        "saves_s": 2,
        "cost": 2,
@@ -16337,25 +16369,41 @@ export const CONTENT = {
       "work_s": 16,
       "picks": 4,
       "availability": 0.97,
-      "parallel_cost": 6,
-      "parallel_label": "Second apple delta, two slices each",
-      "tool": {
-       "saves_s": 0.6,
-       "cost": 3,
-       "label": "Faster delta (shorter catalog cycle)"
-      }
+      "robot": "delta",
+      "robot_options": [
+       "delta",
+       "fast-delta",
+       "scara",
+       "six-axis"
+      ],
+      "max_robots": 3
      },
      {
       "id": "crackers",
       "work_s": 5,
       "picks": 2,
-      "availability": 0.98
+      "availability": 0.98,
+      "robot": "scara",
+      "robot_options": [
+       "scara",
+       "delta",
+       "six-axis"
+      ],
+      "max_robots": 2
      },
      {
       "id": "cheese",
       "work_s": 9,
       "picks": 3,
-      "availability": 0.97
+      "availability": 0.97,
+      "robot": "delta",
+      "robot_options": [
+       "delta",
+       "fast-delta",
+       "scara",
+       "six-axis"
+      ],
+      "max_robots": 3
      },
      {
       "id": "inspection",

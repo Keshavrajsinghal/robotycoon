@@ -4677,6 +4677,29 @@ export const CONTENT = {
      "cost": 1,
      "capacity": 4
     },
+    "robot_types": [
+     {
+      "id": "ph-delta",
+      "kind": "delta",
+      "label": "PH delta",
+      "motion_s": 0.4,
+      "cost": 5
+     },
+     {
+      "id": "ph-scara",
+      "kind": "scara",
+      "label": "PH SCARA",
+      "motion_s": 0.3,
+      "cost": 6
+     },
+     {
+      "id": "ph-arm",
+      "kind": "six-axis",
+      "label": "PH six-axis arm",
+      "motion_s": 0.5,
+      "cost": 7
+     }
+    ],
     "stations": [
      {
       "id": "denester",
@@ -4689,6 +4712,7 @@ export const CONTENT = {
       "work_s": 9,
       "picks": 1,
       "availability": 0.95,
+      "robot": "ph-arm",
       "tool": {
        "saves_s": 3,
        "cost": 2,
@@ -4700,8 +4724,13 @@ export const CONTENT = {
       "work_s": 17,
       "picks": 4,
       "availability": 0.98,
-      "parallel_cost": 5,
-      "parallel_label": "PH second apple robot",
+      "robot": "ph-delta",
+      "robot_options": [
+       "ph-delta",
+       "ph-scara",
+       "ph-arm"
+      ],
+      "max_robots": 2,
       "tool": {
        "saves_s": 1,
        "cost": 2,
@@ -4712,13 +4741,16 @@ export const CONTENT = {
       "id": "crackers",
       "work_s": 6,
       "picks": 2,
-      "availability": 0.99
+      "availability": 0.99,
+      "robot": "ph-scara"
      },
      {
       "id": "cheese",
       "work_s": 10,
       "picks": 3,
       "availability": 0.98,
+      "robot": "ph-delta",
+      "max_robots": 2,
       "tool": {
        "saves_s": 2,
        "cost": 2,

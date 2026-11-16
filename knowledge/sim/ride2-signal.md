@@ -40,7 +40,7 @@ The PLC program is a step chain (numbered steps, each waiting for a condition be
 The photo-eye switches in under 1 ms, and the PLC scans every 10 ms (an illustrative figure). Which statement is right?
 - [ ] The PLC program sees the tray within 1 ms, because the sensor is the only delay :: The PLC copies its inputs only once per scan, so the change can wait up to a full scan before the program sees it.
 - [ ] The PLC reacts the instant the beam is blocked, like an interrupt handler :: A normal PLC looks at its inputs only at the start of each scan; signals too fast for that go to dedicated counter modules.
-- [x] The program may see it up to about 11 ms later, which is harmless here because the tray is stopped and the next one is 18 s away :: Total delay is sensor time plus up to one scan, and delay only turns into position error when something is moving.
+- [x] Up to about 11 ms, which is harmless because the tray is stopped :: Total delay is sensor time plus up to one scan, and delay only turns into position error when something is moving. Here the tray is stopped and the next one is 18 s away.
 - [ ] A faster photo-eye would bring the delay close to zero :: The scan is the larger delay; systems that need exact timing use inputs that timestamp the change, such as Beckhoff's EL1252 with 1 ns resolution.
 
 ## Stop: light
@@ -61,8 +61,8 @@ Without controlled light, glare, shadows, and weak contrast cause most vision fa
 
 ### Question
 The detector keeps missing bunches that sit in glare from the overhead lamp. Which change is most likely to fix it?
-- [ ] A camera with twice the pixels :: More pixels do not remove glare, and on the same cable twice the pixels roughly halves the frame rate.
 - [x] Different lighting, such as a diffuse dome light :: Diffuse light removes glare on shiny or curved surfaces, and lighting is among the most important factors in reliable vision.
+- [ ] A camera with twice the pixels :: More pixels do not remove glare, and on the same cable twice the pixels roughly halves the frame rate.
 - [ ] Recalibrating the camera's lens :: Calibration produces numbers that correct where each pixel points; it changes nothing in the picture, glare included.
 - [ ] Switching to a depth camera, which does not depend on lighting :: Depth cameras use light too, and shiny or wet spots can saturate their pixels and leave holes in the depth.
 
@@ -84,10 +84,10 @@ Without depth, the robot must assume every bunch lies at one known height, which
 
 ### Question
 To see more of the tote, someone proposes mounting a stereo depth camera twice as high. Area 4's worked example puts its depth error at about 2 mm at 1 m. What should they expect at 2 m?
+- [ ] About 1 mm, since a wider view averages out the error :: Distance makes stereo depth worse, not better, which is why area 4's apple example moves its plate-mounted camera in close for the final look.
 - [ ] About 2 mm, since datasheet accuracy holds at any distance :: Datasheet figures come from friendly test conditions, and stereo error changes a lot with distance.
 - [ ] About 4 mm, since error doubles when distance doubles :: Doubling is the rule for a small angle error at a distance; stereo depth error grows faster than that.
 - [x] About 8 mm, since stereo error grows with the square of distance :: Far objects shift fewer pixels between the two views, so the same fraction-of-a-pixel matching error costs four times the depth at twice the distance.
-- [ ] About 1 mm, since a wider view averages out the error :: Distance makes stereo depth worse, not better, which is why area 4's apple example moves its plate-mounted camera in close for the final look.
 
 ## Stop: detection
 title: Find a bunch
@@ -108,10 +108,10 @@ Each detection carries a confidence (a 0-1 score). It is not a measured probabil
 
 ### Question
 The grape model marks a bunch with confidence 0.95. What does that number tell you?
-- [ ] The pick will succeed 95% of the time :: It scores the detection, not the whole pick, and even as a detection score it is not a measured probability.
-- [x] It is a score; how often 0.95 detections are right has to be measured on images from the real line :: Networks are often overconfident, so teams set thresholds from counted hits and misses, and recount after any change of lighting, camera, or product.
-- [ ] 95% of the outlined pixels belong to the bunch :: The mask lists the pixels; the confidence is a separate score for the detection as a whole.
-- [ ] Nothing useful, so every detection should be used :: A low-confidence detection is a normal failure that the sequencing logic routes to a new picture or a skip.
+- [ ] The pick will succeed 95% of the time, so about 1 pick in 20 will fail :: It scores the detection, not the whole pick, and even as a detection score it is not a measured probability.
+- [x] A score: how often 0.95 is right must be measured on the line :: The count has to come from images from the real line. Networks are often overconfident, so teams set thresholds from counted hits and misses, and recount after any change of lighting, camera, or product.
+- [ ] 95% of the pixels inside the outline belong to the bunch, not the background :: The mask lists the pixels; the confidence is a separate score for the detection as a whole.
+- [ ] Nothing useful, so every detection should be used whatever its score :: A low-confidence detection is a normal failure that the sequencing logic routes to a new picture or a skip.
 
 ## Stop: position-3d
 title: Where is it, in robot terms
@@ -134,9 +134,9 @@ Rotation errors are the dangerous ones, because they grow with distance: 0.1° o
 ### Question
 During washdown, someone bumps the camera bracket and the camera tilts by 0.5°. It sits 600 mm above the bunches. What happens to the picks?
 - [ ] Nothing, because the arm's repeatability of a few hundredths of a millimeter absorbs it :: Repeatability only promises a return to a taught point; camera-guided targets depend on calibration and accuracy.
-- [x] They land about 5 mm off, consistently, until hand-eye calibration is redone :: The miss is about the angle in radians times the distance, and because the error is fixed, the robot misses confidently every time.
 - [ ] They scatter randomly by about 0.5 mm :: A moved camera gives a consistent offset, not scatter, and at 600 mm half a degree is about 5 mm.
 - [ ] Recalibrating the lens intrinsics fixes it :: The lens did not change; a moved mount needs a new hand-eye calibration.
+- [x] They land about 5 mm off, consistently, until hand-eye calibration is redone :: The miss is about the angle in radians times the distance, and because the error is fixed, the robot misses confidently every time.
 
 ## Stop: grasp
 title: Choose the grip
@@ -157,8 +157,8 @@ Candidates the arm cannot reach (inverse kinematics finds no joint angles that p
 
 ### Question
 The planner's top-scoring grasp needs a wrist tilt that would push a joint past its limit. What should happen?
-- [ ] Run it anyway, since the score already accounts for everything :: The score rates the contact on the bunch, not whether the arm can get there.
 - [x] Drop it and try the next-best candidate, without taking a new picture :: Planners rank candidates and walk down the list until one passes reach, collision, and placement checks.
+- [ ] Run it anyway, since the score already accounts for everything :: The score rates the contact on the bunch, not whether the arm can get there.
 - [ ] Stop the line and call a technician :: An unreachable grasp is a normal case; the software moves on to another grasp or another bunch.
 - [ ] Run inverse kinematics longer until it finds an answer :: Past a joint limit there is no answer to find, and more iterations cannot create one.
 
@@ -181,9 +181,9 @@ MoveIt, an open-source planning framework, packages these steps; by default it u
 
 ### Question
 Someone leaves a cleaning brush in a corner of the tote. Nobody adds it to the planning scene, and no sensor sees it. The planner reports a collision-free path. What follows?
-- [ ] The arm cannot hit the brush, because the path was checked :: The checker knows only its model; an object missing from the planning scene does not exist for it.
-- [x] The arm may hit it, because collision checking is only as good as its model :: That is why cells keep padding, physical guarding, and certified safety functions; the planner's check is a planning aid.
+- [ ] The arm cannot hit the brush, because the planner checked the whole path for collisions :: The checker knows only its model; an object missing from the planning scene does not exist for it.
 - [ ] The planner refuses to plan because something seems wrong :: A planner senses nothing; it tests postures against the scene it was given.
+- [x] The arm may hit it, because collision checking is only as good as its model :: That is why cells keep padding, physical guarding, and certified safety functions; the planner's check is a planning aid.
 - [ ] Trajectory generation slows the arm near the brush :: Timing respects joint and payload limits along the path it is handed; it knows nothing about obstacles.
 
 ## Stop: joint-targets
@@ -206,10 +206,10 @@ The ride shows IK as one stop after the path, which is a simplification. In prac
 
 ### Question
 A bunch lies inside the arm's listed reach, but against the far tote wall, and the grasp needs a steep wrist tilt. Can the arm do it?
-- [ ] Yes, because inside the reach envelope means reachable :: Listed reach describes position alone; the needed tilt may be impossible at that spot.
-- [x] Not necessarily: IK must succeed for the full six-number pose, within joint limits and away from singularities :: Position and tilt decide together; when IK fails, the software tries another grasp or another bunch.
+- [ ] Yes, because any point inside the listed reach envelope is reachable :: Listed reach describes position alone; the needed tilt may be impossible at that spot.
 - [ ] Yes, if the solver iterates long enough, since every pose has a solution :: IK can have no answer at all; a numerical solver can only find a solution that exists.
 - [ ] No, because six-axis arms cannot tilt the gripper :: Tilting is what the three wrist joints are for, which is why this station gets a six-axis arm.
+- [x] Not necessarily: IK must solve the full six-number pose within joint limits :: The answer must also stay away from singularities. Position and tilt decide together; when IK fails, the software tries another grasp or another bunch.
 
 ## Stop: policy
 title: Learned policy
@@ -233,8 +233,8 @@ As of late 2026, most of the learned systems in this guide are research systems 
 
 ### Question
 The policy outputs a wild joint target, far outside the arm's range. What happens next?
-- [ ] The arm follows it, because the network drives the motors directly :: The policy only outputs targets; the drives and their feedback loops do the moving.
 - [x] Hand-written joint limits clamp it, and the safety system can still stop the arm :: Learned mode replaces the decisions from pixels to joint targets; limits, safety circuits, and cell sequencing stay conventional.
+- [ ] The arm follows it, because the network drives the motors directly :: The policy only outputs targets; the drives and their feedback loops do the moving.
 - [ ] Nothing can catch it, because learned mode removed the robot controller's checks :: Only the five decision stops collapse into the network; limits and safety hardware stay where they were.
 - [ ] The policy logs why it chose that target :: A policy is millions of numbers with no named intermediate steps, and losing those checkpoints is the main debugging cost.
 
@@ -258,9 +258,9 @@ Safety is wired separately. STO (Safe Torque Off: a two-channel safety input tha
 ### Question
 The grape cell's guard door opens in the middle of a move. Which sequence is right?
 - [ ] The drives apply Safe Torque Off at once, and that stops the arm on its path :: STO only removes torque; the motor coasts, and a gravity-loaded axis drops onto its brake.
-- [x] The controller brakes the arm along its path under power, then torque is removed and the brakes clamp :: This is a category 1 stop, the kind this design uses for its robots.
 - [ ] The line PLC's program stops the arm :: The line PLC can read safety signals but cannot override them; rated safety hardware does the stopping.
-- [ ] The holding brakes stop the moving arm, as they do every time :: Brakes are built to hold; stopping a moving arm uses up a limited budget, such as 2,000 stops on one Beckhoff motor brake.
+- [x] The arm is braked on its path under power, then torque is cut and the brakes clamp :: The controller does the braking while the motors still have power. This is a category 1 stop, the kind this design uses for its robots.
+- [ ] The motors' holding brakes clamp at once and stop the moving arm, as they do every time :: Brakes are built to hold; stopping a moving arm uses up a limited budget, such as 2,000 stops on one Beckhoff motor brake.
 
 ## Stop: joint
 title: Inside a joint
@@ -280,10 +280,10 @@ Gear play matters little here: about 300 mm from the wrist joint (illustrative),
 
 ### Question
 The power fails while the arm holds the bunch above the tray. What keeps the arm from folding down?
-- [ ] The motors hold position on their own :: A servo motor holds only while it is powered and controlled.
-- [x] Each joint's holding brake clamps the motor shaft as power drops, and the gear ratio multiplies its hold :: The brake is fail-safe: a power cut, a broken cable, or an emergency stop all leave it clamped.
-- [ ] The encoders lock the joints in place :: An encoder only measures the angle; it cannot hold anything.
-- [ ] The gearbox's lack of play keeps each joint still :: Without a brake, gravity turns an unpowered joint backward through its gearbox.
+- [ ] The servo motors keep holding their last position on their own :: A servo motor holds only while it is powered and controlled.
+- [ ] The encoders lock each joint at its last measured angle :: An encoder only measures the angle; it cannot hold anything.
+- [ ] The gearbox's lack of play keeps each joint still without power :: Without a brake, gravity turns an unpowered joint backward through its gearbox.
+- [x] Each joint's holding brake, which clamps as power drops :: The brake clamps the motor shaft, and the gear ratio multiplies its hold. It is fail-safe: a power cut, a broken cable, or an emergency stop all leave it clamped.
 
 ## Stop: arm-motion
 title: The arm moves
@@ -293,7 +293,7 @@ concepts: dof, six-axis, reach, payload, repeatability, speed-specs
 workbench: wb1-dof
 
 ### Plain
-All six joints turn together, and the arm swings into a new pose over the bunch. Like a human arm, it has a waist, a shoulder, an elbow, and a wrist that bends and twists, so it can reach the bunch and tilt the fingers to match how it lies. Those six separate motions are why this guide gives the grape station this kind of arm, a judgment call rather than a rule.
+All six joints turn together: the arm reaches into the tote, the fingers close on the bunch, and the arm swings it over to the tray. Like a human arm, it has a waist, a shoulder, an elbow, and a wrist that bends and twists, so it can reach the bunch and tilt the fingers to match how it lies. Those six separate motions are why this guide gives the grape station this kind of arm, a judgment call rather than a rule.
 
 ### Precise
 [[dof|Degrees of freedom]] (DoF: the number of independent motions needed to say where every part of the robot is) decide which tool poses (position plus orientation) are possible. Placing a tool anywhere and pointing it any way takes six: three for position, three for orientation. In a six-axis arm the first three joints (base, shoulder, elbow) mostly place the wrist, and the last three mostly set which way the fingers point. The apple station only lifts, turns, and sets down flat slices, which a 4-axis delta (an overhead robot whose gripper plate stays level) can do; it cannot tilt its gripper.
@@ -304,10 +304,10 @@ Speed is no constraint at 18 s per bunch; reaching into the tote is. Temperature
 
 ### Question
 Why not give the apple station a six-axis arm too, since it can do everything a delta can?
+- [x] Apple picks are top-down, so a 4-axis delta covers them :: Two more joints would add motors, mass, cost, and error sources the job never uses. A six-axis arm earns its cost only when the tool must tilt or reach around things, as at the grape tote. The delta also runs the standard pick loop faster (about 0.3 s against 0.42 s), though at 18 s per plate that speed matters little.
 - [ ] It should, because more degrees of freedom are always better :: Extra DoF help only when the task uses them, and a top-down pick never tilts the gripper.
-- [x] Apple picks are top-down, which a 4-axis delta fully covers; two more joints would add motors, mass, cost, and error sources the job never uses :: A six-axis arm earns its cost only when the tool must tilt or reach around things, as at the grape tote. The delta also runs the standard pick loop faster (about 0.3 s against 0.42 s), though at 18 s per plate that speed matters little.
-- [ ] A six-axis arm cannot reach far enough :: Six-axis arms span 370-4,683 mm of reach; reach is not the reason.
-- [ ] A delta is more precise than a six-axis arm :: Small six-axis arms repeat within 0.01-0.025 mm and deltas within 0.03-0.1 mm, so precision is not the reason.
+- [ ] A six-axis arm cannot reach far enough across the apple belt :: Six-axis arms span 370-4,683 mm of reach; reach is not the reason.
+- [ ] A delta is more precise than a six-axis arm of similar size :: Small six-axis arms repeat within 0.01-0.025 mm and deltas within 0.03-0.1 mm, so precision is not the reason.
 
 ## Stop: gripper
 title: Soft fingers
@@ -328,7 +328,7 @@ Food versions use food-contact materials and can be cleaned in place; Schmalz's 
 ### Question
 Bunches sometimes shift in the soft grip on the way to the tray. A technician proposes doubling the finger air pressure. What is the main risk?
 - [ ] None, because soft fingers cannot damage anything :: Their squeeze rises with air pressure, and set too high they bruise soft items.
-- [x] A harder squeeze can pop berries off the stem; soft fingers trade grip force for gentleness :: That trade-off is built in, which is why soft fingers suit delicate, irregular items rather than every job.
+- [x] A harder squeeze can pop berries off or bruise them :: Soft fingers trade grip force for gentleness. That trade-off is built in, which is why soft fingers suit delicate, irregular items rather than every job.
 - [ ] The fingers stop bending, because bending comes from the rubber, not the air :: The fingers bend because inflating their channels lengthens one side while the other keeps its length.
 - [ ] Better to switch to a suction cup, which holds more firmly :: A bunch has no flat face for a cup to seal on, and suction on a grape lifts one berry or bruises it.
 

@@ -81,10 +81,16 @@ function contentsTable(ids) {
 	return out;
 }
 
-// Robot kind per station (the agreed station design); unknown pick stations get a SCARA.
+// Robot drawn at a station: the row's chosen robot type when the data gives one, else the agreed
+// station design by id; unknown pick stations get a SCARA.
 const ROBOT_KIND = { grapes: "six", apples: "delta", crackers: "scara", cheese: "delta" };
+const TYPE_KIND = { delta: "delta", scara: "scara", "six-axis": "six" };
 const MACHINE = new Set(["denester", "inspection", "lidding", "outfeed", "infeed"]);
-const kindOf = (id) => ROBOT_KIND[id] ?? (MACHINE.has(id) ? null : "scara");
+const kindOf = (id, row) => (row?.kind ? TYPE_KIND[row.kind] : null) ?? ROBOT_KIND[id] ?? (MACHINE.has(id) ? null : "scara");
+const robotsOf = (row) => Math.max(1, row?.count ?? 1);
+/** Delta positions along the belt for n deltas sharing a station centered at S, and the frame's half width. */
+const deltaSpots = (S, n) => (n <= 1 ? [S] : Array.from({ length: n }, (_, k) => S + (k - (n - 1) / 2) * (n === 2 ? 0.72 : 0.46)));
+const deltaHalf = (n) => (n > 1 ? 0.74 : 0.56);
 
 /** SCARA with a vacuum cup (robots.js draws its SCARA with fingers). Same geometry otherwise. */
 function drawScaraCup(r, bx, by, target, toolZ, s, colors) {
@@ -302,10 +308,11 @@ export class FlowView {
 		const id = this.ids[i];
 		const S = this.L.S[i];
 		const row = o.rows[i];
-		const kind = kindOf(id);
+		const kind = kindOf(id, row);
+		const n = robotsOf(row);
 		if (kind === "six" || kind === "scara") {
 			// Pedestals (robots stand at belt height so their arms clear the belt) and feeds.
-			for (const b of this.robotBases(i, row.parallel)) {
+			for (const b of this.robotBases(i, n)) {
 				obox(r, b.s, b.t, 0, 0.42, 0.42, BZ, PAL.steel, { top: shade(PAL.steel, 1.1) });
 				this.drawFeed(r, id, b.feed[0], b.feed[1]);
 			}
@@ -314,9 +321,9 @@ export class FlowView {
 		}
 		if (kind === "delta") {
 			// The ingredient belt under the delta keeps moving; the delta picks from it.
-			this.drawIngredientBelt(r, id, S, -0.7, row.parallel ? 0.7 : 0.5, t);
+			this.drawIngredientBelt(r, id, S, -0.7, n > 1 ? 0.7 : 0.5, t);
 			for (const from of row.inFrom) this.drawFeed(r, from, S + 0.34, -1.14, 0.7);
-			const half = row.parallel ? 0.74 : 0.56;
+			const half = deltaHalf(n);
 			for (const ps of [S - half, S + half]) obox(r, ps, -1.02, 0, 0.07, 0.07, 1.82, PAL.steel);
 			return;
 		}
@@ -356,13 +363,28 @@ export class FlowView {
 		}
 	}
 
-	robotBases(i, parallel) {
+	/** The item an arm carries at station id, hanging under its tool at (x, y, z). */
+	drawHeld(r, id, x, y, z) {
+		const at = frameAt(x, y, z, A, 1);
+		if (id === "grapes") drawHangingBunch(r, x, y, z + 0.11, 0, 0.75);
+		else if (id === "apples") drawAppleSlice(r, at, 0, 0, 0.3, 0.85, 0.8);
+		else if (id === "cheese") drawCheeseWedge(r, at, 0, 0, 0.3, 0.85);
+		else drawCrackerPack(r, at, 0, 0, A, 0.85);
+	}
+
+	/** Pedestal spots for n arms (six-axis or SCARA) sharing station i, each with its feed. */
+	robotBases(i, n) {
 		const S = this.L.S[i];
-		if (!parallel) return [{ s: S - 0.14, t: -0.76, feed: [S + 0.26, -1.02], phase: 0 }];
-		return [
-			{ s: S - 0.4, t: -0.76, feed: [S - 0.6, -1.06], phase: 0.5 },
-			{ s: S + 0.34, t: -0.76, feed: [S + 0.56, -1.06], phase: 0 },
-		];
+		if (n <= 1) return [{ s: S - 0.14, t: -0.76, feed: [S + 0.26, -1.02], phase: 0 }];
+		if (n === 2)
+			return [
+				{ s: S - 0.4, t: -0.76, feed: [S - 0.6, -1.06], phase: 0.5 },
+				{ s: S + 0.34, t: -0.76, feed: [S + 0.56, -1.06], phase: 0 },
+			];
+		return Array.from({ length: n }, (_, k) => {
+			const d = (k - (n - 1) / 2) * 0.5;
+			return { s: S + d, t: -0.76, feed: [S + d * 1.3, -1.12], phase: (n - 1 - k) / n };
+		});
 	}
 
 	/** A tote (grapes) or feeder stack (crackers, anything else) behind the belt. */
@@ -404,6 +426,7 @@ export class FlowView {
 			const [x, y] = W2(s, tc + (k % 2 ? 0.05 : -0.05));
 			const at = frameAt(x, y, z + 0.004, A, 1);
 			if (id === "cheese") drawCheeseWedge(r, at, 0, 0, k * 1.3, 0.85);
+			else if (id === "crackers") drawCrackerPack(r, at, 0, 0, A, 0.8);
 			else drawAppleSlice(r, at, 0, 0, k * 1.1, 0.85, 0.8);
 		}
 	}
@@ -418,10 +441,8 @@ export class FlowView {
 		const work = o.P.work[i];
 		const frozen = (ph === "held" || ph === "stopped") && st.plate && st.el < work;
 		if (ph !== "work" && !frozen) return { k: 0, dip: 0, busy: false, holding: false };
-		const row = o.rows[i];
-		const per = row.picks && row.base > 0 ? row.base / row.picks : 3.5;
-		let trips = Math.max(1, Math.round(row.own / per));
-		if (row.parallel) trips = Math.max(1, Math.ceil(trips / 2));
+		// The busiest robot's picks per plate, as the line model deals them (each robot keeps this pace).
+		const trips = Math.max(1, o.rows[i].trips ?? 1);
 		const period = Math.max(0.5, work / trips);
 		const tt = st.el + phase * period;
 		const u = (((tt / period) % 1) + 1) % 1;
@@ -440,14 +461,16 @@ export class FlowView {
 		const id = this.ids[i];
 		const S = this.L.S[i];
 		const row = o.rows[i];
-		const colors = row.tool > 0 ? { accent: HI } : undefined;
-		const kind = kindOf(id);
+		// A faster tool or a changed robot type shows in the safety-yellow accent.
+		const colors = row.tool > 0 || row.changed ? { accent: HI } : undefined;
+		const kind = kindOf(id, row);
+		const n = robotsOf(row);
 		if (kind === "six" || kind === "scara") {
-			for (const b of this.robotBases(i, row.parallel)) {
+			for (const b of this.robotBases(i, n)) {
 				const ps = this.pose(i, o, b.phase);
 				// Swing about the base (radius and angle blend), so the arm never folds over itself.
 				const fr = [b.feed[0] - b.s, b.feed[1] - b.t];
-				const tr = [S + (row.parallel ? (b.s < S ? -0.12 : 0.12) : 0) - b.s, -b.t];
+				const tr = [S + (n > 1 ? Math.sign(b.s - S) * 0.12 : 0) - b.s, -b.t];
 				const ra = Math.hypot(...fr) + (Math.hypot(...tr) - Math.hypot(...fr)) * ps.k;
 				const a0 = Math.atan2(fr[1], fr[0]);
 				const a1 = Math.atan2(tr[1], tr[0]);
@@ -460,31 +483,29 @@ export class FlowView {
 				this.raised(r, BZ, () => {
 					if (kind === "six") {
 						drawSixAxis(r, bx, by, [x, y, z], { scale: RS, tool: "fingers", grip: ps.holding ? 0.15 : 0.85, colors });
-						if (ps.holding) drawHangingBunch(r, x, y, z + 0.02, 0, 0.75);
+						if (ps.holding && id === "grapes") drawHangingBunch(r, x, y, z + 0.02, 0, 0.75);
+						else if (ps.holding) this.drawHeld(r, id, x, y, z - 0.06);
 					} else {
 						const [wx, wy] = drawScaraCup(r, bx, by, [x, y], z, RS, colors);
-						if (ps.holding) drawCrackerPack(r, frameAt(wx, wy, z - 0.09, A, 1), 0, 0, A, 0.85);
+						if (ps.holding) this.drawHeld(r, id, wx, wy, z - 0.09);
 					}
 				});
 			}
 			return;
 		}
 		if (kind === "delta") {
-			const half = row.parallel ? 0.74 : 0.56;
+			const half = deltaHalf(n);
 			const top = 1.82;
 			r.line(W(S - half, -1.02, top), W(S + half, -1.02, top), PAL.steel, 3);
-			for (const [k, ds] of (row.parallel ? [S - 0.36, S + 0.36] : [S]).entries()) {
-				const ps = this.pose(i, o, k ? 0 : 0.5);
+			for (const [k, ds] of deltaSpots(S, n).entries()) {
+				const ps = this.pose(i, o, n === 1 ? 0.5 : (n - 1 - k) / n);
 				const pz = 0.72 + (ps.busy ? (1 - ps.dip) * 0.22 : 0.3) + 0.18 * ps.k;
 				const pt = -0.7 + 0.7 * ps.k;
-				const plat = W(ds + (row.parallel ? (ds < S ? 0.24 : -0.24) * ps.k : 0), pt, pz);
+				// Several deltas each reach in toward the tray at the station's center.
+				const plat = W(ds - (ds - S) * 0.66 * ps.k, pt, pz);
 				const [cx, cy] = W2(ds, -0.36);
 				drawDelta(r, cx, cy, top, plat, { scale: RS, grip: ps.holding ? 0.2 : 0.8, colors });
-				if (ps.holding) {
-					const at = frameAt(plat[0], plat[1], plat[2] - 0.14 * RS - 0.03, A, 1);
-					if (id === "cheese") drawCheeseWedge(r, at, 0, 0, 0.3, 0.85);
-					else drawAppleSlice(r, at, 0, 0, 0.3, 0.85, 0.8);
-				}
+				if (ps.holding) this.drawHeld(r, id, plat[0], plat[1], plat[2] - 0.14 * RS - 0.03);
 			}
 			r.line(W(S - half, 0.5, top), W(S + half, 0.5, top), PAL.steel, 3);
 			r.line(W(S - half, -1.02, top), W(S - half, 0.5, top), PAL.steel, 3);
@@ -553,8 +574,8 @@ export class FlowView {
 			obox(r, S + 0.28, 0.42, 0, 0.06, 0.06, 1.12, "#d7dce2");
 		}
 		if (id === "outfeed") for (const ps of GANTRY_S) obox(r, S + ps, 0.45, 0, 0.08, 0.08, GANTRY_H, PAL.metal);
-		if (kindOf(id) === "delta") {
-			const half = row.parallel ? 0.74 : 0.56;
+		if (kindOf(id, row) === "delta") {
+			const half = deltaHalf(robotsOf(row));
 			for (const ps of [S - half, S + half]) obox(r, ps, 0.5, 0, 0.07, 0.07, 1.82, PAL.steel);
 		}
 		// Stack light: green working or indexing, amber waiting, red stopped.

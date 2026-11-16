@@ -527,6 +527,49 @@
 	color: var(--muted);
 }
 
+/* Robot type and count for a robot station (above the on/off changes). */
+.wb6-robots {
+	display: grid;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.wb6-robots[hidden] {
+	display: none;
+}
+
+.wb6-robots-k {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--muted);
+}
+
+.wb6-count {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.wb6-step {
+	min-width: 40px;
+	justify-content: center;
+	font-weight: 800;
+}
+
+.wb6-count-v {
+	min-width: 1.5em;
+	text-align: center;
+	font-weight: 800;
+	font-size: 16px;
+	font-variant-numeric: tabular-nums;
+}
+
+.wb6-count-note {
+	font-size: 12px;
+	color: var(--muted);
+}
+
 .wb6-opts {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));

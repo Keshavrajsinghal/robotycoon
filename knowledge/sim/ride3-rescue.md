@@ -37,7 +37,7 @@ What breaks without that arrow: a state machine handles only the failures someon
 The VERIFY step finds the bunch hanging half out of the soft fingers. What should the station's program do next?
 - [ ] Place it anyway; the bunch will settle into the grip during the move :: Items shift and tilt inside a soft grip, so a half-held bunch can fall onto the tray edge or the conveyor.
 - [ ] Nothing special; soft fingers sense the slip and regrip on their own :: Most soft grippers feel nothing and simply curl to a set air pressure. The check has to come from somewhere else, here a second picture.
-- [x] Follow a written failure arrow: stop the pick and post a request for help, with a time limit :: A state machine handles only the failures someone wrote down. A help state with a timeout keeps the line moving at 18 s per plate.
+- [x] Stop the pick and post a request for help, with a time limit :: This follows a written failure arrow. A state machine handles only the failures someone wrote down. A help state with a timeout keeps the line moving at 18 s per plate.
 - [ ] Retry the same grasp until it works :: An open-ended retry can stall the station on a bunch it cannot pick, and the station has 18 s per plate. Real sequences cap retries: the cheese station's logic, for example, allows two attempts and then flags the tray.
 
 ## Stop: help-request
@@ -60,7 +60,7 @@ This stop adds 0 ms to the meter on purpose. Waiting for a free operator happens
 ### Question
 Most deployed fleets prefer remote assist to direct control when a robot gets stuck. Why?
 - [ ] In remote assist the person still drives the arm the whole time, just with a simpler controller :: The robot runs on its own and the person answers a narrow question, such as where the stem is. Waymo, for example, states that its remote agents advise and do not drive.
-- [x] An answer that takes a few seconds still works, and one operator can serve many robots :: The robot plans and executes the motion itself, so the person is outside the control loop. Direct control ties up one operator per robot for the whole takeover.
+- [x] A few seconds of delay is fine, and one operator can serve many robots :: An answer that takes a few seconds still works: the robot plans and executes the motion itself, so the person is outside the control loop. Direct control ties up one operator per robot for the whole takeover.
 - [ ] Direct control needs more bandwidth, and bandwidth is the main cost of teleoperation :: The hard part of direct control is delay inside the loop, not capacity. A fast link with a long queue in front of it still lags.
 - [ ] Remote assist needs no network connection, because the robot decides alone :: The robot still sends an image and waits for an answer. If none comes within its timeout (8 s in area 9's illustrative sketch), it lets the plate pass.
 
@@ -84,7 +84,7 @@ Why does raising the camera from 30 to 60 fps cut delay, even if nothing else in
 - [ ] It does not: delay comes from the network, and frame rate only makes motion look smoother :: The wait for the next frame is real delay. One lab measured a mean glass-to-glass of 50.4 ms at 25 fps and 15.5 ms at 300 fps with the same monitor.
 - [ ] Each frame is read off the sensor faster at a higher frame rate :: Readout time is rows times row time, set by the sensor and how many rows are read, not by how often frames are taken.
 - [ ] Frames taken at a higher rate travel over the network faster :: Network time depends on distance and the link, not on how often pictures are taken. At 60 fps there are more frames to send, not faster ones.
-- [x] An event waits for the next frame slot, which averages about 17 ms at 30 fps and about 8 ms at 60 fps :: This is a wait, not work: it costs half a frame interval on average, so a faster frame rate shrinks it directly.
+- [x] The wait for the next frame slot halves, about 17 to 8 ms :: An event waits for the next frame slot: about 17 ms on average at 30 fps, 8 ms at 60. This is a wait, not work: it costs half a frame interval on average, so a faster frame rate shrinks it directly.
 
 ## Stop: encode
 title: Encode
@@ -105,10 +105,10 @@ What breaks without compression: raw 1280x720 color video at 60 fps is about 1.3
 
 ### Question
 The operator says the video lags. A teammate proposes switching the codec from H.264 to AV1. Which change would most likely cut the lag?
-- [x] Keep H.264 and turn off B-frames and lookahead, with a one-frame encoder buffer :: Encoder delay comes mostly from settings. In area 9's budget this takes the stage from about 70 ms to about 5 ms.
+- [x] Keep H.264, but turn off B-frames and lookahead :: Encoder delay comes mostly from settings. With a one-frame encoder buffer as well, area 9's budget takes the stage from about 70 ms to about 5 ms.
 - [ ] Switch to AV1, since newer codecs are faster :: Codecs trade computation for bits. AV1 saves bandwidth, but in software it can be far slower: over 500 times H.264's encoding time in one 4K study using its 2018 reference encoder.
 - [ ] Raise the bitrate so each frame keeps more detail :: Bitrate trades against quality, not delay. The encoder still waits for future frames, and bigger frames take longer to push onto the link.
-- [ ] Make every frame a keyframe, so no frame depends on another :: That does remove the wait for future frames, but complete pictures are large, so every frame takes longer to push onto the link, and lookahead can still hold frames back. Intra refresh repairs the picture without those bursts.
+- [ ] Make every frame a keyframe, so no frame ever has to wait for or depend on another :: That does remove the wait for future frames, but complete pictures are large, so every frame takes longer to push onto the link, and lookahead can still hold frames back. Intra refresh repairs the picture without those bursts.
 
 ## Stop: send
 title: Send
@@ -130,9 +130,9 @@ What breaks over TCP (Transmission Control Protocol: reliable, in-order delivery
 ### Question
 Why does the live video ride on UDP rather than TCP, which guarantees every packet arrives?
 - [ ] UDP packets travel through the cables faster :: Both travel at the same physical speed, about 200 km per millisecond in fiber. The difference is what happens after a loss.
-- [x] A resent packet would arrive after its frame was needed, and under TCP every later frame would wait for it :: At 30 fps a frame is due every 33 ms, and a resend takes at least one round trip. UDP lets the receiver skip the gap and move on.
+- [x] Resends arrive too late, and under TCP later frames wait behind them :: A resent packet would arrive after its frame was needed: at 30 fps a frame is due every 33 ms, and a resend takes at least one round trip. Under TCP every later frame would wait for it. UDP lets the receiver skip the gap and move on.
 - [ ] UDP never loses packets on a good network, so reliability is not needed :: UDP has no resending at all, and loss still happens, for example on plant Wi-Fi. WebRTC handles it with resends that fit the budget, extra recovery data, or intra refresh.
-- [ ] TCP would be fine with Nagle's algorithm turned off :: Turning off Nagle stops TCP holding back small writes, but a lost packet still blocks everything behind it for at least one round trip.
+- [ ] TCP would work just as well once Nagle's algorithm is turned off :: Turning off Nagle stops TCP holding back small writes, but a lost packet still blocks everything behind it for at least one round trip.
 
 ## Stop: network-out
 title: Network out
@@ -177,7 +177,7 @@ What breaks without a jitter buffer: frames that arrive in clumps play in jerks,
 
 ### Question
 At shift change, bulk uploads of inspection images fill the plant's link. What happens to the operator's view?
-- [x] Router queues grow, jitter climbs, the jitter buffer grows to cover it, and the view lags tens of ms more :: Area 9's illustrative case adds 50-80 ms of lag. The fixes are network priority for teleop traffic, a cap on bulk uploads, and an encoder that follows the congestion controller's lower estimate.
+- [x] The view lags tens of ms more, as queues and jitter grow :: Router queues grow, jitter climbs, and the jitter buffer grows to cover it. Area 9's illustrative case adds 50-80 ms of lag. The fixes are network priority for teleop traffic, a cap on bulk uploads, and an encoder that follows the congestion controller's lower estimate.
 - [ ] Nothing, as long as the link has spare capacity on average :: While the uploads fill the link there is no spare capacity at that moment, whatever the average says. Router buffers fill first, adding delay and jitter for everyone before any packet is dropped.
 - [ ] Some frames drop, but the ones that arrive are as fresh as before :: Queues form before drops, so arriving frames are older too, and the jitter buffer holds them longer to smooth them out.
 - [ ] A 120 Hz monitor would cancel out the extra lag :: Going from 60 to 120 Hz cuts the average refresh wait from 8.3 to 4.2 ms, about 4 ms, far less than tens of ms.
@@ -188,7 +188,7 @@ cargo: Operator command: ease bunches apart
 cargo_detail: A SpaceMouse push, capped at 50 mm/s (illustrative)
 concepts: teleop-modes, operator-interfaces, latency-budget
 workbench: wb5-teleop
-delay_ms: 221-239
+delay_ms: 213-239
 
 ### Plain
 A person at a desk watches the video and pushes a hand controller to guide the arm. It is like steering a car by watching a slightly late video of the road: they always react to what happened a moment ago. A simple reaction takes about a fifth of a second, and working out how to untangle two bunches takes longer.
@@ -196,7 +196,7 @@ A person at a desk watches the video and pushes a hand controller to guide the a
 ### Precise
 This is direct control (the operator's device streams motion targets many times a second and the robot follows them). The device is a SpaceMouse (a 6-DOF puck, meaning six independent directions of motion: push, pull, or twist a knob to move the tool along and around three axes), set up with an enable button that must stay held for any motion, speed capped at 50 mm/s, and the gripper on a button (illustrative settings). It commands velocity, so it needs a dead zone (a small band around the resting position that counts as zero), or a resting hand makes the arm drift. Commands are expressed in the camera's view, so "push away" means away on screen.
 
-The meter adds a simple visual reaction time, about 213-231 ms mean, plus 8 ms of device sampling (the computer asks the puck for a reading 125 times a second over USB; illustrative). That is a rough stand-in. Decisions take longer, and people predict and move continuously, so delay changes how they work more than it adds one fixed step. Area 9's machine budget leaves the human out for that reason.
+The meter adds a simple visual reaction time, about 213-231 ms mean, plus a wait of 0-8 ms for the next device reading (the computer asks the puck for a reading 125 times a second over USB, so about 4 ms on average; illustrative). That is a rough stand-in. Decisions take longer, and people predict and move continuously, so delay changes how they work more than it adds one fixed step. Area 9's machine budget leaves the human out for that reason.
 
 Targets come from human studies. Below 150 ms one way, most applications feel essentially transparent (ITU-T G.114, a telecom standards body's guideline on delay); in a telesurgery study, delays of 100 ms or less were acceptable. At delays of seconds, operators fall back to moving, then waiting to see the result. With about 400 ms of machine delay, this operator is far outside the comfortable zone.
 
@@ -204,7 +204,7 @@ Targets come from human studies. Below 150 ms one way, most applications feel es
 With about 400 ms of machine delay around the loop, what happens when the operator tries to nudge the bunch quickly?
 - [ ] It feels transparent, because 400 ms is within ITU-T's 400 ms planning limit :: 400 ms is the one-way planning limit, not a comfort level. Essentially transparent interactivity needs under 150 ms one way, and highly interactive tasks can suffer from less.
 - [ ] The 50 mm/s speed cap removes the problem, because slow motion cannot overshoot :: The cap limits how far the arm moves during the delay, but the operator still acts on an old picture. It reduces the damage; it does not remove the lag.
-- [x] They see each result late, so quick corrections overshoot; operators slow down, and at long delays they move and wait :: If they hold a push until they see the arm move, it has already traveled about 20 mm at the 50 mm/s cap (arithmetic). At a 3.5 s delay, every subject in a 1970 MIT study moved, then waited to see the result.
+- [x] Each result shows up late, so quick corrections overshoot :: Operators slow down, and at long delays they move and wait. If they hold a push until they see the arm move and then let go, the arm has gone about 20 mm by the time the release reaches it (50 mm/s times about 400 ms; arithmetic). At a 3.5 s delay, every subject in a 1970 MIT study moved, then waited to see the result.
 - [ ] A VR headset would remove the lag by making the view immersive :: Immersion helps judge depth, not delay. In GELLO's study, VR controllers reached 0.72 success versus 0.92 for a simple leader arm.
 
 ## Stop: network-back
@@ -239,9 +239,9 @@ delay_ms: 70
 The arm's controller receives the command and starts to move, smoothing it so the arm does not jerk. Like a train's dead-man's pedal, the robot keeps checking that commands are still coming; if they stop, it stops by itself and keeps hold of the bunch. Once the bunch is free and gripped, the robot places it in the tray on its own.
 
 ### Precise
-Two stages close the loop. The controller cycle (the fixed beat at which new commands are read) is 10 ms at 100 Hz through this setup's bridge, versus 2 ms at 500 Hz through an interface such as Universal Robots' RTDE (a real-time data link into the arm's controller). Then motion: a smoothing filter softens each new target. On one arm the smoothing setting alone spans 30-200 ms; a low value reacts fast, and a high value prevents overshoot. Area 9's budget uses 60 ms (illustrative), so 70 ms in all. In this ride's design, once the bunches are apart and one is gripped, the operator hands control back and the station's own program places it.
+Two stages close the loop. The controller cycle (the fixed beat at which new commands are read) is 10 ms at 100 Hz through this setup's bridge, versus 2 ms at 500 Hz through an interface such as Universal Robots' RTDE (a real-time data link into the arm's controller). This stage counts a whole cycle, not the half-cycle average wait of a camera frame or a USB poll: a command waits about half a cycle for the next read, then the bridge needs time to receive it and pass it to the arm (illustrative). Then motion: a smoothing filter softens each new target. On one arm the smoothing setting alone spans 30-200 ms; a low value reacts fast, and a high value prevents overshoot. Area 9's budget uses 60 ms (illustrative), so 70 ms in all. In this ride's design, once the bunches are apart and one is gripped, the operator hands control back and the station's own program places it.
 
-Around the whole loop that is about 402 ms of machine delay, plus the operator's reaction: about 624 ms on the meter. For scale, a measured 5G teleoperated-driving rig had about 500 ms end to end, not counting human reaction.
+Around the whole loop that is about 398 ms of machine delay, plus the operator's reaction: about 620 ms on the meter. For scale, a measured 5G teleoperated-driving rig had about 500 ms end to end, not counting human reaction.
 
 Safety stays local. A [[watchdogs|watchdog]] (a timer that triggers a safe action when an expected signal stops arriving) brings the arm to a controlled stop (braking smoothly to a halt and holding position, rather than cutting power) if no fresh command arrives within 250 ms, keeping the gripper closed so the bunch is not dropped. After 2 s without heartbeats it ends the takeover, parks the arm, and lets the next plate pass without grapes so inspection rejects it (illustrative values). At the 50 mm/s cap, a 250 ms timeout allows up to 12.5 mm of motion before the stop begins (arithmetic), plus braking distance. What breaks without the watchdog: interfaces such as RTDE keep their last input value, so a dropped link could leave a velocity command running. The hardwired emergency stop works whether or not the link is up.
 
@@ -250,21 +250,23 @@ Mid-move, the operator's link drops. What should happen, and where must that dec
 - [ ] Nothing needs building: when a connection drops, the robot just stops :: Many interfaces keep the last value; Universal Robots' RTDE notes that its inputs retain their last received value, so a velocity command could keep running.
 - [ ] Cut motor power immediately, the safest possible stop :: A powered-down arm can coast or drop its load. Teleop systems usually command a controlled stop and hold position, and keep the hardwired emergency stop for real emergencies.
 - [ ] The operator's browser sends an emergency stop over the network :: The link is the thing that failed, and a stop sent over a network cannot guarantee timing. The guaranteed stop must live on the robot.
-- [x] The robot's own computer sees no fresh command within its timeout, makes a controlled stop, and keeps hold of the bunch :: Only the local side can guarantee timing. The remote operator can ask for a stop, but the guarantee that it happens never depends on the network.
+- [x] The robot's own computer notices the silence and makes a controlled stop :: It sees no fresh command within its timeout, stops, and keeps hold of the bunch. Only the local side can guarantee timing. The remote operator can ask for a stop, but the guarantee that it happens never depends on the network.
 
 ## Puzzle
 title: Get direct control under 150 ms
 type: budget
 
 ### Prompt
-The meter ended near 624 ms. About 222 ms of that is the operator's own reaction, which no purchase removes. The other 402 ms is machine delay around the loop: video out plus command back. Direct control wants that loop near 150 ms. ITU-T's guideline for essentially transparent interactivity is below 150 ms one way, and this loop covers both directions.
+The meter ended near 620 ms. About 222 ms of that is the operator's own reaction, which no purchase removes. The other 398 ms is machine delay around the loop: video out plus command back. Direct control wants that loop near 150 ms. ITU-T's guideline for essentially transparent interactivity is below 150 ms one way, and this loop covers both directions.
+
+The ride's meter showed where the machine delay sits: capture about 37 ms (including the wait for the next frame), encode 70 ms, send 15 ms, the network 48 ms each way, decode and display about 106 ms (80 ms of it the jitter buffer), the wait for the next device reading about 4 ms, and the arm 70 ms (a 10 ms controller cycle plus 60 ms of smoothing).
 
 Choose improvements that bring the machine loop to 150 ms or less within 12 effort points. The model is illustrative: delays and savings come from area 9's budget for this one setup, costs are invented effort points, and savings simply add, which real systems only roughly do.
 
 ### Data
 ```json
 {
-  "start_ms": 402,
+  "start_ms": 398,
   "target_ms": 150,
   "budget": 12,
   "unit": "effort points",
@@ -300,16 +302,16 @@ Choose improvements that bring the machine loop to 150 ms or less within 12 effo
     {
       "id": "input-polling",
       "label": "1000 Hz USB polling for the SpaceMouse",
-      "saves_ms": 7,
+      "saves_ms": 3.5,
       "cost": 1,
-      "why": "125 Hz polling adds up to 8 ms; 1000 Hz brings it to about 1 ms. Small, but cheap."
+      "why": "125 Hz polling makes a push wait up to 8 ms, about 4 on average; 1000 Hz cuts that to about 0.5 ms. Small, but cheap."
     },
     {
       "id": "controller-rate",
       "label": "500 Hz controller interface instead of a 100 Hz bridge",
       "saves_ms": 8,
       "cost": 2,
-      "why": "A 100 Hz bridge reads commands every 10 ms; a 500 Hz interface such as Universal Robots' RTDE reads them every 2 ms."
+      "why": "A 100 Hz bridge reads commands every 10 ms; a 500 Hz interface such as Universal Robots' RTDE reads them every 2 ms. Counting a whole cycle for receiving and acting on each command, that saves about 8 ms."
     },
     {
       "id": "smoothing",
@@ -344,6 +346,6 @@ Choose improvements that bring the machine loop to 150 ms or less within 12 effo
 ```
 
 ### Debrief
-Every solution includes low-latency encoder settings (about 76 ms, cheap in this model) and a wired uplink with a smaller jitter buffer (about 137 ms); together they cover most of the 252 ms. In this model lighter smoothing (30 ms) is also needed, plus one more small saving, such as the 60 fps camera or the 120 Hz monitor, to get under 150 ms. Distance, bandwidth, and a newer codec did little: the 1,000 km of fiber costs only about 5 ms each way, extra bandwidth only shortens the 15 ms send stage, and AV1 changes the bit count, not the wait. Every useful option together reaches about 110 ms, area 9's tuned loop, but costs more than the budget.
+Every solution includes low-latency encoder settings (about 76 ms, cheap in this model) and a wired uplink with a smaller jitter buffer (about 137 ms); together they cover most of the 248 ms. In this model lighter smoothing (30 ms) is also needed, plus one more saving of at least 5 ms to reach 150 ms: the 60 fps camera, the 120 Hz monitor, or the 500 Hz controller interface (faster USB polling alone falls just short). Distance, bandwidth, and a newer codec did little: the 1,000 km of fiber costs only about 5 ms each way, extra bandwidth only shortens the 15 ms send stage, and AV1 changes the bit count, not the wait. Every useful option together reaches about 110 ms, area 9's tuned loop, but costs more than the budget.
 
 Switching to remote assist changes the problem instead of racing it. The operator clicks the stem on one still image, and the robot plans and executes the pick itself, with its own collision checks and limits. The person is no longer inside the control loop, so the answer has seconds, not 150 ms: at 18 s per plate, a reply within a few seconds keeps the plate on schedule, and one operator can cover several stations. Waymo's remote agents work at a median one-way latency of about 150 ms to its U.S. centers (so about 300 ms there and back, twice this puzzle's target), fine for advice but poor for steering, which is why they advise rather than drive. Direct control stays for the rare case a click cannot fix, with the watchdog standing by.

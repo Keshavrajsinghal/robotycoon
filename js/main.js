@@ -118,10 +118,15 @@ async function main() {
 		workbench: (id) => content.workbenches?.find((w) => w.id === id) ?? null,
 		hudHeight: () => $("#hud").offsetHeight,
 	};
-	// Play waits at a stop while the rider is reading: mouse over the panel, the phone sheet
-	// expanded, or any dialog (concept, glossary, puzzle, workbench) open.
+	// Play waits at a stop while the rider is reading: mouse over the panel, keyboard focus inside
+	// the panel body (focus-visible only, so a mouse click on a panel button does not freeze Play),
+	// the phone sheet expanded, or any dialog (concept, glossary, puzzle, workbench) open.
 	const sheetExpanded = () => app.isPhone() && !$("#panel").hidden && $("#panel").dataset.state === "expanded";
-	const runner = new RideRunner({ reducedMotion, holdDwell: () => (app.panel?.isHovered() ?? false) || sheetExpanded() || modalOpen() });
+	const keyboardInPanel = () => {
+		const a = document.activeElement;
+		return !!a && $("#panel-body").contains(a) && a.matches(":focus-visible");
+	};
+	const runner = new RideRunner({ reducedMotion, holdDwell: () => (app.panel?.isHovered() ?? false) || keyboardInPanel() || sheetExpanded() || modalOpen() });
 	runner.setSpeed(SPEEDS.includes(state.get("speed")) ? state.get("speed") : 1);
 	app.runner = runner;
 	const router = new Router((route, prev) => onRoute(route, prev));
@@ -430,7 +435,9 @@ async function main() {
 
 	function overviewCamera(instant) {
 		const phone = app.isPhone();
-		scene.lookAt(phone ? 42 : 40, phone ? 50 : 49, 0, { zoom: phone ? 0.3 : 0.6, instant });
+		// Phone: x - y = 0 centers the four ride gates around the plaza horizontally (x + y keeps
+		// the vertical framing), so every gate label fits a 360 px screen.
+		scene.lookAt(phone ? 46 : 40, phone ? 46 : 49, 0, { zoom: phone ? 0.3 : 0.6, instant });
 	}
 
 	function selectRide(rideId, { stopId = null, jump = false } = {}) {

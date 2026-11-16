@@ -291,9 +291,15 @@ button.label::before {
 	inset: -7px -4px;
 }
 
+/* Only the light gate labels turn white on hover: dark building labels and the selected
+   building or trail step keep their own fill (white on white text would hide them, and a tap
+   leaves a sticky hover state on touch screens). */
 button.label:hover {
-	background: #ffffff;
 	box-shadow: 0 3px 12px rgba(15, 30, 40, 0.35);
+}
+
+button.label-gate:hover {
+	background: #ffffff;
 }
 
 .label-gate {
@@ -1202,6 +1208,14 @@ a.concept-link {
 	padding: 8px 8px calc(var(--safe-b) + 16px);
 }
 
+/* From 760 px up the controls float as a pill near the bottom edge (14 px gap + 62 px pill),
+   under the drawer's z-index: end the drawer above it, at the same 84 px the scene keeps clear. */
+@media (min-width: 760px) {
+	.app.controls-on .drawer {
+		bottom: calc(var(--safe-b) + 84px);
+	}
+}
+
 .route-list {
 	list-style: none;
 	margin: 0;
@@ -1707,6 +1721,8 @@ a.concept-link {
 	left: 50%;
 	bottom: calc(var(--safe-b) + 92px);
 	transform: translate(-50%, 12px);
+	/* Without max-content an absolutely placed box at left: 50% shrinks to the right half. */
+	width: max-content;
 	max-width: calc(100vw - 32px);
 	padding: 10px 16px;
 	border-radius: 999px;

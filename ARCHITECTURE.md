@@ -303,6 +303,8 @@ park is drawn there.
                                            // animated while the zone is on screen (prefer
                                            // scene.addDynamic items with depth for correct overlap)
   closeup(stopId, el, ctx) -> cleanup      // optional; illustration at the top of the stop panel
+                                           // (on phones it follows the stop text, so the collapsed
+                                           // sheet shows the explanation first)
   focus(pos, ctx) -> [x, y, z]             // optional; where the camera aims when boarding and
                                            // while following the cart at pos (default: the cart).
                                            // Ride 1 aims 2 m toward the conveyor so the station
@@ -337,7 +339,8 @@ goToStop(stopId), openWorkbench(id)
 so a deep link does not also mark stop 1 seen), `play, pause, toggle, stepForward, stepBack,
 restart, setSpeed(0.5|1|2|4), cycleSpeed, goToStop(i, {jump}), goToStopId(id, {jump}),
 setMode(mode), finishMove, pos() -> {x,y,z,heading,slope}, state()`. Play dwells 7 s (at 1x) at
-each stop and holds while the rider is reading: mouse over the panel, the phone sheet expanded,
+each stop and holds while the rider is reading: mouse over the panel, keyboard focus inside the
+panel body (`:focus-visible` only, so a mouse click does not freeze Play), the phone sheet expanded,
 or any dialog open (main.js passes this as `holdDwell`). Pause during a move holds the cart where
 it is (`state().held`, and `moving` is false) and Play resumes that move; step forward arrives at
 the next stop, step back returns to the stop it left, and restart, a route click, a mode switch,
@@ -465,6 +468,8 @@ Plain/Precise check compares the browser's own serialization of the content HTML
 - Keyboard: `index.html` source order is the Tab order (top bar, ride controls, route, panel,
   then the map's labeled buttons). Space plays or pauses, arrow keys step, Escape closes the top
   dialog, then a menu (focus returns to its button), then the route list, then the phone sheet.
+  When the panel re-renders (a new stop, Plain/Precise, a mode switch) the focused control's
+  replacement keeps focus, or the panel title when it is gone.
 - `prefers-reduced-motion: reduce` (or the in-app toggle) makes the cart jump stop to stop,
   snaps the camera, and stops idle animation.
 - Routes: `#/ride/<rideId>[/<stopId>]`, `#/workbench/<id>`, `#/town`, `#/town/<districtId>`,

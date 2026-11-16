@@ -163,6 +163,20 @@ export function codeMark(r, cx, cy, z, s = 1, lw = 1, heading = HEADING) {
 	}
 }
 
+/**
+ * A dark belt flight (pusher bar, like the ones addLineTrays draws on the indexing belt) right
+ * behind (side -1) or ahead of (side 1) a tray: the ride-1 cargo shows the tray locked between
+ * two flights from the infeed on, once it is indexed. Callers order each bar against the tray
+ * with flightFar.
+ */
+export function flightBar(r, cx, cy, z, s = 1, heading = HEADING, side = -1) {
+	const p = frame(cx, cy, z, heading, s)(0.355 * side, 0);
+	r.orientedBox(p[0], p[1], z, 0.05 * s, 0.56 * s, 0.035 * s, heading, "#262a30");
+}
+
+/** True when that flight bar is farther from the viewer than the tray (draw it first). */
+export const flightFar = (heading, side) => side * (Math.cos(heading) + Math.sin(heading)) < 0;
+
 /** A tray as the line shows it; c from contents(). */
 export function drawTray(r, x, y, z, c, opts = {}) {
 	const s = opts.scale ?? 1;

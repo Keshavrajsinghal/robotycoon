@@ -18,8 +18,15 @@ knowledge/sim/workbenches.md). Times are seconds per plate. Unknown fields are i
   transfer_s            number    Optional, default 0. Seconds per plate the indexing belt spends
                                   moving trays on by one station. Every station pays it on top of
                                   its own work (the lower segment of each bar).
-  parallel_overhead_s   number    Optional, default 0. Seconds added to a station's work when a
-                                  second robot shares it, so two robots give work / 2 + overhead.
+  parallel_overhead_s   number    Optional, default 0. Seconds added to a station's work when more
+                                  than one robot shares it (on top of the busiest robot's picks).
+  robot_types           array     Optional. Robot types the robot stations can choose from:
+    id                  string    Unique; stations name types by it.
+    kind                string    "delta", "scara", or "six-axis": which robot the picture draws.
+    label               string    Name shown on the option.
+    motion_s            number    >= 0. Arm motion time per pick (a benchmark-loop time). Changing
+                                  a station's type changes each pick by the difference.
+    cost                number    >= 0. Price of one robot of this type.
   buffer                object    { cost: number >= 0, capacity: integer >= 1 }. Price of one
                                   accumulation buffer in front of a station, and how many plates it
                                   holds in the animation. In the line model a buffer splits the line
@@ -34,26 +41,38 @@ knowledge/sim/workbenches.md). Times are seconds per plate. Unknown fields are i
     id                  string    A ride-1 stop id (denester, grapes, apples, crackers, cheese,
                                   inspection, lidding, outfeed). The column label is that stop's
                                   title from content; the drawing is chosen by id.
-    work_s              number    >= 0. Seconds the station's robot or machine is busy per plate.
+    work_s              number    >= 0. Seconds the station's robot or machine is busy per plate
+                                  (with its installed robot type, at a robot station).
     picks               integer   Optional, >= 1. Picks (or machine operations) per plate; shown
                                   next to the work and sets how many trips the robot animates.
     availability        number    Optional, 0 < a <= 1, default 1. Share of time the station is
                                   not stopped. Without buffers the line runs for the product of
-                                  all availabilities. A second robot counts the station twice.
-    parallel_cost       number    Optional, >= 0. Cost of adding a second robot that shares this
-                                  station's work. Omit when a second robot is not an option here.
-    parallel_label      string    Optional. Name of that option (default "Second robot").
+                                  all availabilities. Each robot counts the station once.
+    robot               string    Optional. A robot_types id: the robot installed here. Stations
+                                  without one are machines and the drawing is chosen by id.
+    robot_options       array     Optional. robot_types ids the learner may choose here, including
+                                  robot (default: robot only).
+    max_robots          integer   Optional, >= 1, default 1. Most robots that may share the
+                                  station. A setup of N robots of type T costs N * T.cost less the
+                                  installed robot's cost (never below 0).
     tool                object    Optional. A faster gripper, robot, or method for this station:
                                   { saves_s: number > 0 (seconds removed from work_s),
                                     cost: number >= 0, label: string (optional, its name) }.
   moves                 array     Optional. Tasks that can be handed to a neighbouring station:
     from, to            string    Station ids right next to each other in the line.
-    seconds             number    > 0. Work that leaves "from" and is added to "to".
+    seconds             number    > 0. One pick that leaves "from" and is added to "to": its time
+                                  with the installed robots at both stations. A changed robot type
+                                  at either end changes it there by the motion-time difference.
     cost                number    >= 0.
     label               string    Optional. What the task is (for example "one apple slice").
 
-Line model: a station's cycle = (work_s + seconds moved in - seconds moved out - tool saves_s),
-halved plus parallel_overhead_s with a second robot, plus transfer_s. Buffers split the line into
+Line model: a station's work with robot type T = work_s + picks * (T.motion_s - installed motion_s);
+its own work = that work + seconds moved in - seconds moved out - tool saves_s (a moved pick's
+seconds changed at each end by that end's motion-time difference). With N > 1 robots the picks are
+dealt out whole, largest first to the least-loaded robot (remaining own picks split the station's
+own work equally; moved-in picks keep their seconds), and the work is the busiest robot's share plus
+parallel_overhead_s. Its cycle = work + transfer_s; its availability is availability^N.
+Buffers split the line into
 parts; a part's availability is the product of its stations' availabilities. A part makes
 3600 * availability / (its slowest cycle) plates per hour and the line makes the smallest of these,
 so every station must fit under limit = takt * (availability of its part). Solved when the line
@@ -63,7 +82,7 @@ rate >= target_per_hour and the total cost <= budget.
 import { h, loadCss } from "../core/dom.js";
 import { PAL } from "../engine/park.js";
 import { FlowView } from "./wb6-draw.js";
-import { buildOptions, cheapestSolution, evaluate, LineSim, validate, worstCycle } from "./wb6-model.js";
+import { buildOptions, cheapestSolution, defaultSetup, evaluate, LineSim, robotCost, taskSeconds, typeWork, validate, worstCycle } from "./wb6-model.js";
 
 const ID = "wb6-line-balancing";
 const SIM_SPEED = 8; // simulated seconds per real second in the animation
@@ -98,7 +117,8 @@ function mount(el, ctx) {
 	const yMax = worstCycle(m) * 1.2;
 
 	const sel = new Set();
-	let ev = evaluate(m, opts, sel);
+	const setup = defaultSetup(m); // robot type and count per robot station
+	let ev = evaluate(m, opts, sel, setup);
 	let P = null;
 	let selected = Math.max(0, ev.rows.findIndex((r) => r.bottleneck));
 	let solvedFired = false;
@@ -187,6 +207,7 @@ function mount(el, ctx) {
 	const panelChips = h("span", { class: "wb6-chips" });
 	const formula = h("div", { class: "wb6-formula" });
 	const formulaLimit = h("div", { class: "wb6-formula" });
+	const robotBox = h("div", { class: "wb6-robots" });
 	const optList = h("div", { class: "wb6-opts" });
 	const stopBtn = h(
 		"button",
@@ -217,6 +238,7 @@ function mount(el, ctx) {
 		{ class: "wb6-panel", "aria-label": "Selected station" },
 		h("div", { class: "wb6-panel-head" }, panelTitle, panelChips),
 		h("div", { class: "wb6-formulas" }, formula, formulaLimit),
+		robotBox,
 		optList,
 		h("div", { class: "wb6-actions" }, m.shortStop > 0 ? [stopBtn, stopNote] : null, resetBtn),
 	);
@@ -232,6 +254,8 @@ function mount(el, ctx) {
 	const liveSim = new LineSim(n);
 	let shownSim = liveSim;
 	let optButtons = [];
+	let typeButtons = [];
+	let countUi = null;
 
 	function renderStats() {
 		taktV.textContent = f1(m.takt);
@@ -285,16 +309,17 @@ function mount(el, ctx) {
 	function renderFormula() {
 		const row = ev.rows[selected];
 		const [cy, li] = fpair(row.cycle, row.limit);
-		const picks = row.picks ? ` (${row.picks} ${row.picks === 1 ? "pick" : "picks"})` : "";
-		const own = [term(`${f1(row.base)} s`, `work${picks}`)];
+		const what = [row.picks ? `${row.picks} ${row.picks === 1 ? "pick" : "picks"}` : null, row.robotLabel].filter(Boolean).join(", ");
+		const own = [term(`${f1(row.typeWork)} s`, `work${what ? ` (${what})` : ""}`)];
 		if (row.moved > 1e-9) own.push(op("+"), term(`${f1(row.moved)} s`, "moved in"));
 		if (row.moved < -1e-9) own.push(op(MINUS), term(`${f1(-row.moved)} s`, "moved out"));
 		if (row.tool > 0) own.push(op(MINUS), term(`${f1(row.tool)} s`, "faster"));
 		const parts = [];
-		if (row.parallel) {
+		if (row.count > 1) {
+			// Picks are dealt out whole, so the station waits for its busiest robot.
 			if (own.length > 1) parts.push(op("("), ...own, op(")"));
 			else parts.push(...own);
-			parts.push(op("÷"), term("2", "robots"));
+			parts.push(op("→"), term(`${f1(row.work - m.overhead)} s`, `busiest of ${row.count} robots (${row.trips} ${row.trips === 1 ? "pick" : "picks"})`));
 			if (m.overhead > 0) parts.push(op("+"), term(`${f1(m.overhead)} s`, "overhead"));
 		} else parts.push(...own);
 		if (m.transfer > 0) parts.push(op("+"), term(`${f1(m.transfer)} s`, "transfer"));
@@ -308,37 +333,102 @@ function mount(el, ctx) {
 			term(pct(seg.avail), whole ? "line availability" : "availability of this part"),
 			op("="),
 			term(`${li} s`, "limit", "is-total"),
-			h("span", { class: "wb6-note" }, `station availability ${pct(row.avail)}${row.parallel ? " (2 robots)" : ""}`),
+			h("span", { class: "wb6-note" }, `station availability ${pct(row.avail)}${row.count > 1 ? ` (${row.count} robots)` : ""}`),
 		);
 	}
 
 	function optInfo(o) {
 		const i = selected;
-		if (o.type === "parallel") return { name: o.label ?? "Second robot", effect: `÷2${m.overhead > 0 ? ` + ${f1(m.overhead)} s` : ""}` };
 		if (o.type === "tool") return { name: o.label ?? "Faster tool", effect: `${MINUS}${f1(o.saves)} s` };
 		if (o.type === "buffer") return { name: "Buffer in front", effect: `holds ${m.buffer.capacity}` };
 		const what = o.label ?? "a task";
-		if (o.from === i) return { name: `Move ${what} to ${title(o.to)}`, effect: `${MINUS}${f1(o.seconds)} s here` };
-		return { name: `Take ${what} from ${title(o.from)}`, effect: `+${f1(o.seconds)} s here` };
+		// The task's seconds here, with the robot type chosen at this station.
+		const here = f1(taskSeconds(m, o.seconds, i, setup[i]?.type));
+		if (o.from === i) return { name: `Move ${what} to ${title(o.to)}`, effect: `${MINUS}${here} s here` };
+		return { name: `Take ${what} from ${title(o.from)}`, effect: `+${here} s here` };
+	}
+
+	/** Robot type buttons and the robot count stepper for a robot station. */
+	function renderRobots() {
+		const s = m.stations[selected];
+		typeButtons = [];
+		countUi = null;
+		robotBox.replaceChildren();
+		robotBox.hidden = !s.robot;
+		if (!s.robot) return;
+		if (s.robotOptions.length > 1) {
+			typeButtons = s.robotOptions.map((id) => {
+				const t = m.types.get(id);
+				const effect = h("span", { class: "wb6-opt-effect" });
+				const cost = h("span", { class: "wb6-opt-cost" });
+				const btn = h(
+					"button",
+					{ type: "button", class: "wb6-opt wb6-opt-type", "data-robot-type": id, "aria-pressed": "false", onclick: () => setRobot({ type: id }) },
+					h("span", { class: "wb6-opt-check", "aria-hidden": "true" }),
+					h("span", { class: "wb6-opt-name" }, t.label),
+					h("span", { class: "wb6-opt-meta" }, effect, cost),
+				);
+				return { id, btn, effect, cost };
+			});
+			robotBox.append(h("div", { class: "wb6-robots-k" }, "Robot type"), h("div", { class: "wb6-opts", role: "group", "aria-label": "Robot type" }, typeButtons.map((b) => b.btn)));
+		}
+		if (s.maxRobots > 1) {
+			const val = h("output", { class: "wb6-count-v", "aria-live": "polite" });
+			const minus = h("button", { type: "button", class: "btn wb6-step", "data-robot-count": "less", "aria-label": "One robot fewer", onclick: () => setRobot({ count: setup[selected].count - 1 }) }, MINUS);
+			const plus = h("button", { type: "button", class: "btn wb6-step", "data-robot-count": "more", "aria-label": "One robot more", onclick: () => setRobot({ count: setup[selected].count + 1 }) }, "+");
+			const note = h("span", { class: "wb6-count-note" });
+			countUi = { val, minus, plus, note };
+			robotBox.append(h("div", { class: "wb6-count" }, h("span", { class: "wb6-robots-k" }, "Robots"), minus, val, plus, note));
+		}
+	}
+
+	function refreshRobots() {
+		const s = m.stations[selected];
+		if (!s.robot) return;
+		const cur = setup[selected];
+		const curCost = robotCost(m, selected, cur.type, cur.count);
+		const fits = (type, count) => ev.spent - curCost + robotCost(m, selected, type, count) <= m.budget + 1e-9;
+		for (const { id, btn, effect, cost } of typeButtons) {
+			const on = cur.type === id;
+			const afford = on || fits(id, cur.count);
+			const perPick = typeWork(m, selected, id) / (s.picks ?? 1);
+			btn.setAttribute("aria-pressed", on ? "true" : "false");
+			btn.disabled = !afford;
+			effect.textContent = `${perPick.toFixed(2)} s per pick`;
+			cost.textContent = `${money(m.types.get(id).cost)} each`;
+		}
+		if (countUi) {
+			const { val, minus, plus, note } = countUi;
+			val.textContent = String(cur.count);
+			minus.disabled = cur.count <= 1;
+			const more = cur.count < s.maxRobots;
+			plus.disabled = !more || !fits(cur.type, cur.count + 1);
+			const left = m.budget - ev.spent;
+			const next = more ? robotCost(m, selected, cur.type, cur.count + 1) - curCost : 0;
+			note.textContent = !more ? `at most ${s.maxRobots}` : plus.disabled ? `one more: ${money(next)} (${fnum(Math.max(0, left))} left)` : `one more: ${money(next)}`;
+		}
 	}
 
 	function renderPanel() {
 		panelTitle.textContent = title(selected);
-		const rank = { parallel: 0, tool: 1, move: 2, buffer: 3 };
+		renderRobots();
+		const rank = { tool: 1, move: 2, buffer: 3 };
 		const mine = opts.filter((o) => (o.type === "move" ? o.from === selected || o.to === selected : o.station === selected)).sort((a, b) => rank[a.type] - rank[b.type]);
 		optButtons = mine.map((o) => {
 			const info = optInfo(o);
+			const effect = h("span", { class: "wb6-opt-effect" }, info.effect);
 			const cost = h("span", { class: "wb6-opt-cost" });
 			const btn = h(
 				"button",
 				{ type: "button", class: `wb6-opt wb6-opt-${o.type}`, "data-opt": o.key, "aria-pressed": "false", onclick: () => toggle(o.key) },
 				h("span", { class: "wb6-opt-check", "aria-hidden": "true" }),
 				h("span", { class: "wb6-opt-name" }, info.name),
-				h("span", { class: "wb6-opt-meta" }, h("span", { class: "wb6-opt-effect" }, info.effect), cost),
+				h("span", { class: "wb6-opt-meta" }, effect, cost),
 			);
-			return { o, btn, cost };
+			return { o, btn, effect, cost };
 		});
-		optList.replaceChildren(...(optButtons.length ? optButtons.map((b) => b.btn) : [h("p", { class: "wb6-none" }, "No changes on offer at this station.")]));
+		const robotsOffered = typeButtons.length > 0 || countUi !== null;
+		optList.replaceChildren(...(optButtons.length ? optButtons.map((b) => b.btn) : robotsOffered ? [] : [h("p", { class: "wb6-none" }, "No changes on offer at this station.")]));
 		refreshPanel();
 	}
 
@@ -346,9 +436,11 @@ function mount(el, ctx) {
 		const row = ev.rows[selected];
 		panelChips.replaceChildren(...[row.bottleneck ? chip("Bottleneck", "bn") : null, row.over ? chip("Over limit", "bad") : chip("Fits limit", "good")].filter(Boolean));
 		renderFormula();
+		refreshRobots();
 		const left = m.budget - ev.spent;
-		for (const { o, btn, cost } of optButtons) {
+		for (const { o, btn, effect, cost } of optButtons) {
 			const on = sel.has(o.key);
+			effect.textContent = optInfo(o).effect; // a moved task's seconds follow the robot type
 			const afford = on || o.cost <= left + 1e-9;
 			btn.setAttribute("aria-pressed", on ? "true" : "false");
 			btn.disabled = !afford;
@@ -386,7 +478,7 @@ function mount(el, ctx) {
 	}
 
 	function update() {
-		ev = evaluate(m, opts, sel);
+		ev = evaluate(m, opts, sel, setup);
 		P = params();
 		renderStats();
 		renderChart();
@@ -408,9 +500,30 @@ function mount(el, ctx) {
 
 	let deltaTimer = 0;
 	function toggle(key) {
+		withDelta(() => {
+			if (sel.has(key)) sel.delete(key);
+			else sel.add(key);
+		});
+	}
+
+	/** Change the selected station's robot type or count (clamped to 1..max_robots). */
+	function setRobot(patch) {
+		const s = m.stations[selected];
+		const cur = setup[selected];
+		const next = { type: patch.type ?? cur.type, count: Math.max(1, Math.min(s.maxRobots, patch.count ?? cur.count)) };
+		if (next.type === cur.type && next.count === cur.count) return;
+		const pressed = patch.count === undefined || !countUi ? null : patch.count > cur.count ? countUi.plus : countUi.minus;
+		withDelta(() => {
+			setup[selected] = next;
+		});
+		// A stepper button that just reached its end is disabled: keep keyboard focus on the other one.
+		if (pressed?.disabled && document.activeElement === pressed) (pressed === countUi.plus ? countUi.minus : countUi.plus).focus();
+	}
+
+	/** Apply a change, then show how much it moved the line rate. */
+	function withDelta(change) {
 		const before = ratePh(ev.rate);
-		if (sel.has(key)) sel.delete(key);
-		else sel.add(key);
+		change();
 		update();
 		const d = ratePh(ev.rate) - before;
 		rateDelta.textContent = d > 0 ? `+${d} plates/h` : d < 0 ? `${MINUS}${-d} plates/h` : "no change";
@@ -432,6 +545,7 @@ function mount(el, ctx) {
 
 	function reset() {
 		sel.clear();
+		setup.splice(0, setup.length, ...defaultSetup(m));
 		update();
 		rateDelta.textContent = "";
 	}
@@ -553,7 +667,8 @@ function mount(el, ctx) {
 				const best = cheapestSolution(m, opts);
 				if (!best) return false;
 				sel.clear();
-				for (const k of best) sel.add(k);
+				for (const k of best.sel) sel.add(k);
+				setup.splice(0, setup.length, ...best.setup);
 				update();
 				return solvedFired;
 			},
@@ -569,6 +684,7 @@ function mount(el, ctx) {
 					limits: ev.segs.map((sg) => ({ from: m.stations[sg.from].id, to: m.stations[sg.to].id, limit: Math.round(m.takt * sg.avail * 100) / 100 })),
 					over: ev.rows.filter((r) => r.over).map((r) => r.id),
 					chosen: [...sel],
+					robots: Object.fromEntries(m.stations.flatMap((s, i) => (setup[i] ? [[s.id, { ...setup[i] }]] : []))),
 					selected: m.stations[selected].id,
 					simTime: Math.round(liveSim.t * 10) / 10,
 					stopped: m.stations.filter((_, i) => liveSim.stopped(i)).map((s) => s.id),

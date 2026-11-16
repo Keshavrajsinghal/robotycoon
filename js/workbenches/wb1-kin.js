@@ -240,8 +240,9 @@ export const COMPONENTS = ["x", "y", "z", "roll", "pitch", "yaw"];
 
 /**
  * What the free joints can change at configuration q.
- *   move[x|y|z]:          'free'  the slice can move along this axis on its own
+ *   move[x|y|z]:          'free'  the slice can move along this axis on its own, without turning
  *                         'tied'  it moves along this axis only together with other changes
+ *                                 (another axis, or a turn)
  *                         'stuck' no free joint moves it along this axis
  *   turn[roll|pitch|yaw]: 'free'  it can turn about this axis while staying where it is
  *                         'tied'  it turns about this axis only while also moving
@@ -262,19 +263,23 @@ export function analyze(model, q, free, link = same) {
 	const k = free.length;
 	const scaled = J.map((c) => [c[0] / Lc, c[1] / Lc, c[2] / Lc, c[3], c[4], c[5]]);
 	result.rank = basis(scaled, 0.05).length;
-	// Position block: span of the position parts of the columns.
 	const P = scaled.map((c) => c.slice(0, 3));
-	const Pb = basis(P, 0.05);
+	const A = scaled.map((c) => c.slice(3));
+	// Joint motions that leave block B (columns' rows) unchanged: its null space, as unit vectors.
+	const nullOf = (B) => {
+		const rowBasis = basis([0, 1, 2].map((i) => B.map((c) => c[i])), 0.05);
+		return basis([...rowBasis, ...Array.from({ length: k }, (_, j) => unit(k, j))], 0.1).slice(rowBasis.length);
+	};
+	const image = (vs, B) => vs.map((nv) => [0, 1, 2].map((i) => nv.reduce((s, x, j) => s + x * B[j][i], 0)));
+	// Moves: what the joint motions that keep the slice's orientation do to its position, so a
+	// wrist that can only slide the slice by turning it does not count as moving it on its own.
+	const Vb = basis(image(nullOf(A), P), 0.1);
 	for (let i = 0; i < 3; i++) {
 		const rowNorm = Math.hypot(...P.map((c) => c[i]));
-		result.move[COMPONENTS[i]] = remainder(unit(3, i), Pb) < 0.26 ? "free" : rowNorm < 0.12 ? "stuck" : "tied";
+		result.move[COMPONENTS[i]] = remainder(unit(3, i), Vb) < 0.26 ? "free" : rowNorm < 0.12 ? "stuck" : "tied";
 	}
-	// Joint motions that keep the slice in place: null space of the position block.
-	const rows = [0, 1, 2].map((i) => P.map((c) => c[i]));
-	const rowBasis = basis(rows, 0.05);
-	const nullBasis = basis([...rowBasis, ...Array.from({ length: k }, (_, j) => unit(k, j))], 0.1).slice(rowBasis.length);
-	const A = scaled.map((c) => c.slice(3));
-	const turns = nullBasis.map((nv) => [0, 1, 2].map((i) => nv.reduce((s, x, j) => s + x * A[j][i], 0)));
+	// Turns: what the joint motions that keep the slice in place do to its orientation.
+	const turns = image(nullOf(P), A);
 	const Wb = basis(turns, 0.1);
 	for (let i = 0; i < 3; i++) {
 		const rowNorm = Math.hypot(...A.map((c) => c[i]));

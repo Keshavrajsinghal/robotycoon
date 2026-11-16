@@ -37,7 +37,7 @@ What breaks: double feeds (two trays stuck together go down as one), missed feed
 ### Question
 The line needs about 3.3 trays a minute, and its denester is rated for about 120. What should the engineers choosing it care about most?
 - [ ] Its rated speed, since a faster denester makes a faster line :: Rated speed is not the limit: this one already runs at under 3% of its rating. A faster model adds nothing to line output.
-- [x] How rarely it double-feeds or jams with molded fiber trays, and how long a magazine lasts :: At this rate, output is lost to jams, double feeds, and refills, and every stop at the first station starves all the stations after it.
+- [x] How rarely it jams or double-feeds, and how long a magazine of trays lasts :: At this rate, output is lost to jams, double feeds of molded fiber trays, and refills, and every stop at the first station starves all the stations after it.
 - [ ] Very little: at under 3% of its rating it will barely wear, so it will seldom fail :: Running slowly does not stop trays from clinging together or rims from being crushed. Those failures stop the line or make a bad plate at any speed.
 - [ ] Its speed, because the denester sets the line's takt time :: Takt comes from demand, not from a machine: 200 plates an hour means one plate every 18 s, whatever the denester can do.
 
@@ -63,7 +63,7 @@ What breaks without a good conveyor: an item slips or shifts, so a robot's idea 
 The tray belt indexes: it moves one step in 1-2 s (illustrative), then stops. Which robots still have to hit a moving target?
 - [ ] None of them, because the belt stops before each robot works :: The tray belt stops, but the apple and cheese robots pick from their own ingredient belts, which keep moving.
 - [ ] Every robot, because the tray is still moving while they place :: On an indexing belt each robot places onto a stationary tray, so placing needs no tracking for the tray.
-- [x] The apple and cheese robots, which pick from continuously moving ingredient belts :: They place onto a still tray but pick slices and wedges on the move, using a camera plus conveyor tracking to predict where each one is now.
+- [x] The apple and cheese robots, which pick from moving belts :: Their ingredient belts run continuously. They place onto a still tray but pick slices and wedges on the move, using a camera plus conveyor tracking to predict where each one is now.
 - [ ] Only the grape arm, because its bunches lie at random angles :: Random angles make the grape pick hard, but in this design the arm picks from a tote, not from a moving belt.
 
 ## Stop: grapes
@@ -84,10 +84,10 @@ An interlock only helps if nobody defeats it, for example by taping the switch s
 
 ### Question
 Someone has to go into the grape cell to free a tangled bunch. Which setup actually keeps them safe?
-- [ ] A warning light and a sign on the door :: Lights and signs are awareness devices: they only warn. Nothing stops the arm if someone walks in anyway.
+- [ ] A flashing warning light over the door and a clear sign telling people to keep out :: Lights and signs are awareness devices: they only warn. Nothing stops the arm if someone walks in anyway.
 - [ ] Pressing the cell's emergency stop button, then reaching in :: An emergency stop is a backup to the guards, not a lockout. OSHA's lockout rule says push buttons do not isolate the power, so it cannot replace each worker's personal lock.
 - [ ] Waiting until the arm looks paused, then reaching in quickly :: An arm that looks paused may simply be waiting for its next tray. People cannot predict a robot's next motion, which is why guarding exists.
-- [x] An interlocked door that stops the arm when opened, plus locking the power off before going in :: The interlock feeds the safety circuit, and lockout/tagout covers the maintenance work during which many robot accidents happen.
+- [x] An interlocked door, plus locking out the power first :: The interlock stops the arm when the door opens and feeds the safety circuit, and lockout/tagout (each worker locks the power off before going in) covers the maintenance work during which many robot accidents happen.
 
 ## Stop: apples
 title: Apple station
@@ -131,7 +131,7 @@ Epson's GX8 SCARA comes in an IP65 version, and FANUC sells food-grade SCARAs ra
 
 ### Question
 The spec says IP67. Suppose the daily washdown sprays the cracker robot with hot high-pressure jets. Which statement is true?
-- [x] Neither IP65 nor IP67 proves a machine survives an 80 bar, 80 C jet from 10 cm, so ask for IP69K plus IP67 :: Each water digit is its own test, and none checks cleaning chemicals, so chemical resistance has to be confirmed separately.
+- [x] Ask for IP69K as well as IP67, since neither IP65 nor IP67 tests hot high-pressure jets :: Of these ratings, only IP69K's test (the same jet as water digit 9) sprays an 80 bar, 80 C jet from 10 cm. Each water digit is its own test, and none checks cleaning chemicals, so chemical resistance has to be confirmed separately.
 - [ ] IP67 is a higher number than IP65, so an IP67 robot has also passed the IP65 jet test :: Above 6 the water digits are separate tests. Water digit 7 is immersion, and a device that passes it has not necessarily passed the 5 or 6 jet tests.
 - [ ] IP69K is the top rating, so an IP69K robot is also proven against immersion :: IP69K proves resistance to hot high-pressure jets only. Immersion is the water-7 or water-8 test, so a device that needs both should list both.
 - [ ] The rating hardly matters here, because the cracker packs are wrapped :: Wrapping protects the crackers, not the robot. The robot still stands in a room that is washed down every day.
@@ -159,7 +159,7 @@ The room is held at 2-4 C and the cheese delta is stainless steel. Which stateme
 - [ ] At 2-4 C bacteria cannot grow, so the washdown is mostly for appearance :: Listeria can grow even in refrigerated food. The cold slows it but does not stop it.
 - [ ] Only the suction cups touch cheese, so only they need to meet the food-area rules :: Under EN 1672-2, any surface over the open tray that could drip into the food counts as food area, including the robot's arms.
 - [ ] A stainless robot is hygienic by default, whatever its shape :: Shape matters as much as material. Open tube ends, bolted metal-to-metal joints, and flat ledges trap water and food soil even in stainless steel.
-- [x] The cold slows Listeria but does not stop it, so the daily washdown matters more than the temperature :: Listeria can also be hard to remove once it is in a plant, which is why equipment is shaped so the washdown reaches every surface.
+- [x] The cold only slows Listeria, so the washdown matters more than the temperature :: Cold does not stop Listeria, so the daily washdown does the real work. Listeria can also be hard to remove once it is in a plant, which is why equipment is shaped so the washdown reaches every surface.
 
 ## Stop: inspection
 title: Inspection
@@ -202,8 +202,8 @@ What breaks: a lid not seated spills or exposes food, a crumb on the flange can 
 
 ### Question
 The lidder stops and the HMI marks it "blocked". Inspection and every pick station before it also stop. Where is the problem most likely?
-- [ ] Inside the lidder, which has jammed :: A jam shows as faulted. Blocked means the lidder works but has nowhere to send plates.
-- [x] Downstream at the outfeed, where a full rack has not been swapped :: Blocked means no room downstream, and a full rack backs trays up through lidding and inspection until the pick stations stop.
+- [ ] Inside the lidder itself, which has jammed on a crooked lid or tray :: A jam shows as faulted. Blocked means the lidder works but has nowhere to send plates.
+- [x] Downstream at the outfeed: a full rack not yet swapped :: Blocked means no room downstream, and a full rack backs trays up through lidding and inspection until the pick stations stop.
 - [ ] Upstream at the cheese station, which stopped sending plates :: A missing supply would leave the lidder starved, not blocked.
 - [ ] The lidder is too slow for the 18 s beat :: The line needs about 3.3 lids a minute, below even small traysealers' 5-15 packs a minute. Speed is not the issue here.
 
@@ -228,7 +228,7 @@ The outfeed light curtain was placed for a 0.35 s total stop: 560 mm plus the re
 - [ ] Nothing changes, because the curtain itself is a top-grade safety device :: Even a Type 4 curtain, the kind that must not fail dangerously, says nothing about whether the robot stops before a hand arrives. Distance depends on stopping time.
 - [ ] The cell stays safe, because the robot itself complies with ISO 10218-1 :: ISO 10218-1 covers only the robot, as partly completed machinery. The integrator is responsible for the whole cell, guard distances included.
 - [ ] Adding a warning sign at the slot makes up for the difference :: Signs and lights are awareness devices: they warn but stop nothing, so they cannot make up for a curtain that is too close.
-- [x] The stopping time must be measured again, and the curtain moved farther out if needed :: Minimum distance is hand speed × total stopping time, so a slower stop needs more distance.
+- [x] Measure the stopping time again, and move the curtain farther out if needed :: Minimum distance is hand speed × total stopping time, so a slower stop needs more distance.
 
 ## Puzzle
 title: What fixes it?
