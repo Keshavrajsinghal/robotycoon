@@ -1,0 +1,525 @@
+/* Town map and showroom. Uses the UI tokens from css/app.css (light and dark). */
+
+/* ---------------------------------------------------------------- town labels */
+
+.town-overlay .label-district {
+	border-color: var(--district, #2f6f8f);
+}
+
+.town-overlay .label-district:hover {
+	background: #ffffff;
+}
+
+/* Building labels: only the open district's (and a selected building's). The shared rule in
+   app.css also shows every building label at zoom >= 0.9, which crowds the town. */
+.town-overlay.zoom-near .label-building:not(.in-district):not(.selected) {
+	display: none;
+}
+
+/* The airline catering plant, home of the cheese plate line, keeps its district's color. */
+.town-overlay .label-building.catering-plant:not(.selected) {
+	background: #16766b;
+	box-shadow: 0 0 0 2px #f2c230, 0 2px 8px rgba(15, 30, 40, 0.25);
+}
+
+/* A label that would cover a more important one, or peek out around the view bar (town.js). */
+.town-overlay .label-covered,
+.town-overlay .label-under-bar {
+	visibility: hidden;
+}
+
+/* Labels toggle off: only the selected things keep their labels. */
+.town-overlay.labels-off .label-district,
+.town-overlay.labels-off .label-step:not(.selected) {
+	display: none;
+}
+
+.town-overlay.labels-off .label-building.selected {
+	display: block;
+}
+
+/* Whole town in view with a district open: its building labels would cover the other districts'
+   labels, so they yield (a selected building keeps its label) and the open district's own label
+   returns, ringed in its color. */
+.town-overlay.town-wide .label-building.in-district:not(.selected) {
+	display: none;
+}
+
+.town-overlay.town-wide:not(.labels-off) .label-district.open {
+	display: block;
+	box-shadow: 0 0 0 3px var(--district, #2f6f8f), 0 2px 8px rgba(15, 30, 40, 0.25);
+}
+
+.label-step {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3px;
+	border: 2px solid #e2557a;
+	font-size: 12px;
+}
+
+button.label-step {
+	min-height: 0;
+}
+
+.label-step .step-n {
+	display: inline-grid;
+	place-items: center;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 4px;
+	border-radius: 999px;
+	background: #e2557a;
+	color: #ffffff;
+	font-weight: 800;
+	font-size: 12px;
+	line-height: 1;
+}
+
+.label-step .step-title {
+	display: none;
+	padding-right: 6px;
+}
+
+.zoom-near .label-step .step-title,
+.label-step.selected .step-title {
+	display: inline;
+}
+
+/* Inside an open district the building labels come first: step flags shrink to their number. */
+.town-overlay.district-open .label-step:not(.selected) .step-title {
+	display: none;
+}
+
+.label-step.selected {
+	background: #e2557a;
+	color: #ffffff;
+	z-index: 2;
+}
+
+.label-step.selected .step-n {
+	background: #ffffff;
+	color: #b8264f;
+}
+
+/* At the whole-town zoom on a phone the flags would cover the district labels: show them once
+   the learner zooms in or opens a step (the panel lists every step either way). */
+.town-overlay.zoom-far:not(.trail-open) .label-step {
+	display: none;
+}
+
+.zoom-far .label-step .step-n {
+	min-width: 18px;
+	height: 18px;
+	font-size: 11px;
+}
+
+/* ---------------------------------------------------------------- town panel */
+
+.town-fit {
+	padding: 0 12px;
+}
+
+.town-picks {
+	display: grid;
+	gap: 8px;
+}
+
+.town-pick {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	min-height: 48px;
+	padding: 8px 12px;
+	border: 1px solid var(--border);
+	border-left: 5px solid var(--district, var(--accent));
+	border-radius: 10px;
+	background: var(--surface);
+	color: var(--text);
+	text-align: left;
+}
+
+.town-pick:hover {
+	background: var(--surface-2);
+}
+
+.town-dot {
+	flex: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	background: var(--district, var(--accent));
+	transform: rotate(45deg);
+}
+
+.town-pick-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.town-pick-title {
+	font-weight: 700;
+}
+
+.town-pick-sub {
+	font-size: 13px;
+	color: var(--muted);
+	overflow-wrap: anywhere;
+}
+
+.town-tagline {
+	border-left: 4px solid var(--district, var(--accent));
+	padding-left: 8px;
+}
+
+.town-lifecycle .prose {
+	margin-bottom: 8px;
+}
+
+.town-steps {
+	list-style: none;
+	margin: 10px 0 0;
+	padding: 0;
+	display: grid;
+	gap: 6px;
+}
+
+.town-step-btn {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	min-height: 44px;
+	padding: 6px 10px;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--surface);
+	color: var(--text);
+	text-align: left;
+	font-weight: 600;
+}
+
+.town-step-btn:hover {
+	background: var(--surface-2);
+}
+
+.town-step-btn[aria-current="step"] {
+	border-color: #e2557a;
+	box-shadow: inset 4px 0 0 #e2557a;
+}
+
+.town-step-n {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border-radius: 999px;
+	background: #e2557a;
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: 800;
+}
+
+.town-roles li + li {
+	margin-top: 6px;
+}
+
+@media (max-width: 400px) {
+	.town-view .view-bar .btn {
+		gap: 6px;
+		padding: 0 11px;
+		font-size: 15px;
+	}
+}
+
+@media (max-width: 759px) {
+	.town-fit-text {
+		display: none;
+	}
+
+	.town-reopen {
+		bottom: calc(var(--safe-b) + 16px);
+	}
+}
+
+/* ---------------------------------------------------------------- showroom */
+
+.showroom-v2 {
+	overflow-x: hidden;
+}
+
+.showroom-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 18px;
+}
+
+.showroom-head .panel-kicker {
+	flex-basis: 100%;
+}
+
+.showroom-v2 .showroom-head h2 {
+	margin: 0;
+}
+
+.showroom-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--muted);
+}
+
+.showroom-legend li {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.lg {
+	display: inline-block;
+	flex: none;
+}
+
+.lg-bar {
+	width: 6px;
+	height: 16px;
+	border-radius: 3px;
+	background: var(--accent);
+}
+
+.lg-block {
+	width: 11px;
+	height: 11px;
+	border-radius: 2px;
+	background: #5d6670;
+}
+
+.lg-scale {
+	width: 6px;
+	height: 16px;
+	background: linear-gradient(to top, #d9583b 50%, #f4f4f2 50%);
+	box-shadow: 0 0 0 1px var(--border);
+}
+
+.showroom-v2 .showroom-stage {
+	display: block;
+	margin-top: 12px;
+	/* No side padding: the pinned scale column must reach the edge, or robots peek out beside it. */
+	padding: 6px 0 12px;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x proximity;
+	/* Snapped robot columns stop beside the pinned scale column, not under it. */
+	scroll-padding-left: 92px;
+	border: 1px solid var(--border);
+	border-radius: 14px;
+	background: var(--surface-2);
+}
+
+.showroom-track {
+	position: relative;
+	margin: 0 auto;
+}
+
+/* The robots' canvas sits behind the columns' top padding (--stage-h, set by showroom.js). */
+.showroom-canvas {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+}
+
+.showroom-cols {
+	display: flex;
+	align-items: stretch;
+}
+
+.showroom-v2 .robot-col {
+	flex: none;
+	min-width: 0;
+	padding: 0 6px;
+	scroll-snap-align: start;
+}
+
+.showroom-v2 .robot-col:not(.robot-col-scale) {
+	padding-top: var(--stage-h, 0px);
+}
+
+/* The scale column (meter stick, axis ticks) stays pinned while the robots scroll past on a
+   phone, so every robot can be read against it. */
+.showroom-v2 .robot-col-scale {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	background: var(--surface-2);
+	box-shadow: 1px 0 0 var(--border);
+	scroll-snap-align: none;
+}
+
+.showroom-ruler {
+	display: block;
+	margin: 0 -6px;
+}
+
+.showroom-v2 .robot-caption {
+	padding: 8px 6px 0;
+	border-top: 3px solid var(--robot, #6b7480);
+}
+
+/* Range bars under the robots: one band per quantity, same log scale in every column. The
+   gridlines run edge to edge so they read as one chart across the columns. */
+.spec-band {
+	position: relative;
+	margin: 0 -6px;
+	border-top: 1px solid var(--border);
+}
+
+.spec-grid {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 0;
+	border-top: 1px dashed var(--border);
+}
+
+.spec-bar {
+	position: absolute;
+	left: 16px;
+	width: 10px;
+	border-radius: 5px;
+	background: var(--robot, var(--accent));
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.spec-label {
+	position: absolute;
+	left: 32px;
+	max-width: calc(100% - 36px);
+	transform: translateY(-50%);
+	padding: 1px 7px;
+	border: 1.5px solid var(--robot, var(--border));
+	border-radius: 999px;
+	background: var(--surface);
+	color: var(--text);
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.35;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.spec-axis-title {
+	position: absolute;
+	top: 4px;
+	left: 8px;
+	right: 4px;
+	font-size: 11px;
+	font-weight: 750;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+.spec-tick {
+	position: absolute;
+	right: 8px;
+	transform: translateY(-50%);
+	padding: 0 3px;
+	background: var(--surface-2);
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 650;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.2;
+}
+
+.robot-col-scale .robot-caption h3 {
+	font-size: 13px;
+	color: var(--muted);
+}
+
+.robot-more {
+	display: inline;
+	min-height: 32px;
+	margin: 0;
+	padding: 2px 0;
+	border: 0;
+	background: none;
+	color: var(--text);
+	font: inherit;
+	font-weight: 750;
+	text-align: left;
+	text-decoration: underline dotted;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+
+.showroom-specs {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 2px 10px;
+	margin: 0;
+	font-size: 13px;
+}
+
+.showroom-specs dt {
+	color: var(--muted);
+	font-weight: 600;
+}
+
+.showroom-specs dd {
+	margin: 0;
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.showroom-cols .showroom-specs {
+	font-size: 12px;
+	gap: 1px 8px;
+}
+
+.showroom-specs dd.num {
+	white-space: nowrap;
+	overflow-wrap: normal;
+}
+
+.showroom-cols .robot-caption {
+	padding: 8px 2px 0;
+}
+
+.showroom-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 12px;
+	margin-top: 16px;
+}
+
+.showroom-card {
+	border-top: 4px solid var(--robot, var(--border));
+	scroll-margin-top: calc(var(--hud-px) + 70px);
+}
+
+.showroom-card .showroom-specs {
+	margin: 8px 0;
+}
+
+.showroom-card .meta-line {
+	margin: 0;
+}
+
+@media (max-width: 759px) {
+	.showroom-cards {
+		grid-template-columns: 1fr;
+	}
+}

@@ -1,287 +1,523 @@
-// Town map (#/town): one block per district from content.town, with clickable districts and
-// buildings. Showroom (#/showroom): every content.showroom robot drawn side by side at one
-// scale next to a 1.7 m person. Drawing code only; all names and text come from content.
+// Town map (#/town, #/town/<districtId>): the industry map (area 12) as a small isometric town,
+// with the deployment lifecycle (area 11) as a flagged trail. Showroom (#/showroom) lives in
+// showroom.js. Drawing code and UI chrome only: every name, sentence, and number comes from
+// content (district and building entries, area intros, concept titles and text).
 
-import { $, h } from "../core/dom.js";
-import { shade } from "../engine/iso.js";
-import { drawTree, groundRect, object, PAL, rng } from "../engine/park.js";
-import { LAYER, Scene } from "../engine/scene.js";
+import { $, h, loadCss } from "../core/dom.js";
+import { bus } from "../core/events.js";
+import { project, unproject } from "../engine/iso.js";
+import { Scene } from "../engine/scene.js";
 import { conceptLink } from "../ui/concept.js";
 import { icon } from "../ui/icons.js";
+import { topModal } from "../ui/modal.js";
+import { levelSwitch } from "../ui/panel.js";
+import { buildTown, planTown, projRect, townProjRect } from "./town-map.js";
 
-const BLOCK = 12;
-const GAP = 3;
-const DISTRICT_COLORS = ["#e9d8b4", "#d9e4c8", "#d6e2ee", "#efd7cf", "#e3d6ee", "#d4ebe4", "#efe3c4"];
-const ROOFS = ["#b5543c", "#3d7fd1", "#1f9e8f", "#8a5cc7", "#d9583b", "#2f6f8f", "#6b8e23"];
+export { initShowroom } from "./showroom.js";
 
-function layout(districts) {
-	const cols = Math.min(4, Math.max(1, Math.ceil(districts.length / 2)));
-	return districts.map((d, i) => {
-		const row = Math.floor(i / cols);
-		const col = i % cols;
-		const inRow = Math.min(cols, districts.length - row * cols);
-		const offset = ((cols - inRow) * (BLOCK + GAP)) / 2;
-		const x0 = GAP + col * (BLOCK + GAP) + offset;
-		const y0 = GAP + row * (BLOCK + GAP);
-		return { d, i, rect: [x0, y0, x0 + BLOCK, y0 + BLOCK] };
-	});
-}
+const MAX_ZOOM = 2.4;
+/** Below minZoom times this the whole town is in view: the open district's building labels yield. */
+const WIDE = 1.35;
 
-function drawBuilding(r, x, y, w, d, hgt, roof, style) {
-	r.shadow(x + w / 2 + 0.6, y + d / 2 + 0.6, w * 0.6, d * 0.6, 0.12);
-	r.box(x, y, 0, w, d, hgt, "#f1ece2", { top: shade(roof, 1.05) });
-	// Windows on the two visible faces.
-	for (let k = 0; k < Math.floor(hgt / 1.2); k++) {
-		const z0 = 0.6 + k * 1.2;
-		for (let i = 0; i < Math.floor(w / 1.3); i++)
-			r.quad(
-				[
-					[x + 0.4 + i * 1.3, y + d + 0.01, z0],
-					[x + 1.1 + i * 1.3, y + d + 0.01, z0],
-					[x + 1.1 + i * 1.3, y + d + 0.01, z0 + 0.6],
-					[x + 0.4 + i * 1.3, y + d + 0.01, z0 + 0.6],
-				],
-				PAL.window,
-				{ flat: true },
-			);
-		for (let i = 0; i < Math.floor(d / 1.3); i++)
-			r.quad(
-				[
-					[x + w + 0.01, y + 0.4 + i * 1.3, z0],
-					[x + w + 0.01, y + 1.1 + i * 1.3, z0],
-					[x + w + 0.01, y + 1.1 + i * 1.3, z0 + 0.6],
-					[x + w + 0.01, y + 0.4 + i * 1.3, z0 + 0.6],
-				],
-				shade(PAL.window, 0.9),
-				{ flat: true },
-			);
-	}
-	if (style % 3 === 0) {
-		// Sawtooth factory roof.
-		for (let i = 0; i < Math.floor(w / 1.5); i++) {
-			const sx = x + i * 1.5;
-			r.mesh(
-				[
-					[
-						[sx, y, hgt],
-						[sx + 1.5, y, hgt],
-						[sx + 1.5, y, hgt + 0.9],
-					],
-					[
-						[sx, y + d, hgt],
-						[sx + 1.5, y + d, hgt + 0.9],
-						[sx + 1.5, y + d, hgt],
-					],
-					[
-						[sx, y, hgt],
-						[sx + 1.5, y, hgt + 0.9],
-						[sx + 1.5, y + d, hgt + 0.9],
-						[sx, y + d, hgt],
-					],
-					[
-						[sx + 1.5, y, hgt],
-						[sx + 1.5, y + d, hgt],
-						[sx + 1.5, y + d, hgt + 0.9],
-						[sx + 1.5, y, hgt + 0.9],
-					],
-				],
-				roof,
-				{ twoSided: true },
-			);
-		}
-	} else if (style % 3 === 1) {
-		r.box(x + w * 0.2, y + d * 0.25, hgt, w * 0.3, d * 0.3, 0.6, PAL.steel);
-		r.cylinder(x + w * 0.75, y + d * 0.7, hgt, 0.3, 1.6, "#9aa5b1", 8);
-	} else {
-		r.box(x + w * 0.35, y + d * 0.35, hgt, w * 0.3, d * 0.3, 1.4, shade(roof, 0.9));
-		r.cylinder(x + w * 0.5, y + d * 0.5, hgt + 1.4, 0.05, 1.2, PAL.dark, 5);
-	}
-	r.quad(
-		[
-			[x + w / 2 - 0.4, y + d + 0.02, 0],
-			[x + w / 2 + 0.4, y + d + 0.02, 0],
-			[x + w / 2 + 0.4, y + d + 0.02, 1.0],
-			[x + w / 2 - 0.4, y + d + 0.02, 1.0],
-		],
-		"#5b4636",
-		{ flat: true },
-	);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+/** Set a CSS custom property (h() style objects cannot) and return the element. */
+function withVar(el, name, value) {
+	if (value) el.style.setProperty(name, value);
+	return el;
 }
 
 export function initTown(app) {
+	loadCss("css/modules/town.css");
 	const view = $("#town-view");
-	const canvas = h("canvas", { class: "scene-canvas", role: "img", "aria-label": "Isometric town map. Use the district and building labels to explore." });
-	const overlay = h("div", { class: "overlay" });
+	const content = app.content;
+	const town = content.town ?? { districts: [], buildings: [] };
+	const area = (n) => content.areas?.find((a) => a.area === n) ?? null;
+	const industry = area(12);
+	const lifecycle = area(11);
+	const steps = (lifecycle?.concepts ?? []).filter((id) => content.concepts?.[id]);
+
+	const canvas = h("canvas", { class: "scene-canvas", role: "img", "aria-label": "Isometric town map. Use the district, building, and step labels, or the list in the panel, to explore." });
+	const overlay = h("div", { class: "overlay town-overlay" });
 	const backBtn = h("button", { class: "btn", type: "button", html: `${icon("park")}<span>Back to park</span>` });
 	const showBtn = h("button", { class: "btn", type: "button", html: `${icon("showroom")}<span>Showroom</span>` });
+	const fitBtn = h("button", { class: "btn town-fit", type: "button", "aria-label": "Show the whole town", title: "Show the whole town", html: `${icon("town")}<span class="town-fit-text">Whole town</span>` });
+	const bar = h("div", { class: "view-bar" }, backBtn, showBtn, fitBtn);
 	const panel = h("aside", { class: "panel town-panel", "aria-label": "Town details" });
 	const pTitle = h("h2", { class: "panel-title", id: "town-panel-title", tabindex: "-1" });
 	const pKicker = h("div", { class: "panel-kicker" });
 	const pClose = h("button", { class: "icon-btn panel-close", type: "button", "aria-label": "Close panel", html: icon("close") });
-	const pToggle = h("button", { class: "sheet-toggle", type: "button", "aria-expanded": "false" }, h("span", { class: "grip" }), h("span", { class: "sr-only" }, "Expand or collapse the panel"));
-	const pBody = h("div", { class: "panel-body" });
-	panel.append(h("div", { class: "panel-head" }, pToggle, pKicker, pTitle, pClose), pBody);
+	const pToggle = h("button", { class: "sheet-toggle", type: "button", "aria-expanded": "false", "aria-controls": "town-panel-body" }, h("span", { class: "grip" }), h("span", { class: "sr-only" }, "Expand or collapse the panel"));
+	const pHead = h("div", { class: "panel-head" }, pToggle, pKicker, pTitle, pClose);
+	const pBody = h("div", { class: "panel-body", id: "town-panel-body" });
+	const reopen = h("button", { class: "panel-reopen town-reopen", type: "button", hidden: true }, "Details");
+	panel.append(pHead, pBody);
 	panel.setAttribute("aria-labelledby", "town-panel-title");
 	panel.dataset.state = "collapsed";
-	view.append(canvas, overlay, h("div", { class: "view-bar" }, backBtn, showBtn), panel);
+	// Tab order matches the park: view buttons, the panel, then the map's labeled buttons.
+	view.append(bar, panel, reopen, canvas, overlay);
+
+	let scene = null;
+	let plan = null;
+	let labels = null;
+	let labelPos = null;
+	let labelEpoch = 0;
+	let sel = { type: "intro" };
+	let built = false;
+	let ro = null;
+	// Projected-pixel town rectangle and one diamond per district cell (plot plus half its roads),
+	// used to keep the camera over the town.
+	let townRect = null;
+	let outline = [];
+	// The view bar's box in overlay pixels: map labels that would peek out around it are hidden.
+	let barBox = null;
+
 	backBtn.addEventListener("click", () => app.router.go({ name: "park" }));
 	showBtn.addEventListener("click", () => app.router.go({ name: "showroom" }));
-	pToggle.addEventListener("click", () => {
-		const v = panel.dataset.state !== "expanded";
+	fitBtn.addEventListener("click", () => fitTown(false));
+
+	// ------------------------------------------------------------ phone sheet (matches the park's)
+	const setExpanded = (v) => {
 		panel.dataset.state = v ? "expanded" : "collapsed";
 		pToggle.setAttribute("aria-expanded", v ? "true" : "false");
-		syncInsets();
+		requestAnimationFrame(syncInsets);
+	};
+	pToggle.addEventListener("click", (e) => {
+		e.stopPropagation();
+		setExpanded(panel.dataset.state !== "expanded");
+	});
+	pHead.addEventListener("click", (e) => {
+		if (!app.isPhone() || e.target.closest("button, a")) return;
+		setExpanded(panel.dataset.state !== "expanded");
 	});
 	pClose.addEventListener("click", () => {
 		panel.hidden = true;
-		syncInsets();
+		reopen.hidden = false;
+		reopen.focus({ preventScroll: true });
+		requestAnimationFrame(syncAndSettle);
 	});
+	reopen.addEventListener("click", () => showPanel());
+	// Escape collapses the expanded phone sheet (after dialogs and menus, like the park's sheet).
+	const onKey = (e) => {
+		if (e.key !== "Escape" || view.hidden || topModal() || app.hud?.menuOpen()) return;
+		if (app.isPhone() && !panel.hidden && panel.dataset.state === "expanded") {
+			e.preventDefault();
+			setExpanded(false);
+			pToggle.focus({ preventScroll: true });
+		}
+	};
+	document.addEventListener("keydown", onKey);
 
-	let scene = null;
-	let blocks = [];
-	let selected = null;
-	const town = app.content.town ?? { districts: [], buildings: [] };
+	function showPanel() {
+		// Runs on every selection: its frame callback refreshes the insets before the camera aims.
+		panel.hidden = false;
+		reopen.hidden = true;
+		requestAnimationFrame(syncAndSettle);
+	}
+
+	/** After the panel opens or closes, glide the camera back over the town (keepInView would jump). */
+	function syncAndSettle() {
+		syncInsets();
+		if (!scene || scene.camAnim) return;
+		const cam = scene.camera;
+		const v = freeView(cam.zoom);
+		if (!v) return;
+		const [cx, cy] = clampCenter(cam.x + v.ux, cam.y + v.uy, cam.zoom);
+		if (Math.hypot(cx - cam.x - v.ux, cy - cam.y - v.uy) * cam.zoom < 2) return;
+		const [wx, wy] = unproject(cx, cy, 0);
+		scene.lookAt(wx, wy, 0, { zoom: cam.zoom });
+	}
+
+	// ------------------------------------------------------------ layout and camera
+	function insetsFor(forFit) {
+		const phone = app.isPhone();
+		const top = app.hudHeight() + bar.offsetHeight + 16;
+		const open = !panel.hidden;
+		let bottom = 0;
+		if (phone && open) {
+			// Fit against the collapsed sheet so expanding it does not change the zoom limit.
+			const collapsed = Math.max(170, window.innerHeight * 0.36);
+			bottom = forFit ? Math.min(panel.offsetHeight || collapsed, collapsed) : panel.offsetHeight;
+		}
+		return { top, right: open && !phone ? panel.offsetWidth : 0, bottom, left: 0 };
+	}
+
+	/** Zoom that fits a world box [x0,y0,x1,y1] (with height) into the free part of the view. */
+	function zoomToFit(rect, height, pad = 0.94) {
+		return zoomToFitProj(projRect([rect[0], rect[1], 0, rect[2], rect[3], height]), pad);
+	}
+
+	function zoomToFitProj(pr, pad = 0.94) {
+		const ins = insetsFor(true);
+		const w = Math.max(80, scene.w - ins.left - ins.right);
+		const hh = Math.max(80, scene.h - ins.top - ins.bottom);
+		return Math.min(w / (pr[2] - pr[0]), hh / (pr[3] - pr[1])) * pad;
+	}
 
 	function syncInsets() {
 		if (!scene) return;
-		const hud = app.hudHeight();
-		const phone = app.isPhone();
-		const bar = view.querySelector(".view-bar");
-		scene.setInsets({
-			top: hud + (bar ? bar.offsetHeight + 12 : 0),
-			right: !panel.hidden && !phone ? panel.offsetWidth : 0,
-			bottom: !panel.hidden && phone ? panel.offsetHeight : 0,
-			left: 0,
-		});
+		scene.setInsets(insetsFor(false));
+		updateZoomLimits();
+		// The bar sits over the map; labels under it are hidden (see hideUnderBar).
+		barBox = bar.offsetWidth ? [bar.offsetLeft - overlay.offsetLeft, bar.offsetTop - overlay.offsetTop, bar.offsetLeft - overlay.offsetLeft + bar.offsetWidth, bar.offsetTop - overlay.offsetTop + bar.offsetHeight] : null;
 	}
 
-	function build() {
-		blocks = layout(town.districts);
-		const W = Math.max(...blocks.map((b) => b.rect[2]), 20) + GAP;
-		const H = Math.max(...blocks.map((b) => b.rect[3]), 20) + GAP;
-		scene = new Scene({ canvas, overlay, limits: [-(H + 6) * 32, -200, (W + 6) * 32, (W + H) * 16 + 300], minZoom: 0.2, maxZoom: 2.4 });
-		scene.reducedMotion = () => app.reducedMotion();
-		scene.add({
-			layer: LAYER.TERRAIN,
-			depth: -1e6,
-			bounds: [0, 0, -1.2, W, H, 0],
-			draw: (r) => {
-				r.quad(
-					[
-						[0, H, -1.2],
-						[W, H, -1.2],
-						[W, H, 0],
-						[0, H, 0],
-					],
-					PAL.earth,
-				);
-				r.quad(
-					[
-						[W, H, -1.2],
-						[W, 0, -1.2],
-						[W, 0, 0],
-						[W, H, 0],
-					],
-					PAL.earth,
-				);
-				r.ground(0, 0, W, H, PAL.path, 0);
-			},
-		});
-		const R = rng(7);
-		for (const b of blocks) {
-			const [x0, y0, x1, y1] = b.rect;
-			const color = DISTRICT_COLORS[b.i % DISTRICT_COLORS.length];
-			groundRect(scene, x0 - 0.3, y0 - 0.3, x1 + 0.3, y1 + 0.3, PAL.pathEdge, { layer: LAYER.GROUND });
-			groundRect(scene, x0, y0, x1, y1, PAL.grass, { layer: LAYER.GROUND, z: 0.015 });
-			groundRect(scene, x0 + 1, y0 + 1, x1 - 1, y1 - 1, color, { layer: LAYER.GROUND, z: 0.02 });
-			const roof = ROOFS[b.i % ROOFS.length];
-			const mine = town.buildings.filter((bd) => bd.district === b.d.id);
-			const slots = [
-				[x0 + 1.4, y0 + 1.4],
-				[x0 + 6.6, y0 + 1.4],
-				[x0 + 1.4, y0 + 6.6],
-				[x0 + 6.6, y0 + 6.6],
-			];
-			slots.forEach(([sx, sy], k) => {
-				const bd = mine[k];
-				const w = 4;
-				const d = 4;
-				if (bd) {
-					const hgt = 2.4 + ((b.i + k) % 3) * 1.2;
-					object(scene, sx, sy, sx + w, sy + d, hgt + 2, (r) => drawBuilding(r, sx, sy, w, d, hgt, roof, b.i + k));
-					scene.addHit({ id: `building-${bd.id}`, kind: "building", bounds: [sx, sy, 0, sx + w, sy + d, hgt + 1], priority: 1, onActivate: () => selectBuilding(bd.id) });
-					scene.addLabel({ id: `building-${bd.id}`, kind: "building", pos: [sx + w / 2, sy + d / 2, hgt + 1.6], text: bd.title, onClick: () => selectBuilding(bd.id), ariaLabel: `Building: ${bd.title}` });
-				} else {
-					for (let t = 0; t < 3; t++) {
-						const tx = sx + 1 + R() * (w - 2);
-						const ty = sy + 1 + R() * (d - 2);
-						const kind = Math.floor(R() * 4);
-						object(scene, tx - 0.9, ty - 0.9, tx + 0.9, ty + 0.9, 3, (r) => drawTree(r, tx, ty, kind, 0.9));
-					}
-				}
-			});
-			scene.addHit({ id: `district-${b.d.id}`, kind: "district", bounds: [x0, y0, 0, x1, y1, 0.5], priority: 0, onActivate: () => app.router.go({ name: "town", districtId: b.d.id }) });
-			scene.addLabel({
-				id: `district-${b.d.id}`,
-				kind: "district",
-				pos: [(x0 + x1) / 2, (y0 + y1) / 2, 6],
-				text: b.d.title,
-				onClick: () => app.router.go({ name: "town", districtId: b.d.id }),
-				ariaLabel: `District: ${b.d.title}`,
-			});
+	/** The minimum zoom always shows the whole town; the camera cannot leave the town. */
+	function updateZoomLimits() {
+		if (!scene || !plan || scene.w < 10) return;
+		const pr = townProjRect(plan, 3);
+		townRect = pr;
+		scene.minZoom = Math.min(MAX_ZOOM, Math.max(0.05, zoomToFitProj(pr, 0.96)));
+		scene.maxZoom = MAX_ZOOM;
+		// A loose safety net only: keepInView holds the free part of the view over the town.
+		const pw = pr[2] - pr[0];
+		const ph = pr[3] - pr[1];
+		scene.limits = [pr[0] - pw, pr[1] - ph, pr[2] + pw, pr[3] + ph];
+		if (scene.camera.zoom < scene.minZoom) {
+			scene.camera.zoom = scene.minZoom;
+			scene.clampCamera();
+			scene.invalidate();
 		}
-		new ResizeObserver(syncInsets).observe(panel);
-		syncInsets();
-		scene.fitWorldRect([0, 0, W, H], { instant: true, height: 4 });
 	}
 
-	function section(title, html) {
-		return html ? h("div", { class: "section" }, h("h4", {}, title), h("div", { class: "prose", html })) : null;
+	/** Half sizes and center offset (projected px) of the part of the view not under the bar or panel. */
+	function freeView(zoom) {
+		const ins = scene.insets;
+		const fw = scene.w - ins.left - ins.right;
+		const fh = scene.h - ins.top - ins.bottom;
+		if (fw < 80 || fh < 80) return null; // the expanded phone sheet covers the map
+		return { hw: fw / 2 / zoom, hh: fh / 2 / zoom, ux: (ins.left - ins.right) / 2 / zoom, uy: (ins.top - ins.bottom) / 2 / zoom };
 	}
 
-	function showIntro() {
-		selected = null;
-		pKicker.textContent = "Town map";
-		pTitle.textContent = "Who makes robots work";
-		pBody.replaceChildren(
-			h("p", {}, "Each block is one kind of company. Tap a district or a building to see what it does."),
-			town.districts.length
-				? h(
-						"div",
-						{ class: "ride-cards" },
-						town.districts.map((d) => {
-							const b = h("button", { class: "btn block", type: "button", "data-district": d.id }, d.title);
-							b.addEventListener("click", () => app.router.go({ name: "town", districtId: d.id }));
-							return b;
-						}),
-					)
-				: h("p", { class: "empty" }, "The town has not been written yet."),
-		);
+	/** Nearest point of the town outline to a projected point: [x, y, distance] (0 inside). */
+	function nearestLand(px, py) {
+		let best = null;
+		for (const poly of outline) {
+			let inside = true;
+			for (let i = 0; i < poly.length; i++) {
+				const a = poly[i];
+				const b = poly[(i + 1) % poly.length];
+				const dx = b[0] - a[0];
+				const dy = b[1] - a[1];
+				if (dx * (py - a[1]) - dy * (px - a[0]) < 0) inside = false;
+				const t = clamp(((px - a[0]) * dx + (py - a[1]) * dy) / (dx * dx + dy * dy || 1), 0, 1);
+				const qx = a[0] + dx * t;
+				const qy = a[1] + dy * t;
+				const d = Math.hypot(px - qx, py - qy);
+				if (!best || d < best[2]) best = [qx, qy, d];
+			}
+			if (inside) return [px, py, 0];
+		}
+		return best;
 	}
 
 	/**
-	 * Highlight one label. Inside the open district, show the building labels at any zoom and hide
-	 * the district's own label, which would sit on top of them (the panel title names it).
+	 * Where the free part of the view may be centered at a zoom: on an axis where the town is
+	 * smaller than the view it stays centered, otherwise the view stays inside the town's
+	 * rectangle, and land always reaches within a quarter view of the middle (the rectangle's
+	 * corners are empty sky, because the town is a diamond on screen).
 	 */
-	function markSelected(id, districtId = null) {
-		for (const l of scene.labels.values()) {
-			l.el.classList.toggle("selected", l.id === id);
-			if (l.kind === "district") l.el.classList.toggle("open", l.id === `district-${districtId}`);
+	function clampCenter(cx, cy, zoom) {
+		const v = freeView(zoom);
+		if (!v || !townRect) return [cx, cy];
+		const fit = (c, lo, hi, half) => (hi - lo <= 2 * half ? (lo + hi) / 2 : clamp(c, lo + half, hi - half));
+		let x = fit(cx, townRect[0], townRect[2], v.hw);
+		let y = fit(cy, townRect[1], townRect[3], v.hh);
+		const n = nearestLand(x, y);
+		const reach = 0.5 * Math.min(v.hw, v.hh);
+		if (n && n[2] > reach) {
+			const k = (n[2] - reach) / n[2];
+			x += (n[0] - x) * k;
+			y += (n[1] - y) * k;
 		}
-		for (const bd of town.buildings) scene.labels.get(`building-${bd.id}`)?.el.classList.toggle("in-district", bd.district === districtId);
+		return [x, y];
 	}
 
-	function selectDistrict(id) {
-		const d = town.districts.find((x) => x.id === id);
-		if (!d) return showIntro();
-		selected = `district-${id}`;
-		markSelected(selected, id);
+	/** Per frame: pull the camera back over the town after a drag, pinch, wheel, or inset change. */
+	function keepInView() {
+		if (!scene || view.hidden || scene.camAnim) return false;
+		const cam = scene.camera;
+		const v = freeView(cam.zoom);
+		if (!v) return false;
+		const [cx, cy] = clampCenter(cam.x + v.ux, cam.y + v.uy, cam.zoom);
+		const nx = cx - v.ux;
+		const ny = cy - v.uy;
+		if (Math.abs(nx - cam.x) < 0.01 && Math.abs(ny - cam.y) < 0.01) return false;
+		cam.x = nx;
+		cam.y = ny;
+		return true;
+	}
+
+	/** Animate the camera to a world point, adjusted so the view stays over the town. */
+	function look(x, y, z, zoom, instant = false) {
+		const zz = clamp(zoom, scene.minZoom, scene.maxZoom);
+		const [px, py] = project(x, y, z);
+		const [cx, cy] = clampCenter(px, py, zz);
+		const [wx, wy] = unproject(cx, cy, 0);
+		scene.lookAt(wx, wy, 0, { zoom: zz, instant });
+	}
+
+	function fitTown(instant) {
+		if (!scene) return;
+		updateZoomLimits();
+		// Center of the occupied area in projected pixels, as a world point on the ground.
+		const pr = townProjRect(plan, 3);
+		const [wx, wy] = unproject((pr[0] + pr[2]) / 2, (pr[1] + pr[3]) / 2, 0);
+		look(wx, wy, 0, scene.minZoom, instant);
+	}
+
+	// ------------------------------------------------------------ build
+	function build() {
+		plan = planTown(town, steps);
+		outline = plan.districts.map((c) =>
+			[
+				[c.cell[0], c.cell[1]],
+				[c.cell[2], c.cell[1]],
+				[c.cell[2], c.cell[3]],
+				[c.cell[0], c.cell[3]],
+			].map(([x, y]) => project(x, y, 0)),
+		);
+		scene = new Scene({ canvas, overlay, minZoom: 0.1, maxZoom: MAX_ZOOM });
+		scene.reducedMotion = () => app.reducedMotion();
+		({ labels, labelPos } = buildTown(scene, plan, {
+			reducedMotion: () => app.reducedMotion(),
+			selected: selectedDistrictId,
+			onDistrict: (id) => app.router.go({ name: "town", districtId: id }),
+			onBuilding: (id) => selectBuilding(id),
+			onStep: (id) => selectStep(id),
+			stepTitle: (id) => app.conceptTitle(id),
+		}));
+		scene.setLabelsVisible(!!app.state.get("labels"));
+		scene.addTick(keepInView);
+		scene.addTick(labelTick);
+		// Label widths change once the web font arrives: check overlaps again.
+		document.fonts?.ready.then(() => {
+			labelEpoch++;
+			scene?.requestFrame();
+		});
+		let viewSize = "";
+		ro = new ResizeObserver(() => {
+			syncInsets();
+			// The view itself changed size (window resize, phone rotation): re-aim at the selection.
+			const size = `${view.clientWidth}x${view.clientHeight}`;
+			if (viewSize && size !== viewSize && !view.hidden) requestAnimationFrame(() => aim(true));
+			if (view.clientWidth) viewSize = size;
+		});
+		ro.observe(panel);
+		ro.observe(view);
+		syncInsets();
+		built = true;
+	}
+
+	const offs = [
+		bus.on("prefs", (k) => {
+			if (!scene) return;
+			if (k === "labels") scene.setLabelsVisible(!!app.state.get("labels"));
+			if (k === "level" && sel.type === "step") render();
+		}),
+		bus.on("motion", () => scene?.invalidate()),
+	];
+
+	function selectedDistrictId() {
+		if (sel.type === "district") return sel.id;
+		if (sel.type === "building") return town.buildings.find((b) => b.id === sel.id)?.district ?? null;
+		return null;
+	}
+
+	/** Label states: the open district hides its own label and shows its buildings' labels. */
+	function markLabels() {
+		if (!labels) return;
+		const dId = selectedDistrictId();
+		for (const [id, el] of labels.districts) {
+			el.classList.toggle("open", id === dId);
+			el.classList.toggle("selected", false);
+		}
+		for (const [id, el] of labels.buildings) {
+			const b = town.buildings.find((x) => x.id === id);
+			el.classList.toggle("in-district", b?.district === dId);
+			el.classList.toggle("selected", sel.type === "building" && sel.id === id);
+		}
+		for (const [id, el] of labels.steps) el.classList.toggle("selected", sel.type === "step" && sel.id === id);
+		overlay.classList.toggle("trail-open", sel.type === "step");
+		overlay.classList.toggle("district-open", !!dId);
+		labelEpoch++;
+		scene.invalidate();
+	}
+
+	/**
+	 * Keep map labels from covering each other. Labels are fixed-size HTML boxes anchored at
+	 * projected world points, so their relative screen positions depend only on the zoom: recheck
+	 * when the zoom, the overlay's state classes, or the label states change. A selected step and
+	 * the shown building labels always stay (building labels that would collide are stacked
+	 * upward); a district label or an unselected step flag that would cover one of them is hidden
+	 * (the panel lists every district and step either way). Labels whose anchor the scene hides
+	 * (far off screen) cannot be measured, so the check also reruns when that set changes.
+	 */
+	let overlapKey = "";
+	// Each displayed label's box at the last check, in projected pixels times the zoom.
+	const labelBox = new Map();
+	function resolveLabelOverlaps() {
+		const zoom = scene.camera.zoom;
+		let anchors = "";
+		for (const el of labelPos.keys()) anchors += el.parentElement?.hidden ? "0" : "1";
+		const key = `${zoom.toFixed(4)}|${overlay.className}|${labelEpoch}|${anchors}`;
+		if (key === overlapKey) return false;
+		overlapKey = key;
+		labelBox.clear();
+		const box = (el) => {
+			const w = el.offsetWidth;
+			if (!w) return null; // not displayed
+			const p = labelPos.get(el);
+			const [px, py] = project(p[0], p[1], p[2]);
+			const x = px * zoom;
+			const y = py * zoom;
+			const pad = 3;
+			const b = [x - w / 2 - pad, y - el.offsetHeight - pad, x + w / 2 + pad, y + pad];
+			labelBox.set(el, b);
+			return b;
+		};
+		const meets = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+		const hit = (a, list) => list.some((b) => meets(a, b));
+		const fixed = [];
+		const steps = [];
+		for (const el of labels.steps.values()) {
+			const b = box(el);
+			if (!b || el.classList.contains("selected")) el.classList.remove("label-covered");
+			if (!b) continue;
+			if (el.classList.contains("selected")) fixed.push(b);
+			else steps.push([el, b]);
+		}
+		// Building labels, lowest on screen (nearest the viewer) first; one that would overlap a
+		// placed label moves up just above it.
+		const blds = [];
+		for (const el of labels.buildings.values()) {
+			const b = box(el);
+			if (b) blds.push([el, b]);
+			else el.style.translate = "";
+		}
+		blds.sort((a, b) => b[1][3] - a[1][3]);
+		for (const [el, b] of blds) {
+			let dy = 0;
+			for (let guard = 0; guard < 8; guard++) {
+				const moved = [b[0], b[1] + dy, b[2], b[3] + dy];
+				const o = fixed.find((f) => meets(moved, f));
+				if (!o) break;
+				dy = o[1] - b[3];
+			}
+			el.style.translate = dy ? `0 ${Math.round(dy)}px` : "";
+			const placed = [b[0], b[1] + dy, b[2], b[3] + dy];
+			fixed.push(placed);
+			labelBox.set(el, placed);
+		}
+		const districts = [];
+		for (const el of labels.districts.values()) {
+			const b = box(el);
+			if (!b) {
+				el.classList.remove("label-covered");
+				continue;
+			}
+			const covered = hit(b, fixed);
+			el.classList.toggle("label-covered", covered);
+			if (!covered) districts.push(b);
+		}
+		const shown = [...fixed, ...districts];
+		for (const [el, b] of steps) {
+			const covered = hit(b, shown);
+			el.classList.toggle("label-covered", covered);
+			if (!covered) shown.push(b);
+		}
+		for (const el of labelPos.keys()) if (!labelBox.has(el)) el.classList.remove("label-under-bar");
+		// Run one more frame so the check also sees the final zoom of a camera move.
+		return true;
+	}
+
+	/**
+	 * Hide unselected labels that would peek out around the view bar, sit under the top bar, or
+	 * sit behind the panel (the map runs under all three), so they neither show in pieces nor take
+	 * keyboard focus while invisible. Uses the boxes from the last overlap check: no layout reads.
+	 */
+	function hideUnderBar() {
+		const cam = scene.camera;
+		const ox = scene.w / 2 - cam.x * cam.zoom;
+		const oy = scene.h / 2 - cam.y * cam.zoom;
+		const top = app.hudHeight();
+		const right = scene.w - scene.insets.right;
+		const bottom = scene.h - scene.insets.bottom;
+		let changed = false;
+		for (const [el, b] of labelBox) {
+			let under = false;
+			if (!el.classList.contains("selected")) {
+				const [x0, y0, x1, y1] = [b[0] + ox, b[1] + oy, b[2] + ox, b[3] + oy];
+				const behindPanel = (x0 + x1) / 2 > right || (y0 + y1) / 2 > bottom;
+				under = behindPanel || y0 < top || (!!barBox && x0 < barBox[2] && x1 > barBox[0] && y0 < barBox[3] && y1 > barBox[1]);
+			}
+			if (el.classList.contains("label-under-bar") !== under) {
+				el.classList.toggle("label-under-bar", under);
+				changed = true;
+			}
+		}
+		return changed;
+	}
+
+	/** Per frame: whole-town state, label overlaps (when something changed), labels under the bar. */
+	function labelTick() {
+		if (!labels || view.hidden) return false;
+		overlay.classList.toggle("town-wide", scene.camera.zoom < scene.minZoom * WIDE);
+		const a = resolveLabelOverlaps();
+		const b = hideUnderBar();
+		return a || b;
+	}
+
+	// ------------------------------------------------------------ panel views
+	const section = (title, html, attrs = {}) => (html ? h("div", { class: "section", ...attrs }, h("h4", {}, title), h("div", { class: "prose", html })) : null);
+
+	function districtButton(c) {
+		const b = h(
+			"button",
+			{ class: "town-pick", type: "button", "data-district": c.d.id },
+			h("span", { class: "town-dot", "aria-hidden": "true" }),
+			h("span", { class: "town-pick-text" }, h("span", { class: "town-pick-title" }, c.d.title), c.d.tagline ? h("span", { class: "town-pick-sub" }, c.d.tagline) : null),
+		);
+		b.style.setProperty("--district", c.accent);
+		b.addEventListener("click", () => app.router.go({ name: "town", districtId: c.d.id }));
+		return b;
+	}
+
+	function stepList() {
+		if (!steps.length) return null;
+		return h(
+			"ol",
+			{ class: "town-steps" },
+			steps.map((id, i) => {
+				const current = sel.type === "step" && sel.id === id;
+				const b = h("button", { class: "town-step-btn", type: "button", "data-step": id, "aria-current": current ? "step" : undefined }, h("span", { class: "town-step-n", "aria-hidden": "true" }, String(i + 1)), h("span", {}, app.conceptTitle(id)));
+				b.addEventListener("click", () => selectStep(id));
+				return h("li", {}, b);
+			}),
+		);
+	}
+
+	function renderIntro() {
+		pKicker.textContent = "Town map";
+		pTitle.textContent = industry?.title ?? "Town map";
+		const parts = [];
+		if (industry?.intro) parts.push(h("div", { class: "prose", html: industry.intro }));
+		if (plan?.districts.length) parts.push(h("div", { class: "section" }, h("h4", {}, "Districts"), h("div", { class: "town-picks" }, plan.districts.map(districtButton))));
+		else parts.push(h("p", { class: "empty" }, "The town has not been written yet."));
+		if (steps.length) parts.push(h("div", { class: "section town-lifecycle" }, h("h4", {}, lifecycle.title), lifecycle.intro ? h("div", { class: "prose", html: lifecycle.intro }) : null, stepList()));
+		pBody.replaceChildren(...parts);
+	}
+
+	function renderDistrict(d) {
+		const c = plan.byId.get(d.id);
 		pKicker.textContent = "District";
 		pTitle.textContent = d.title;
-		const buildings = town.buildings.filter((b) => b.district === id);
+		const buildings = c?.buildings.map((x) => x.b) ?? town.buildings.filter((b) => b.district === d.id);
+		const all = h("button", { class: "btn", type: "button" }, "All districts");
+		all.addEventListener("click", () => app.router.go({ name: "town" }));
 		pBody.replaceChildren(
 			...[
-				d.tagline ? h("p", { class: "meta-line" }, d.tagline) : null,
+				d.tagline ? withVar(h("p", { class: "meta-line town-tagline" }, d.tagline), "--district", c?.accent) : null,
 				h("div", { class: "prose", html: d.plain }),
 				section("Sells", d.sells),
 				section("Buys from", d.buysFrom),
@@ -303,21 +539,13 @@ export function initTown(app) {
 							),
 						)
 					: null,
+				h("div", { class: "panel-row" }, all),
 			].filter(Boolean),
 		);
-		panel.hidden = false;
-		pBody.scrollTop = 0;
-		syncInsets();
-		const blk = blocks.find((b) => b.d.id === id);
-		if (blk) scene.lookAt((blk.rect[0] + blk.rect[2]) / 2, (blk.rect[1] + blk.rect[3]) / 2, 2, { zoom: Math.max(scene.camera.zoom, app.isPhone() ? 0.5 : 0.9) });
 	}
 
-	function selectBuilding(id) {
-		const b = town.buildings.find((x) => x.id === id);
-		if (!b) return;
+	function renderBuilding(b) {
 		const d = town.districts.find((x) => x.id === b.district);
-		selected = `building-${id}`;
-		markSelected(selected, b.district);
 		pKicker.textContent = d ? d.title : "Building";
 		pTitle.textContent = b.title;
 		const back = d ? h("button", { class: "btn", type: "button" }, `Back to ${d.title}`) : null;
@@ -326,213 +554,188 @@ export function initTown(app) {
 			...[
 				h("div", { class: "prose", html: b.about }),
 				b.roles?.length
-					? h("div", { class: "section", "data-roles": b.id }, h("h4", {}, "Job functions"), h("ul", { class: "prose" }, b.roles.map((r) => h("li", {}, h("strong", {}, r.name), h("span", { html: ` — ${r.html}` })))))
+					? h(
+							"div",
+							{ class: "section", "data-roles": b.id },
+							h("h4", {}, "Job functions"),
+							h(
+								"ul",
+								{ class: "prose town-roles" },
+								b.roles.map((r) => h("li", {}, h("strong", {}, r.name), h("span", { html: ` — ${r.html}` }))),
+							),
+						)
 					: null,
-				back,
+				back ? h("div", { class: "panel-row" }, back) : null,
 			].filter(Boolean),
 		);
-		panel.hidden = false;
-		pBody.scrollTop = 0;
-		syncInsets();
+	}
+
+	function renderStep(id) {
+		const c = content.concepts[id];
+		const i = steps.indexOf(id);
+		pKicker.textContent = `${lifecycle?.title ?? ""} · Step ${i + 1} of ${steps.length}`;
+		pTitle.textContent = c.title;
+		const level = app.level();
+		const nav = h("div", { class: "panel-row town-step-nav" });
+		if (i > 0) {
+			const prev = h("button", { class: "btn", type: "button", "data-step-nav": "prev" }, "Previous step");
+			prev.addEventListener("click", () => selectStep(steps[i - 1]));
+			nav.append(prev);
+		}
+		if (i < steps.length - 1) {
+			const next = h("button", { class: "btn primary", type: "button", "data-step-nav": "next" }, "Next step");
+			next.addEventListener("click", () => selectStep(steps[i + 1]));
+			nav.append(next);
+		}
+		const all = h("button", { class: "btn", type: "button" }, "All districts");
+		all.addEventListener("click", () => app.router.go({ name: "town" }));
+		nav.append(all);
+		pBody.replaceChildren(
+			...[
+				h("div", { class: "panel-row" }, levelSwitch(app)),
+				h(
+					"section",
+					{ class: "card concept-card", "data-step-concept": id },
+					h("div", { class: "prose", html: level === "precise" ? c.precise : c.plain }),
+					level === "plain" && c.analogyLimit ? h("div", { class: "analogy-limit prose" }, h("strong", {}, "Where the analogy breaks"), h("div", { html: c.analogyLimit })) : null,
+				),
+				h("p", {}, "Read more: ", conceptLink(app, id, c.title)),
+				nav,
+				stepList(),
+			].filter(Boolean),
+		);
+	}
+
+	function render() {
+		const keep = pBody.scrollTop;
+		const same = pBody.dataset.view === `${sel.type}:${sel.id ?? ""}`;
+		// A button inside the panel started this: keep keyboard focus in the panel, on the same
+		// Next/Previous step button when it is still there (stepping through by keyboard).
+		const hadFocus = pBody.contains(document.activeElement);
+		const nav = hadFocus ? document.activeElement.dataset?.stepNav : undefined;
+		if (sel.type === "district") renderDistrict(town.districts.find((d) => d.id === sel.id));
+		else if (sel.type === "building") renderBuilding(town.buildings.find((b) => b.id === sel.id));
+		else if (sel.type === "step") renderStep(sel.id);
+		else renderIntro();
+		pBody.dataset.view = `${sel.type}:${sel.id ?? ""}`;
+		pBody.scrollTop = same ? keep : 0;
+		if (hadFocus && !pBody.contains(document.activeElement)) {
+			const again = nav ? pBody.querySelector(`[data-step-nav="${nav}"]`) : null;
+			if (again) again.focus({ preventScroll: true });
+			else pTitle.focus({ preventScroll: true });
+		}
+	}
+
+	// ------------------------------------------------------------ selection
+	function showIntro() {
+		sel = { type: "intro" };
+		render();
+		markLabels();
+	}
+
+	function selectDistrict(id) {
+		const d = town.districts.find((x) => x.id === id);
+		if (!d) return showIntro();
+		sel = { type: "district", id };
+		render();
+		markLabels();
+		showPanel();
+		requestAnimationFrame(() => aim(false));
+	}
+
+	function selectBuilding(id) {
+		const b = town.buildings.find((x) => x.id === id);
+		if (!b) return;
+		sel = { type: "building", id };
+		render();
+		markLabels();
+		showPanel();
+		requestAnimationFrame(() => aim(false));
+	}
+
+	function selectStep(id) {
+		if (!content.concepts?.[id]) return;
+		sel = { type: "step", id };
+		render();
+		markLabels();
+		showPanel();
+		requestAnimationFrame(() => aim(false));
+	}
+
+	/**
+	 * Point the camera at the current selection: the open district, the selected building, the
+	 * selected step's flag, or the whole town. Also used when the view changes size (a phone
+	 * turned sideways), so the selection does not drift under the panel.
+	 */
+	function aim(instant) {
+		if (!scene || !plan) return;
+		if (sel.type === "district") {
+			const c = plan.byId.get(sel.id);
+			if (c) look(c.center[0], c.center[1], c.top / 3, Math.min(1.5, Math.max(scene.minZoom, zoomToFit(c.cell, c.top, 0.92))), instant);
+		} else if (sel.type === "building") {
+			const b = town.buildings.find((x) => x.id === sel.id);
+			const c = b && plan.byId.get(b.district);
+			const bd = c?.buildings.find((x) => x.b.id === sel.id);
+			if (!bd) return;
+			const [x, y, w, d] = bd.rect;
+			look(x + w / 2, y + d / 2, bd.geom.top / 3, Math.min(1.8, Math.max(scene.camera.zoom, zoomToFit(c.cell, c.top, 0.92))), instant);
+		} else if (sel.type === "step") {
+			const f = plan.trail?.flags.find((x) => x.id === sel.id);
+			if (f) look(f.x, f.y, 1, Math.min(1.4, Math.max(scene.camera.zoom, scene.minZoom * 1.8)), instant);
+		} else fitTown(instant);
+	}
+
+	// main.js calls show() from setView and then show(districtId) for the route in the same task;
+	// apply the selection once, for the last call.
+	let pending;
+	let queued = false;
+	function applyRoute() {
+		queued = false;
+		const districtId = pending;
+		if (districtId) selectDistrict(districtId);
+		else if (sel.type === "district" || sel.type === "building" || sel.type === "intro") {
+			// The bare #/town route is the overview: leave an open district or building.
+			const wasDistrict = sel.type !== "intro";
+			showIntro();
+			if (wasDistrict) fitTown(false);
+		}
 	}
 
 	return {
 		show(districtId) {
 			view.hidden = false;
-			if (!scene) build();
+			const first = !built;
+			if (first) build();
 			else scene.resize();
-			if (districtId) selectDistrict(districtId);
-			else if (!selected) showIntro();
+			if (first) {
+				// Fill the panel before fitting: the phone sheet's height sets the free area.
+				render();
+				markLabels();
+			}
+			syncInsets();
+			if (first) fitTown(true);
+			pending = districtId ?? null;
+			if (!queued) {
+				queued = true;
+				queueMicrotask(applyRoute);
+			}
 			scene.requestFrame();
 		},
 		hide() {
 			view.hidden = true;
 		},
+		/** Remove listeners, observers, and the scene (main.js keeps the town for the app's life). */
+		destroy() {
+			for (const off of offs) off();
+			document.removeEventListener("keydown", onKey);
+			ro?.disconnect();
+			scene?.destroy();
+			view.replaceChildren();
+		},
 		selectBuilding,
+		selectStep,
 		get scene() {
 			return scene;
-		},
-	};
-}
-
-// ---------------------------------------------------------------------------
-// Showroom
-
-function drawPerson(c, x, ground, s) {
-	const H = 1700 * s;
-	c.fillStyle = "#59616c";
-	c.beginPath();
-	c.arc(x, ground - H + H * 0.065, H * 0.065, 0, Math.PI * 2);
-	c.fill();
-	c.beginPath();
-	c.roundRect?.(x - H * 0.11, ground - H * 0.86, H * 0.22, H * 0.4, H * 0.05);
-	if (!c.roundRect) c.rect(x - H * 0.11, ground - H * 0.86, H * 0.22, H * 0.4);
-	c.fill();
-	c.fillRect(x - H * 0.09, ground - H * 0.47, H * 0.07, H * 0.47);
-	c.fillRect(x + H * 0.02, ground - H * 0.47, H * 0.07, H * 0.47);
-}
-
-function drawRobotSide(c, robot, x, ground, s) {
-	const H = (robot.heightMm?.mid ?? 1000) * s;
-	const R = (robot.reachMm?.max ?? 1000) * s;
-	const kind = robot.concept ?? robot.id;
-	const body = "#e9edf1";
-	const dark = "#3b4552";
-	const accent = kind === "delta" ? "#3d7fd1" : kind === "scara" ? "#2f6fb3" : kind === "gantry" ? "#e8792f" : "#2a9d8f";
-	c.lineCap = "round";
-	c.lineJoin = "round";
-	const seg = (x1, y1, x2, y2, w, col) => {
-		c.strokeStyle = col;
-		c.lineWidth = Math.max(2, w);
-		c.beginPath();
-		c.moveTo(x1, y1);
-		c.lineTo(x2, y2);
-		c.stroke();
-	};
-	const joint = (px, py, r) => {
-		c.fillStyle = accent;
-		c.beginPath();
-		c.arc(px, py, Math.max(2.5, r), 0, Math.PI * 2);
-		c.fill();
-	};
-	if (kind === "scara") {
-		c.fillStyle = dark;
-		c.fillRect(x - H * 0.18, ground - H * 0.06, H * 0.36, H * 0.06);
-		seg(x, ground - H * 0.05, x, ground - H * 0.9, H * 0.16, body);
-		seg(x, ground - H * 0.92, x + R * 0.52, ground - H * 0.92, H * 0.1, body);
-		joint(x + R * 0.52, ground - H * 0.92, H * 0.06);
-		seg(x + R * 0.52, ground - H, x + R, ground - H, H * 0.08, body);
-		seg(x + R, ground - H, x + R, ground - H * 0.45, H * 0.025, "#9aa5b1");
-		joint(x, ground - H * 0.92, H * 0.07);
-	} else if (kind === "delta") {
-		const top = ground - H;
-		const plat = ground - H * 0.3;
-		c.fillStyle = body;
-		c.fillRect(x - H * 0.18, top, H * 0.36, H * 0.14);
-		for (const sx of [-1, 0, 1]) {
-			const ex = x + sx * R * 0.32 + (sx === 0 ? R * 0.12 : 0);
-			const ey = top + H * 0.28;
-			seg(x + sx * H * 0.12, top + H * 0.1, ex, ey, H * 0.04, accent);
-			seg(ex, ey, x + sx * H * 0.04, plat, H * 0.015, "#9aa5b1");
-		}
-		c.fillStyle = dark;
-		c.fillRect(x - H * 0.06, plat, H * 0.12, H * 0.04);
-	} else if (kind === "gantry") {
-		seg(x, ground, x, ground - H, H * 0.04, "#9aa5b1");
-		seg(x + R, ground, x + R, ground - H, H * 0.04, "#9aa5b1");
-		seg(x, ground - H, x + R, ground - H, H * 0.05, accent);
-		seg(x + R * 0.55, ground - H, x + R * 0.55, ground - H * 0.4, H * 0.035, "#9aa5b1");
-		c.fillStyle = dark;
-		c.fillRect(x + R * 0.55 - H * 0.04, ground - H - H * 0.03, H * 0.08, H * 0.07);
-	} else {
-		// Articulated arm (6-axis, cobot, and anything else).
-		c.fillStyle = dark;
-		c.fillRect(x - H * 0.16, ground - H * 0.05, H * 0.32, H * 0.05);
-		c.fillStyle = body;
-		c.fillRect(x - H * 0.11, ground - H * 0.32, H * 0.22, H * 0.28);
-		const sh = [x, ground - H * 0.36];
-		const el = [x + R * 0.18, ground - H * 0.96];
-		const wr = [x + R * 0.68, ground - H * 0.82];
-		seg(sh[0], sh[1], el[0], el[1], H * 0.11, body);
-		seg(el[0], el[1], wr[0], wr[1], H * 0.08, body);
-		seg(wr[0], wr[1], wr[0], wr[1] + H * 0.12, H * 0.04, "#9aa5b1");
-		joint(sh[0], sh[1], H * 0.07);
-		joint(el[0], el[1], H * 0.055);
-		joint(wr[0], wr[1], H * 0.04);
-	}
-	// Reach line.
-	c.setLineDash([4, 4]);
-	c.strokeStyle = "#8f5b00";
-	c.lineWidth = 1.5;
-	c.beginPath();
-	const ry = ground - Math.min(H * 0.5, 18);
-	const rx0 = kind === "delta" ? x - R / 2 : x;
-	c.moveTo(rx0, ry);
-	c.lineTo(rx0 + R, ry);
-	c.stroke();
-	c.setLineDash([]);
-}
-
-export function initShowroom(app) {
-	const view = $("#showroom-view");
-	const robots = app.content.showroom ?? [];
-	const back = h("button", { class: "btn", type: "button", html: `${icon("park")}<span>Back to park</span>` });
-	const toTown = h("button", { class: "btn", type: "button", html: `${icon("town")}<span>Town map</span>` });
-	back.addEventListener("click", () => app.router.go({ name: "park" }));
-	toTown.addEventListener("click", () => app.router.go({ name: "town" }));
-	const stage = h("div", { class: "showroom-stage", "aria-label": "Robots drawn at the same scale" });
-	const notes = h("div", {});
-	view.append(
-		h("div", { class: "view-bar" }, back, toTown),
-		h("h2", {}, "Showroom"),
-		h("p", { class: "meta-line" }, "Every robot is drawn at the same scale next to a 1.7 m person. The dashed line shows the maximum reach."),
-		stage,
-		notes,
-	);
-
-	function render() {
-		stage.replaceChildren();
-		notes.replaceChildren();
-		if (!robots.length) {
-			stage.append(h("p", { class: "empty" }, "The showroom has not been written yet."));
-			return;
-		}
-		const stageH = app.isPhone() ? 210 : 280;
-		const maxH = Math.max(1700, ...robots.map((r) => r.heightMm?.max ?? 0));
-		const s = (stageH - 24) / maxH;
-		const dpr = Math.min(2, window.devicePixelRatio || 1);
-		const column = (w, drawFn, caption, id) => {
-			const cv = h("canvas", { width: String(Math.round(w * dpr)), height: String(Math.round(stageH * dpr)), style: { width: `${w}px`, height: `${stageH}px` }, "aria-hidden": "true" });
-			const c = cv.getContext("2d");
-			c.setTransform(dpr, 0, 0, dpr, 0, 0);
-			drawFn(c);
-			stage.append(h("div", { class: "robot-col", "data-robot": id ?? "person", style: { width: `${w}px` } }, cv, caption));
-		};
-		column(90, (c) => drawPerson(c, 45, stageH - 2, s), h("div", { class: "robot-caption" }, h("h3", {}, "Person"), h("dl", {}, h("dt", {}, "Height"), h("dd", {}, "1.7 m"))));
-		for (const rb of robots) {
-			const R = (rb.reachMm?.max ?? 1000) * s;
-			const w = Math.max(140, Math.ceil(R + 50));
-			const x = (rb.concept ?? rb.id) === "delta" ? w / 2 : 26;
-			column(
-				w,
-				(c) => drawRobotSide(c, rb, x, stageH - 2, s),
-				h(
-					"div",
-					{ class: "robot-caption" },
-					h("h3", {}, rb.title),
-					h(
-						"dl",
-						{},
-						h("dt", {}, "Payload"),
-						h("dd", {}, rb.payloadKg ? `${rb.payloadKg.text} kg` : "-"),
-						h("dt", {}, "Reach"),
-						h("dd", {}, rb.reachMm ? `${rb.reachMm.text} mm` : "-"),
-						h("dt", {}, "Speed"),
-						h("dd", { html: rb.speed || "-" }),
-					),
-				),
-				rb.id,
-			);
-		}
-		for (const rb of robots) {
-			const src = rb.sources?.length ? h("ol", { class: "sources" }, rb.sources.map((x) => h("li", {}, h("a", { href: x.url, target: "_blank", rel: "noopener" }, x.title), x.note ? h("span", { html: ` — ${x.note}` }) : null))) : null;
-			notes.append(
-				h("section", { class: "card", style: { marginTop: "14px" } }, h("h3", {}, rb.title, " ", rb.concept ? conceptLink(app, rb.concept, "(concept)") : null), h("div", { class: "prose", html: rb.notes }), src),
-			);
-		}
-	}
-
-	let rendered = false;
-	return {
-		show() {
-			view.hidden = false;
-			if (!rendered) {
-				render();
-				rendered = true;
-			}
-		},
-		hide() {
-			view.hidden = true;
 		},
 	};
 }
