@@ -1,0 +1,265 @@
+/* Workbench wb4-calibration: camera image of the grape tote and the robot-frame top view, knock sliders, calibration. */
+
+.wb4 {
+	container-type: inline-size;
+	display: grid;
+	gap: 12px;
+}
+
+.wb4-views {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.wb4-view {
+	margin: 0;
+	min-width: 0;
+}
+
+.wb4-view figcaption,
+.wb4-kicker,
+.wb4-box legend {
+	font-size: 11px;
+	font-weight: 750;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.wb4-view figcaption {
+	margin-bottom: 4px;
+}
+
+.wb4-canvas {
+	display: block;
+	width: 100%;
+	border-radius: 10px;
+	border: 1px solid var(--border);
+	background: #dde1e6;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.wb4-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	margin-top: 6px;
+	font-size: 12px;
+	color: var(--muted);
+}
+
+.wb4-legend > span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.wb4-sw {
+	display: inline-block;
+	width: 16px;
+	height: 10px;
+	flex: none;
+	border-radius: 3px;
+}
+
+.wb4-sw.detect {
+	width: 12px;
+	height: 12px;
+	background:
+		linear-gradient(#ffd84a, #ffd84a) center / 100% 3px no-repeat,
+		linear-gradient(#ffd84a, #ffd84a) center / 3px 100% no-repeat;
+	border-radius: 0;
+	filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+}
+
+.wb4-sw.collected {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #43c46b;
+	box-shadow: 0 0 0 1.5px #ffffff, 0 0 0 2.5px rgba(0, 0, 0, 0.25);
+}
+
+.wb4-sw.actual {
+	background: rgba(47, 111, 179, 0.18);
+	border: 2px solid #2f6fb3;
+}
+
+.wb4-sw.believed {
+	height: 0;
+	border-top: 3px dashed #ef7d2d;
+	border-radius: 0;
+}
+
+.wb4-sw.tol {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	border: 2px dashed #43c46b;
+	background: rgba(67, 196, 107, 0.18);
+}
+
+.wb4-pickbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.wb4-picks {
+	display: flex;
+	gap: 6px;
+}
+
+.wb4-pick {
+	min-width: 44px;
+	padding: 0 10px;
+	font-variant-numeric: tabular-nums;
+}
+
+.wb4-next {
+	margin-left: auto;
+}
+
+.wb4-result {
+	margin: 0;
+	min-height: 1.5em;
+	font-weight: 650;
+	color: var(--text);
+}
+
+.wb4-result[data-state="hit"] {
+	color: var(--good);
+}
+
+.wb4-result[data-state="miss"] {
+	color: var(--bad);
+}
+
+.wb4-controls {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+	align-items: start;
+}
+
+.wb4-box {
+	min-width: 0;
+	margin: 0;
+	padding: 8px 12px 12px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: var(--surface-2);
+}
+
+.wb4-box legend {
+	padding: 0 4px;
+}
+
+.wb4-slider {
+	display: grid;
+	grid-template-columns: 4.6em minmax(0, 1fr) 4.8em;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+}
+
+.wb4-slider label {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.wb4-slider input[type="range"] {
+	width: 100%;
+	min-width: 0;
+	height: 32px;
+	margin: 0;
+	accent-color: var(--accent);
+}
+
+.wb4-val {
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+.wb4-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.wb4-check {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.wb4-check input {
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	accent-color: var(--accent);
+}
+
+.wb4-readout {
+	margin: 10px 0 0;
+	font-size: 13px;
+	color: var(--muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.wb4-chip {
+	margin: 10px 0 0;
+	padding: 6px 10px;
+	border-radius: 10px;
+	font-size: 13px;
+	line-height: 1.4;
+	font-variant-numeric: tabular-nums;
+}
+
+.wb4-chip strong {
+	font-weight: 750;
+}
+
+.wb4-chip.warn {
+	background: var(--flag-soft);
+	color: var(--flag);
+}
+
+.wb4-solved {
+	padding: 8px 12px;
+	border: 1px solid var(--good);
+	border-radius: 10px;
+	background: var(--good-soft);
+	color: var(--good);
+	font-weight: 750;
+}
+
+.wb4-error {
+	color: var(--bad);
+}
+
+@container (max-width: 580px) {
+	.wb4-views,
+	.wb4-controls {
+		grid-template-columns: 1fr;
+	}
+}
+
+@container (max-width: 420px) {
+	.wb4-next {
+		margin-left: 0;
+	}
+}
