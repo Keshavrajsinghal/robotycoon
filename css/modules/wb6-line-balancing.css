@@ -1,0 +1,703 @@
+/* Workbench wb6-line-balancing. Uses the app tokens from css/app.css; the diorama keeps the park's
+   daylight palette in both themes, like the park canvas. */
+
+.wb6 {
+	--wb6-plot-h: 160px;
+	--wb6-work: #3d7fd1;
+	--wb6-xfer: #b3bcc6;
+	--wb6-over: var(--wb6-ride, #d9583b);
+	--wb6-bn-bg: rgba(242, 194, 48, 0.2);
+	--wb6-sel: var(--accent);
+	container-type: inline-size;
+	display: grid;
+	gap: 12px;
+	min-width: 0;
+	font-size: 14px;
+	line-height: 1.35;
+}
+
+@media (prefers-color-scheme: dark) {
+	.wb6 {
+		--wb6-work: #5f9de8;
+		--wb6-xfer: #6c7783;
+		--wb6-over: #f07a5c;
+		--wb6-bn-bg: rgba(242, 194, 48, 0.13);
+	}
+}
+
+.wb6-error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 280px;
+	padding: 16px;
+	text-align: center;
+	color: var(--bad);
+	font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- stats */
+
+.wb6-stats {
+	display: grid;
+	grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) minmax(0, 1fr);
+	gap: 8px;
+}
+
+.wb6-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: var(--surface-2);
+}
+
+.wb6-k {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 6px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.wb6-v {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: 2px;
+}
+
+.wb6-big {
+	font-size: 22px;
+	line-height: 1.15;
+	font-variant-numeric: tabular-nums;
+}
+
+.wb6-of {
+	font-size: 12px;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+.wb6-sub {
+	font-size: 12px;
+	color: var(--muted);
+	overflow-wrap: anywhere;
+}
+
+.wb6-meter {
+	position: relative;
+	display: block;
+	height: 6px;
+	margin: 3px 0 1px;
+	border-radius: 3px;
+	background: var(--surface-3);
+	overflow: hidden;
+}
+
+.wb6-meter-fill {
+	display: block;
+	height: 100%;
+	width: 0;
+	border-radius: 3px;
+	background: var(--wb6-over);
+	transition: width 0.35s ease;
+}
+
+.wb6-meter-target {
+	position: absolute;
+	left: 80%;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: var(--text);
+	opacity: 0.55;
+}
+
+.wb6-rate.is-good {
+	border-color: var(--good);
+	background: var(--good-soft);
+}
+
+.wb6-rate.is-good .wb6-meter-fill {
+	background: var(--good);
+}
+
+.wb6-budget .wb6-meter-fill {
+	background: var(--accent);
+}
+
+.wb6-budget.is-over {
+	border-color: var(--bad);
+}
+
+.wb6-delta {
+	font-size: 11px;
+	letter-spacing: 0;
+	text-transform: none;
+	white-space: nowrap;
+}
+
+.wb6-delta.up {
+	color: var(--good);
+}
+
+.wb6-delta.down {
+	color: var(--bad);
+}
+
+.wb6-delta.same {
+	color: var(--flag);
+}
+
+.wb6-banner {
+	padding: 8px 12px;
+	border: 1px solid var(--good);
+	border-radius: 10px;
+	background: var(--good-soft);
+	color: var(--text);
+}
+
+.wb6-banner strong {
+	color: var(--good);
+}
+
+/* ---------------------------------------------------------------- diorama and chart */
+
+.wb6-viz {
+	min-width: 0;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: var(--surface);
+	overflow: hidden;
+}
+
+.wb6-flow-wrap {
+	background: #e8e2d6;
+	border-bottom: 1px solid var(--border);
+}
+
+.wb6-flow {
+	display: block;
+	width: 100%;
+	height: 140px;
+	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.wb6-chart {
+	--wb6-takt: 0.5;
+	position: relative;
+	padding-top: 6px;
+}
+
+.wb6-cols {
+	display: grid;
+}
+
+.wb6-col {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--text);
+	font: inherit;
+	text-align: center;
+}
+
+.wb6-col:hover .wb6-plot {
+	background: var(--surface-2);
+}
+
+.wb6-col:focus-visible {
+	outline-offset: -3px;
+}
+
+.wb6-plot {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	height: var(--wb6-plot-h);
+	padding: 0 4px;
+	border-bottom: 2px solid var(--border);
+}
+
+.wb6-col.is-bn .wb6-plot {
+	background: var(--wb6-bn-bg);
+}
+
+.wb6-col.is-bn .wb6-val {
+	background: linear-gradient(var(--wb6-bn-bg), var(--wb6-bn-bg)), var(--surface);
+}
+
+.wb6-val {
+	position: relative;
+	z-index: 2;
+	margin-bottom: 2px;
+	padding: 0 3px;
+	border-radius: 4px;
+	background: var(--surface);
+	font-size: 12px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.wb6-col.is-over .wb6-val {
+	color: var(--bad);
+}
+
+.wb6-bar {
+	display: flex;
+	flex-direction: column;
+	width: min(100%, 46px);
+	min-height: 2px;
+	border-radius: 5px 5px 0 0;
+	overflow: hidden;
+	transition: height 0.35s ease;
+}
+
+.wb6-seg {
+	display: block;
+	flex-basis: 0;
+	min-height: 0;
+}
+
+.wb6-seg-work {
+	background: var(--wb6-work);
+}
+
+.wb6-seg-xfer {
+	background: repeating-linear-gradient(135deg, var(--wb6-xfer) 0 4px, transparent 4px 7px), color-mix(in srgb, var(--wb6-xfer) 45%, transparent);
+}
+
+.wb6-col.is-over .wb6-seg-work {
+	background: var(--wb6-over);
+}
+
+.wb6-name {
+	display: block;
+	min-height: 3.6em;
+	padding: 6px 3px 6px;
+	font-size: 12px;
+	line-height: 1.2;
+	overflow-wrap: anywhere;
+	hyphens: auto;
+	color: var(--muted);
+}
+
+.wb6-col[aria-pressed="true"] .wb6-name {
+	background: var(--accent-soft);
+	color: var(--text);
+	font-weight: 700;
+	box-shadow: inset 0 -3px 0 var(--wb6-sel);
+}
+
+.wb6-col[aria-pressed="true"] .wb6-plot {
+	border-bottom-color: var(--wb6-sel);
+}
+
+.wb6-takt {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(6px + var(--wb6-plot-h) * (1 - var(--wb6-takt)));
+	z-index: 1;
+	border-top: 2px dashed var(--muted);
+	pointer-events: none;
+}
+
+.wb6-takt-label {
+	position: absolute;
+	right: 4px;
+	bottom: 3px;
+	padding: 0 5px;
+	border-radius: 4px;
+	background: var(--surface);
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+/* The limit once stops are counted: one solid line per part of the line (buffers split it). */
+.wb6-limits {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 6px;
+	height: var(--wb6-plot-h);
+	z-index: 1;
+	pointer-events: none;
+}
+
+.wb6-limit {
+	position: absolute;
+	height: 0;
+	border-top: 2px solid var(--text);
+	transition: bottom 0.35s ease;
+}
+
+.wb6-limit + .wb6-limit {
+	border-left: 2px solid var(--surface);
+}
+
+.wb6-limit-label {
+	position: absolute;
+	left: 3px;
+	bottom: 3px;
+	padding: 0 4px;
+	border-radius: 4px;
+	background: var(--surface);
+	font-size: 11px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.wb6-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 14px;
+	padding: 6px 10px 8px;
+	border-top: 1px solid var(--border);
+	font-size: 12px;
+	color: var(--muted);
+}
+
+.wb6-lg::before {
+	content: "";
+	display: inline-block;
+	width: 12px;
+	height: 10px;
+	margin-right: 5px;
+	border-radius: 2px;
+	vertical-align: -1px;
+}
+
+.wb6-lg-work::before {
+	background: var(--wb6-work);
+}
+
+.wb6-lg-xfer::before {
+	background: repeating-linear-gradient(135deg, var(--wb6-xfer) 0 3px, transparent 3px 5px);
+}
+
+.wb6-lg-over::before {
+	background: var(--wb6-over);
+}
+
+.wb6-lg-takt::before {
+	height: 0;
+	border-top: 2px dashed var(--muted);
+	border-radius: 0;
+	vertical-align: 3px;
+}
+
+.wb6-lg-limit::before {
+	height: 0;
+	border-top: 2px solid var(--text);
+	border-radius: 0;
+	vertical-align: 3px;
+}
+
+/* ---------------------------------------------------------------- station panel */
+
+.wb6-panel {
+	padding: 12px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	background: var(--surface);
+}
+
+.wb6-panel-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 10px;
+}
+
+.wb6-panel-title {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.25;
+}
+
+.wb6-chips {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.wb6-chip {
+	padding: 2px 9px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.wb6-chip.bn {
+	background: var(--flag-soft);
+	color: var(--flag);
+}
+
+.wb6-chip.bad {
+	background: var(--bad-soft);
+	color: var(--bad);
+}
+
+.wb6-chip.good {
+	background: var(--good-soft);
+	color: var(--good);
+}
+
+.wb6-formulas {
+	display: grid;
+	gap: 6px;
+	margin: 10px 0 12px;
+}
+
+.wb6-formula {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 4px 6px;
+	padding: 8px 10px;
+	border-radius: 10px;
+	background: var(--surface-2);
+}
+
+.wb6-note {
+	align-self: center;
+	margin-left: auto;
+	font-size: 12px;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+.wb6-term {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 0;
+}
+
+.wb6-term-v {
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.wb6-term-k {
+	font-size: 11px;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+.wb6-term.is-total .wb6-term-v {
+	color: var(--text);
+}
+
+.wb6-term.is-good .wb6-term-v {
+	color: var(--good);
+}
+
+.wb6-term.is-bad .wb6-term-v {
+	color: var(--bad);
+}
+
+.wb6-op {
+	font-weight: 700;
+	color: var(--muted);
+}
+
+.wb6-opts {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+	gap: 8px;
+}
+
+.wb6-opt {
+	display: grid;
+	grid-template-columns: 22px minmax(0, 1fr);
+	align-items: center;
+	gap: 2px 10px;
+	min-height: 52px;
+	margin: 0;
+	padding: 8px 10px;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--surface);
+	color: var(--text);
+	font: inherit;
+	text-align: left;
+}
+
+.wb6-opt:hover:not(:disabled) {
+	background: var(--surface-2);
+}
+
+.wb6-opt-check {
+	grid-row: 1 / span 2;
+	position: relative;
+	width: 20px;
+	height: 20px;
+	border: 2px solid var(--muted);
+	border-radius: 6px;
+}
+
+.wb6-opt[aria-pressed="true"] {
+	border-color: var(--accent);
+	background: var(--accent-soft);
+}
+
+.wb6-opt[aria-pressed="true"]:hover {
+	background: var(--accent-soft);
+}
+
+.wb6-opt[aria-pressed="true"] .wb6-opt-check {
+	border-color: var(--accent);
+	background: var(--accent);
+}
+
+.wb6-opt[aria-pressed="true"] .wb6-opt-check::after {
+	content: "";
+	position: absolute;
+	left: 5px;
+	top: 1px;
+	width: 5px;
+	height: 10px;
+	border: solid var(--accent-ink);
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+.wb6-opt:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.wb6-opt-name {
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.wb6-opt-meta {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 2px 10px;
+	font-size: 12px;
+	color: var(--muted);
+}
+
+.wb6-opt-effect {
+	font-variant-numeric: tabular-nums;
+}
+
+.wb6-opt-cost {
+	font-weight: 700;
+	color: var(--text);
+}
+
+.wb6-none {
+	margin: 0;
+	color: var(--muted);
+}
+
+.wb6-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.wb6-stop-note {
+	flex: 1 1 12em;
+	font-size: 13px;
+	color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- reduced motion */
+
+.wb6.wb6-rm .wb6-bar,
+.wb6.wb6-rm .wb6-limit,
+.wb6.wb6-rm .wb6-meter-fill {
+	transition: none;
+}
+
+/* ---------------------------------------------------------------- narrow (phones) */
+
+@container (max-width: 600px) {
+	.wb6 {
+		--wb6-plot-h: 138px;
+	}
+
+	.wb6-stats {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
+	.wb6-rate {
+		grid-column: 1 / -1;
+		order: -1;
+	}
+
+	.wb6-big {
+		font-size: 20px;
+	}
+
+	.wb6-plot {
+		padding: 0 2px;
+	}
+
+	.wb6-val {
+		font-size: 11px;
+		letter-spacing: -0.02em;
+	}
+
+	/* Station names turn sideways (up to two lines) so eight columns fit a phone. */
+	.wb6-name {
+		writing-mode: vertical-rl;
+		transform: rotate(180deg);
+		width: 100%;
+		height: 96px;
+		min-height: 0;
+		padding: 6px 2px;
+		font-size: 11.5px;
+		line-height: 1.15;
+		text-align: end;
+		overflow: hidden;
+		overflow-wrap: normal;
+		hyphens: manual;
+	}
+
+	.wb6-col[aria-pressed="true"] .wb6-name {
+		box-shadow: none;
+	}
+
+	.wb6-takt-label,
+	.wb6-limit-label {
+		font-size: 10.5px;
+	}
+
+	.wb6-actions .btn {
+		flex: 1;
+	}
+}
