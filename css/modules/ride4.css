@@ -1,0 +1,11 @@
+/* Ride 4 (The lesson): close-up illustrations at the top of the stop panel. */
+
+.closeup.closeup-r4 {
+	border: 1px solid var(--border);
+	display: flex;
+	justify-content: center;
+}
+
+.closeup-r4 .closeup-canvas {
+	max-width: 100%;
+}
